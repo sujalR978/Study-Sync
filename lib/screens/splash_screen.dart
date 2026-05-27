@@ -1,25 +1,91 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:study_sync/screens/login_screen.dart';
+import 'package:study_sync/widgets/custom_textfield.dart';
 import 'package:study_sync/constants/app_colors.dart';
 
-class splsh_screen extends StatelessWidget {
-  const splsh_screen({super.key});
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    navigation();
+  }
+
+  void navigation() {
+    Timer(Duration(milliseconds: 2000), () {
+      Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(builder: (context) => LoginScreen()));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 70, right: 70),
 
+          child: Column(
             children: [
-              Text('INITIALIZING HUB...'),
-              SizedBox(
-                width: 300,
-                child: LinearProgressIndicator(
-                  backgroundColor: AppColors.white,
-                  color: AppColors.primary,
+              /// CENTER CONTENT
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+
+                  children: [
+                    SizedBox(
+                      width: 120,
+                      child: Image.asset('assets/icons/ic_appIcon.png'),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    customText.titalText('Study Sync'),
+
+                    const SizedBox(height: 15),
+
+                    customText.opacityText('Study Smart, Stay Focused'),
+                  ],
                 ),
+              ),
+
+              /// BOTTOM CONTENT
+              Column(
+                children: [
+                  const Text(
+                    'INITIALIZING HUB...',
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  SizedBox(
+                    width: 300,
+
+                    child: LinearProgressIndicator(
+                      backgroundColor: Colors.white24,
+                      color: AppColors.primary,
+                      minHeight: 6,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
+                ],
               ),
             ],
           ),

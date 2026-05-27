@@ -34,8 +34,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const splsh_screen(),
+      home: const SplashScreen(),
     );
   }
 }
-
