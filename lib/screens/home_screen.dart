@@ -92,23 +92,7 @@ class HomeScreen extends StatelessWidget {
                     child: const Icon(
                       Icons.person,
                       color: Colors.white,
-                    ),
-                  ),
-
-                      Text(
-                        "Welcome Back 👋",
-
-                        style: TextStyle(
-                          color: Color(0xFF64748B),
-                          fontSize: 14,
-                        ),
-                      ),
-
-                      SizedBox(height: 4),
-
-                      Text(
-                        "Sujal",
-
+                 
                         style: TextStyle(
                           color: Color(0xFF0F172A),
                           fontSize: 22,
