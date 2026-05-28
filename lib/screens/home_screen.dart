@@ -199,7 +199,7 @@ class HomeScreen extends StatelessWidget {
           Container(
             padding: const EdgeInse),
               fontSize: 16,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w600,fdshjdhfkjfkhdfkjhdfkjdfjhfkjhkfdkhjdfkhjfdjlfkjaskljadasdfjkl;adfjlkajl;dfljsalfjdlfjlajfldsjfldjfdfkljfdsajkdfjlksdlsfjkalkjdfslkdsjfadfkjlsfdjkslafjkdlfdjkldfjkslskjldf
             ),
           ),
         ],
