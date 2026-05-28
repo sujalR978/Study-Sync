@@ -197,27 +197,7 @@ class HomeScreen extends StatelessWidget {
         children: [
 
           Container(
-            padding: const EdgeInsets.all(16),
-
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-
-            child: Icon(
-              icon,
-              color: color,
-              size: 30,
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          Text(
-            title,
-
-            style: const TextStyle(
-              color: Color(0xFF0F172A),
+            padding: const EdgeInse),
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
