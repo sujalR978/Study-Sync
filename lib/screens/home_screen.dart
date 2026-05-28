@@ -159,26 +159,7 @@ class HomeScreen extends StatelessWidget {
                   ),
 
       ),
-    );
-  }
 
-  Widget bottomNavItem({
-    required IconData icon,
-    bool isSelected = false,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-
-      decoration: BoxDecoration(
-        color: isSelected
-            ? const Color(0xFF0052FF)
-            : Colors.transparent,
-
-        borderRadius:
-            BorderRadius.circular(16),
-      ),
-
-      child: Icon(
         icon,
 
         color: isSelected
