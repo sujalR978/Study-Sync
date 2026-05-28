@@ -335,19 +335,7 @@ class HomeScreen extends StatelessWidget {
 
 
 
-                      
-                isCompleted: false,
-              ),
-
-              const SizedBox(height: 14),
-
-              taskTile(
-                title: "Design Dashboard",
-                time: "05:00 PM",
-                isCompleted: false,
-              ),
-
-              const SizedBox(height: 30),
+                 
             ],
           ),
         ),
