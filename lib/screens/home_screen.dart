@@ -184,38 +184,7 @@ class HomeScreen extends StatelessWidget {
 
                       blurRadius: 12,
                     ),
-                  ],
-                ),
 
-        ],
-      ),
-
-      child: Column(
-        mainAxisAlignment:
-            MainAxisAlignment.center,
-
-        children: [
-
-          Container(
-            padding: const EdgeInse),
-              fontSize: 16,
-              fontWeight: FontWeight.w600,fdshjdhfkjfkhdfkjhdfkjdfjhfkjhkfdkhjdfkhjfdjlfkjaskljadasdfjkl;adfjlkajl;dfljsalfjdlfjlajfldsjfldjfdfkljfdsajkdfjlksdlsfjkalkjdfslkdsjfadfkjlsfdjkslafjkdlfdjkldfjkslskjldf
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget taskTile({
-    required String title,
-    required String time,
-    required bool isCompleted,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-
-      decoration: BoxDecoration(
         color: Colors.white,
 
         borderRadius:
