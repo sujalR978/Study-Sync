@@ -333,21 +333,8 @@ class HomeScreen extends StatelessWidget {
                     color: const Color(0xFF0052FF),
                   ),
 
-                  quickActionCard(
-                    icon: Icons.menu_book_rounded,
-                    title: "Study Notes",
-                    color: const Color(0xFF00D1FF),
-                  ),
-xisAlignment
-                        .spaceBetween,
 
-                children: const [
 
-                  Text(
-                    "Today's Tasks",
-
-                    style: TextStyle(
-                      color: Color(0xFF0F172A),
                       fontSize: 22,
                       fontWeight:
                           FontWeight.w700,
