@@ -95,15 +95,6 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(width: 14),
-
-                  /// TEXT
-                  Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
-
-                    children: const [
-
                       Text(
                         "Welcome Back 👋",
 
