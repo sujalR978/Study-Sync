@@ -335,20 +335,7 @@ class HomeScreen extends StatelessWidget {
 
 
 
-                      fontSize: 22,
-                      fontWeight:
-                          FontWeight.w700,
-                    ),
-                  ),
-
-                  Text(
-                    "See All",
-
-                      fontWeight:
-                          FontWeight.w600,
-                    ),
-                  ),
-                ],PM",
+                      
                 isCompleted: false,
               ),
 
