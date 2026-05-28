@@ -190,11 +190,7 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(width: 16),
 
 
-                Text(
-                  time,
 
-                  style: const TextStyle(
-                    color: Color(0xFF64748B),
                     fontSize: 13,
                   ),
                 ),
