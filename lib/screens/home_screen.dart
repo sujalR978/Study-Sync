@@ -322,46 +322,7 @@ class HomeScreen extends StatelessWidget {
                     const NeverScrollableScrollPhysics(),
 
                 crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 1.1,
 
-                children: [
-
-                  quickActionCard(
-                    icon: Icons.task_alt_rounded,
-                    title: "Tasks",
-                    color: const Color(0xFF0052FF),
-                  ),
-
-
-
-                 
-            ],
-          ),
-        ),
-      ),
-
-      floatingActionButton:
-          FloatingActionButton(
-        onPressed: () {},
-
-        backgroundColor:
-            const Color(0xFF0052FF),
-
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
-
-  Widget quickActionCard({
-    required IconData icon,
-    required String title,
-    required Color color,
-  }) {
-    return Container(
       padding: const EdgeInsets.all(18),
 
       decoration: BoxDecoration(
