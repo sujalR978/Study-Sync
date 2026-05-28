@@ -188,28 +188,7 @@ class HomeScreen extends StatelessWidget {
         color: Colors.white,
 
         borderRadius:
-            BorderRadius.circular(22),
-
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 12,
-          ),
-        ],
-              border: Border.all(
-                color: isCompleted
-                    ? const Color(0xFF0052FF)
-                    : const Color(0xFFCBD5E1),
-
-                width: 2,
-              ),
-
-              color: isCompleted
-                  ? const Color(0xFF0052FF)
-                  : Colors.transparent,
-            ),
-
-            child: isCompleted
+    
                 ? const Icon(
                     Icons.check,
                     color: Colors.white,
