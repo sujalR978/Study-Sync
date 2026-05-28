@@ -10,23 +10,6 @@ class LogoutScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      /// APP BAR
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        centerTitle: false,
-
-        title: const Text(
-          "Study Tracker",
-
-          style: TextStyle(
-            color: Color(0xFF0E4D6E),
-            fontWeight: FontWeight.w700,
-            fontSize: 22,
-          ),
-        ),
-      ),
-
       body: Stack(
         children: [
           /// BACKGROUND CIRCLES
