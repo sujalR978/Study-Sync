@@ -156,16 +156,4 @@ class HomeScreen extends StatelessWidget {
                       Icons.notifications_none,
                       color: Color(0xFF0F172A),
                     ),
-                  ),
-
-      ),
-
-        icon,
-
-        color: isSelected
-            ? Colors.white
-            : const Color(0xFF64748B),
-      ),
-    );
-  }
-}
+    
