@@ -1,3 +1,4 @@
+import 'package:study_sync/screens/logout_screen.dart';
 import 'package:study_sync/widgets/custom_button.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 import 'package:flutter/material.dart';
@@ -255,7 +256,7 @@ class RegisterScreen extends StatelessWidget {
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => LoginScreen(),
+                            builder: (context) => LogoutScreen(),
                           ),
                         );
                       },
