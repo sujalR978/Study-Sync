@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:study_sync/widgets/custom_button.dart';
+import 'package:study_sync/widgets/custom_textfield.dart';
 
 class LogoutScreen extends StatelessWidget {
   const LogoutScreen({super.key});
@@ -14,15 +16,6 @@ class LogoutScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         centerTitle: false,
 
-        leading: IconButton(
-          onPressed: () {},
-
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Color(0xFF0E4D6E),
-          ),
-        ),
-
         title: const Text(
           "Study Tracker",
 
@@ -34,67 +27,8 @@ class LogoutScreen extends StatelessWidget {
         ),
       ),
 
-      /// BOTTOM NAVIGATION
-      bottomNavigationBar: Container(
-        height: 80,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-        ),
-
-        decoration: BoxDecoration(
-          color: Colors.white,
-
-          border: Border(
-            top: BorderSide(
-              color: Colors.grey.shade200,
-            ),
-          ),
-
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-
-        child: Row(
-          mainAxisAlignment:
-              MainAxisAlignment.spaceAround,
-
-          children: [
-
-            bottomItem(
-              icon: Icons.menu_book,
-              title: "Library",
-              isSelected: false,
-            ),
-
-            bottomItem(
-              icon: Icons.timer,
-              title: "Focus",
-              isSelected: false,
-            ),
-
-            bottomItem(
-              icon: Icons.leaderboard,
-              title: "Stats",
-              isSelected: false,
-            ),
-
-            bottomItem(
-              icon: Icons.person,
-              title: "Profile",
-              isSelected: true,
-            ),
-          ],
-        ),
-      ),
-
       body: Stack(
         children: [
-
           /// BACKGROUND CIRCLES
           Positioned(
             top: 120,
@@ -107,9 +41,7 @@ class LogoutScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
 
-                color: const Color(
-                  0xFF7DD3FC,
-                ).withOpacity(0.15),
+                color: const Color(0xFF7DD3FC).withOpacity(0.15),
               ),
             ),
           ),
@@ -125,9 +57,7 @@ class LogoutScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
 
-                color: const Color(
-                  0xFF6B4A9E,
-                ).withOpacity(0.08),
+                color: const Color(0xFF6B4A9E).withOpacity(0.08),
               ),
             ),
           ),
@@ -138,49 +68,36 @@ class LogoutScreen extends StatelessWidget {
               padding: const EdgeInsets.all(24),
 
               child: Column(
-                mainAxisAlignment:
-                    MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
 
                 children: [
-
                   /// CARD
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(
-                      28,
-                    ),
+                    padding: const EdgeInsets.all(28),
 
                     decoration: BoxDecoration(
-                      color: Colors.white
-                          .withOpacity(0.9),
+                      color: Colors.white.withOpacity(0.9),
 
-                      borderRadius:
-                          BorderRadius.circular(
-                        30,
-                      ),
+                      borderRadius: BorderRadius.circular(30),
 
                       border: Border.all(
-                        color: const Color(
-                          0xFF0E4D6E,
-                        ).withOpacity(0.08),
+                        color: const Color(0xFF0E4D6E).withOpacity(0.08),
                       ),
 
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black
-                              .withOpacity(0.05),
+                          color: Colors.black.withOpacity(0.05),
 
                           blurRadius: 30,
 
-                          offset:
-                              const Offset(0, 10),
+                          offset: const Offset(0, 10),
                         ),
                       ],
                     ),
 
                     child: Column(
                       children: [
-
                         /// ICON
                         Container(
                           height: 90,
@@ -189,9 +106,7 @@ class LogoutScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
 
-                            color: const Color(
-                              0xFF7DD3FC,
-                            ).withOpacity(0.15),
+                            color: const Color(0xFF7DD3FC).withOpacity(0.15),
 
                             boxShadow: [
                               BoxShadow(
@@ -215,20 +130,7 @@ class LogoutScreen extends StatelessWidget {
                         const SizedBox(height: 24),
 
                         /// TITLE
-                        const Text(
-                          "Log out?",
-
-                          style: TextStyle(
-                            color: Color(
-                              0xFF0A0E1A,
-                            ),
-
-                            fontSize: 28,
-
-                            fontWeight:
-                                FontWeight.w700,
-                          ),
-                        ),
+                        customText.titalText('Log out?'),
 
                         const SizedBox(height: 12),
 
@@ -239,9 +141,7 @@ class LogoutScreen extends StatelessWidget {
                           textAlign: TextAlign.center,
 
                           style: TextStyle(
-                            color: Color(
-                              0xFF4A6070,
-                            ),
+                            color: Color(0xFF4A6070),
 
                             fontSize: 15,
 
@@ -252,55 +152,10 @@ class LogoutScreen extends StatelessWidget {
                         const SizedBox(height: 35),
 
                         /// LOGOUT BUTTON
-                        SizedBox(
-                          width: double.infinity,
-                          height: 56,
-
-                          child: ElevatedButton(
-                            onPressed: () {},
-
-                            style:
-                                ElevatedButton
-                                    .styleFrom(
-                              backgroundColor:
-                                  const Color(
-                                0xFF7DD3FC,
-                              ),
-
-                              foregroundColor:
-                                  const Color(
-                                0xFF001F2E,
-                              ),
-
-                              elevation: 5,
-
-                              shadowColor:
-                                  const Color(
-                                0xFF7DD3FC,
-                              ).withOpacity(0.3),
-
-                              shape:
-                                  RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius
-                                        .circular(
-                                  18,
-                                ),
-                              ),
-                            ),
-
-                            child: const Text(
-                              "Log Out",
-
-                              style: TextStyle(
-                                fontWeight:
-                                    FontWeight
-                                        .w700,
-
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
+                        ///
+                        CustomButton.loginButton(
+                          text: 'Log out',
+                          onPressed: () {},
                         ),
 
                         const SizedBox(height: 14),
@@ -313,16 +168,9 @@ class LogoutScreen extends StatelessWidget {
                           child: TextButton(
                             onPressed: () {},
 
-                            style:
-                                TextButton
-                                    .styleFrom(
-                              shape:
-                                  RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius
-                                        .circular(
-                                  18,
-                                ),
+                            style: TextButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18),
                               ),
                             ),
 
@@ -330,13 +178,9 @@ class LogoutScreen extends StatelessWidget {
                               "Cancel",
 
                               style: TextStyle(
-                                color: Color(
-                                  0xFF4A6070,
-                                ),
+                                color: Color(0xFF4A6070),
 
-                                fontWeight:
-                                    FontWeight
-                                        .w600,
+                                fontWeight: FontWeight.w600,
 
                                 fontSize: 15,
                               ),
@@ -351,8 +195,7 @@ class LogoutScreen extends StatelessWidget {
 
                   /// SYNC INFO
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 18,
                       vertical: 12,
                     ),
@@ -360,21 +203,15 @@ class LogoutScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
 
-                      borderRadius:
-                          BorderRadius.circular(
-                        50,
-                      ),
+                      borderRadius: BorderRadius.circular(50),
 
                       border: Border.all(
-                        color: const Color(
-                          0xFF0E4D6E,
-                        ).withOpacity(0.08),
+                        color: const Color(0xFF0E4D6E).withOpacity(0.08),
                       ),
 
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black
-                              .withOpacity(0.03),
+                          color: Colors.black.withOpacity(0.03),
 
                           blurRadius: 10,
                         ),
@@ -382,16 +219,12 @@ class LogoutScreen extends StatelessWidget {
                     ),
 
                     child: Row(
-                      mainAxisSize:
-                          MainAxisSize.min,
+                      mainAxisSize: MainAxisSize.min,
 
                       children: const [
-
                         Icon(
                           Icons.cloud_done,
-                          color: Color(
-                            0xFF0E4D6E,
-                          ),
+                          color: Color(0xFF0E4D6E),
                           size: 18,
                         ),
 
@@ -401,14 +234,11 @@ class LogoutScreen extends StatelessWidget {
                           "Last session synced 2 mins ago",
 
                           style: TextStyle(
-                            color: Color(
-                              0xFF4A6070,
-                            ),
+                            color: Color(0xFF4A6070),
 
                             fontSize: 13,
 
-                            fontWeight:
-                                FontWeight.w500,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
@@ -416,61 +246,6 @@ class LogoutScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget bottomItem({
-    required IconData icon,
-    required String title,
-    required bool isSelected,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 8,
-      ),
-
-      decoration: BoxDecoration(
-        color: isSelected
-            ? const Color(
-                0xFF0E4D6E,
-              ).withOpacity(0.08)
-            : Colors.transparent,
-
-        borderRadius:
-            BorderRadius.circular(16),
-      ),
-
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-
-        children: [
-
-          Icon(
-            icon,
-
-            color: isSelected
-                ? const Color(0xFF0E4D6E)
-                : const Color(0xFF4A6070),
-          ),
-
-          const SizedBox(height: 4),
-
-          Text(
-            title,
-
-            style: TextStyle(
-              color: isSelected
-                  ? const Color(0xFF0E4D6E)
-                  : const Color(0xFF4A6070),
-
-              fontSize: 12,
-
-              fontWeight: FontWeight.w600,
             ),
           ),
         ],
