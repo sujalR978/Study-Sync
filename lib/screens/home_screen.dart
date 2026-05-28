@@ -189,33 +189,6 @@ class HomeScreen extends StatelessWidget {
 
           const SizedBox(width: 16),
 
-          Expanded(
-            child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
-
-              children: [
-
-                Text(
-                  title,
-
-                  style: TextStyle(
-                    color:
-                        const Color(0xFF0F172A),
-
-                    fontSize: 16,
-
-                    fontWeight:
-                        FontWeight.w600,
-
-                    decoration: isCompleted
-                        ? TextDecoration
-                            .lineThrough
-                        : null,
-                  ),
-                ),
-
-                const SizedBox(height: 6),
 
                 Text(
                   time,
