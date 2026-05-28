@@ -196,18 +196,6 @@ class HomeScreen extends StatelessWidget {
             blurRadius: 12,
           ),
         ],
-      ),
-
-      child: Row(
-        children: [
-
-          Container(
-            height: 24,
-            width: 24,
-
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-
               border: Border.all(
                 color: isCompleted
                     ? const Color(0xFF0052FF)
