@@ -344,28 +344,11 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     "See All",
 
-                    style: TextStyle(
-                      color: Color(0xFF00D1FF),
                       fontWeight:
                           FontWeight.w600,
                     ),
                   ),
-                ],
-              ),
-
-              const SizedBox(height: 18),
-
-              taskTile(
-                title: "Complete Flutter UI",
-                time: "09:00 AM",
-                isCompleted: true,
-              ),
-
-              const SizedBox(height: 14),
-
-              taskTile(
-                title: "Study Firebase",
-                time: "12:30 PM",
+                ],PM",
                 isCompleted: false,
               ),
 
