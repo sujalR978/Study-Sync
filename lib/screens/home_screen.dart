@@ -183,17 +183,7 @@ class HomeScreen extends StatelessWidget {
                               0.04),
 
                       blurRadius: 12,
-                    ),
-
-        color: Colors.white,
-
-        borderRadius:
     
-                ? const Icon(
-                    Icons.check,
-                    color: Colors.white,
-                    size: 16,
-                  )
                 : null,
           ),
 
