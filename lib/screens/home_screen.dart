@@ -139,21 +139,4 @@ class HomeScreen extends StatelessWidget {
                       color: Colors.white,
 
                       borderRadius:
-                          BorderRadius.circular(
-                              16),
-
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black
-                              .withOpacity(0.04),
-
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
-
-                    child: const Icon(
-                      Icons.notifications_none,
-                      color: Color(0xFF0F172A),
-                    ),
     
