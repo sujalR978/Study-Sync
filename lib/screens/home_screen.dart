@@ -338,28 +338,7 @@ class HomeScreen extends StatelessWidget {
                     title: "Study Notes",
                     color: const Color(0xFF00D1FF),
                   ),
-
-                  quickActionCard(
-                    icon: Icons.timer_outlined,
-                    title: "Pomodoro",
-                    color: const Color(0xFF7000FF),
-                  ),
-
-                  quickActionCard(
-                    icon:
-                        Icons.analytics_outlined,
-                    title: "Analytics",
-                    color: const Color(0xFF0F172A),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 30),
-
-              /// TODAY TASKS
-              Row(
-                mainAxisAlignment:
-                    MainAxisAlignment
+xisAlignment
                         .spaceBetween,
 
                 children: const [
