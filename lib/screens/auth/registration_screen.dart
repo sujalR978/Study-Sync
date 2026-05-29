@@ -1,8 +1,8 @@
-import 'package:study_sync/screens/logout_screen.dart';
+import 'package:study_sync/screens/auth/logout_screen.dart';
 import 'package:study_sync/widgets/custom_button.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 import 'package:flutter/material.dart';
-import 'package:study_sync/screens/login_screen.dart';
+import 'package:study_sync/screens/auth/login_screen.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});

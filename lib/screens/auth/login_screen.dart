@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:study_sync/widgets/custom_button.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
-import 'package:study_sync/screens/registration_screen.dart';
+import 'package:study_sync/screens/auth/registration_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

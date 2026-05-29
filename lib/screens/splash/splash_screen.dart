@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:study_sync/screens/login_screen.dart';
+import 'package:study_sync/screens/auth/login_screen.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 import 'package:study_sync/constants/app_colors.dart';
 
