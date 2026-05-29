@@ -25,8 +25,10 @@ class CustomTextfield {
     Widget? suffixIcon,
     String? Function(String?)? valideter,
     List<TextInputFormatter>?  regex,
+   required TextEditingController controller,
   }) {
     return TextFormField(
+      controller: controller,
       obscureText: obscureText,
       validator: valideter,
       inputFormatters: regex,
