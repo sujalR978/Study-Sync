@@ -46,7 +46,7 @@ class AuthService {
       } else if (e.code == 'wrong-password') {
         return "Wrong password";
       } else {
-        return e.message ?? "Login failed";
+        return "Login failed";
       }
     } catch (e) {
       return 'Somthing want wrong';
