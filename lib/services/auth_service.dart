@@ -34,16 +34,22 @@ class AuthService {
     await _firestore.collection('users').doc(uid).set(user.toMap());
   }
 
-  Future<void> loginUser({
-    required BuildContext context,
-    required String email,
-    required String password,
-  }) async {
+  Future loginUser({required String email, required String password}) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       return null;
     } on FirebaseAuthException catch (e) {
-      
+      if (e.code == 'invalid-email') {
+        return "Invalid email format";
+      } else if (e.code == 'user-not-found') {
+        return "No user found for this email";
+      } else if (e.code == 'wrong-password') {
+        return "Wrong password";
+      } else {
+        return e.message ?? "Login failed";
+      }
+    } catch (e) {
+      return 'Somthing want wrong';
     }
   }
 }
