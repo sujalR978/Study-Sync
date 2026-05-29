@@ -129,7 +129,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         },
 
                         regex: [
-                          FilteringTextInputFormatter.deny(RegExp(r'[0-9]')),
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'[a-z/A-Z]'),
+                          ),
                         ],
                       ),
 
@@ -140,6 +142,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         hintText: "Username",
 
                         icon: Icons.alternate_email,
+                        valideter: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Set Username.';
+                          }
+
+                          return null;
+                        },
                       ),
 
                       const SizedBox(height: 18),
@@ -147,8 +156,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       /// EMAIL
                       CustomTextfield.customTextField(
                         hintText: "Email Address",
+                        valideter: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Enter your email.';
+                          }
 
+                          return null;
+                        },
                         icon: Icons.mail_outline,
+                        regex: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'[a-z0-9@.]'),
+                          ),
+                        ],
                       ),
 
                       const SizedBox(height: 18),
@@ -158,6 +178,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         hintText: "Phone Number",
 
                         icon: Icons.phone_outlined,
+                        valideter: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Enter your phone.';
+                          }
+
+                          return null;
+                        },
                       ),
 
                       const SizedBox(height: 18),
@@ -169,7 +196,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         icon: Icons.lock_outline,
 
                         obscureText: true,
+                        valideter: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Enter password.';
+                          }
 
+                          return null;
+                        },
                         suffixIcon: const Icon(
                           Icons.visibility_off,
 
@@ -186,7 +219,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         icon: Icons.lock_outline,
 
                         obscureText: true,
+                        valideter: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Confirm password';
+                          }
 
+                          return null;
+                        },
                         suffixIcon: const Icon(
                           Icons.visibility_off,
 
