@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:study_sync/screens/home/home_screen.dart';
+import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/widgets/custom_button.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 import 'package:study_sync/screens/auth/registration_screen.dart';
@@ -14,9 +16,11 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isPasswordVisible = false;
   bool rememberMe = false;
 
-  final TextEditingController emailController = TextEditingController();
+  final TextEditingController email = TextEditingController();
 
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController password = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -143,155 +147,166 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         children: [
                           /// EMAIL FIELD
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "EMAIL ADDRESS",
 
-                            children: [
-                              const Text(
-                                "EMAIL ADDRESS",
-
-                                style: TextStyle(
-                                  color: Color(0xFF64748B),
-
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-
-                                  letterSpacing: 1.2,
-                                ),
-                              ),
-
-                              const SizedBox(height: 10),
-
-                              TextFormField(
-                                controller: emailController,
-
-                                decoration: InputDecoration(
-                                  hintText: "name@example.com",
-
-                                  hintStyle: const TextStyle(
-                                    color: Color(0xFF94A3B8),
-                                  ),
-
-                                  prefixIcon: const Icon(
-                                    Icons.mail_outline,
-
+                                  style: TextStyle(
                                     color: Color(0xFF64748B),
+
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+
+                                    letterSpacing: 1.2,
                                   ),
+                                ),
 
-                                  filled: true,
+                                const SizedBox(height: 10),
 
-                                  fillColor: const Color(0xFFF8FAFC),
+                                TextFormField(
+                                  controller: email,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Email is empty.';
+                                    }
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: "name@example.com",
 
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(18),
+                                    hintStyle: const TextStyle(
+                                      color: Color(0xFF94A3B8),
+                                    ),
 
-                                    borderSide: BorderSide.none,
-                                  ),
+                                    prefixIcon: const Icon(
+                                      Icons.mail_outline,
 
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(18),
+                                      color: Color(0xFF64748B),
+                                    ),
 
-                                    borderSide: const BorderSide(
-                                      color: Color(0xFF00D1FF),
+                                    filled: true,
 
-                                      width: 1.5,
+                                    fillColor: const Color(0xFFF8FAFC),
+
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(18),
+
+                                      borderSide: BorderSide.none,
+                                    ),
+
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(18),
+
+                                      borderSide: const BorderSide(
+                                        color: Color(0xFF00D1FF),
+
+                                        width: 1.5,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
+                                const SizedBox(height: 24),
 
-                          const SizedBox(height: 24),
+                                /// PASSWORD LABEL
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
 
-                          /// PASSWORD LABEL
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      "PASSWORD",
 
-                            children: [
-                              const Text(
-                                "PASSWORD",
+                                      style: TextStyle(
+                                        color: Color(0xFF64748B),
 
-                                style: TextStyle(
-                                  color: Color(0xFF64748B),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
 
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
+                                        letterSpacing: 1.2,
+                                      ),
+                                    ),
 
-                                  letterSpacing: 1.2,
+                                    TextButton(
+                                      onPressed: () {},
+
+                                      child: const Text(
+                                        "Forgot Password?",
+
+                                        style: TextStyle(
+                                          color: Color(0xFF0052FF),
+
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
 
-                              TextButton(
-                                onPressed: () {},
+                                /// PASSWORD FIELD
+                                TextFormField(
+                                  controller: password,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Password is empty.';
+                                    }
+                                  },
+                                  obscureText: !isPasswordVisible,
 
-                                child: const Text(
-                                  "Forgot Password?",
+                                  decoration: InputDecoration(
+                                    hintText: "••••••••",
 
-                                  style: TextStyle(
-                                    color: Color(0xFF0052FF),
+                                    hintStyle: const TextStyle(
+                                      color: Color(0xFF94A3B8),
+                                    ),
 
-                                    fontWeight: FontWeight.w600,
+                                    prefixIcon: const Icon(
+                                      Icons.lock_outline,
+
+                                      color: Color(0xFF64748B),
+                                    ),
+
+                                    suffixIcon: IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          isPasswordVisible =
+                                              !isPasswordVisible;
+                                        });
+                                      },
+
+                                      icon: Icon(
+                                        isPasswordVisible
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+
+                                        color: const Color(0xFF64748B),
+                                      ),
+                                    ),
+
+                                    filled: true,
+
+                                    fillColor: const Color(0xFFF8FAFC),
+
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(18),
+
+                                      borderSide: BorderSide.none,
+                                    ),
+
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(18),
+
+                                      borderSide: const BorderSide(
+                                        color: Color(0xFF00D1FF),
+
+                                        width: 1.5,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-
-                          /// PASSWORD FIELD
-                          TextFormField(
-                            controller: passwordController,
-
-                            obscureText: !isPasswordVisible,
-
-                            decoration: InputDecoration(
-                              hintText: "••••••••",
-
-                              hintStyle: const TextStyle(
-                                color: Color(0xFF94A3B8),
-                              ),
-
-                              prefixIcon: const Icon(
-                                Icons.lock_outline,
-
-                                color: Color(0xFF64748B),
-                              ),
-
-                              suffixIcon: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    isPasswordVisible = !isPasswordVisible;
-                                  });
-                                },
-
-                                icon: Icon(
-                                  isPasswordVisible
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-
-                                  color: const Color(0xFF64748B),
-                                ),
-                              ),
-
-                              filled: true,
-
-                              fillColor: const Color(0xFFF8FAFC),
-
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(18),
-
-                                borderSide: BorderSide.none,
-                              ),
-
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(18),
-
-                                borderSide: const BorderSide(
-                                  color: Color(0xFF00D1FF),
-
-                                  width: 1.5,
-                                ),
-                              ),
+                              ],
                             ),
                           ),
 
@@ -330,7 +345,22 @@ class _LoginScreenState extends State<LoginScreen> {
                           // CustomButton.LoginButton('Log In'),
                           CustomButton.loginButton(
                             text: 'Log In',
-                            onPressed: () {},
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                AuthService login = AuthService();
+                                await login.loginUser(
+                                  context: context,
+                                  email: email.text.trim(),
+                                  password: password.text.trim(),
+                                );
+
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) => HomeScreen(),
+                                  ),
+                                );
+                              }
+                            },
                           ),
 
                           const SizedBox(height: 32),
