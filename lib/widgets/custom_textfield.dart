@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class customText {
   static titalText(String text) {
@@ -17,14 +18,18 @@ class customText {
 }
 
 class CustomTextfield {
- static Widget customTextField({
+  static Widget customTextField({
     required String hintText,
     required IconData icon,
     bool obscureText = false,
     Widget? suffixIcon,
+    String? Function(String?)? valideter,
+    List<TextInputFormatter>?  regex,
   }) {
     return TextFormField(
       obscureText: obscureText,
+      validator: valideter,
+      inputFormatters: regex,
 
       decoration: InputDecoration(
         hintText: hintText,
