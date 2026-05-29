@@ -1,11 +1,19 @@
-import 'package:study_sync/screens/auth/logout_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import 'package:study_sync/screens/auth/login_screen.dart';
 import 'package:study_sync/widgets/custom_button.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
-import 'package:flutter/material.dart';
-import 'package:study_sync/screens/auth/login_screen.dart';
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
+
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  bool rememberMe = false;
 
   @override
   Widget build(BuildContext context) {
@@ -98,6 +106,7 @@ class RegisterScreen extends StatelessWidget {
                         color: Colors.black.withOpacity(0.05),
 
                         blurRadius: 25,
+
                         offset: const Offset(0, 10),
                       ),
                     ],
@@ -108,7 +117,20 @@ class RegisterScreen extends StatelessWidget {
                       /// FULL NAME
                       CustomTextfield.customTextField(
                         hintText: 'Full Name',
+
                         icon: Icons.person_outline,
+
+                        valideter: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Enter your name.';
+                          }
+
+                          return null;
+                        },
+
+                        regex: [
+                          FilteringTextInputFormatter.deny(RegExp(r'[0-9]')),
+                        ],
                       ),
 
                       const SizedBox(height: 18),
@@ -116,6 +138,7 @@ class RegisterScreen extends StatelessWidget {
                       /// USERNAME
                       CustomTextfield.customTextField(
                         hintText: "Username",
+
                         icon: Icons.alternate_email,
                       ),
 
@@ -124,6 +147,7 @@ class RegisterScreen extends StatelessWidget {
                       /// EMAIL
                       CustomTextfield.customTextField(
                         hintText: "Email Address",
+
                         icon: Icons.mail_outline,
                       ),
 
@@ -132,6 +156,7 @@ class RegisterScreen extends StatelessWidget {
                       /// PHONE
                       CustomTextfield.customTextField(
                         hintText: "Phone Number",
+
                         icon: Icons.phone_outlined,
                       ),
 
@@ -140,10 +165,14 @@ class RegisterScreen extends StatelessWidget {
                       /// PASSWORD
                       CustomTextfield.customTextField(
                         hintText: "Password",
+
                         icon: Icons.lock_outline,
+
                         obscureText: true,
+
                         suffixIcon: const Icon(
                           Icons.visibility_off,
+
                           color: Color(0xFF64748B),
                         ),
                       ),
@@ -153,10 +182,14 @@ class RegisterScreen extends StatelessWidget {
                       /// CONFIRM PASSWORD
                       CustomTextfield.customTextField(
                         hintText: "Confirm Password",
+
                         icon: Icons.lock_outline,
+
                         obscureText: true,
+
                         suffixIcon: const Icon(
                           Icons.visibility_off,
+
                           color: Color(0xFF64748B),
                         ),
                       ),
@@ -167,8 +200,14 @@ class RegisterScreen extends StatelessWidget {
                       Row(
                         children: [
                           Checkbox(
-                            value: false,
-                            onChanged: (value) {},
+                            value: rememberMe,
+
+                            onChanged: (value) {
+                              setState(() {
+                                rememberMe = value!;
+                              });
+                            },
+
                             activeColor: const Color(0xFF0052FF),
                           ),
 
@@ -177,6 +216,7 @@ class RegisterScreen extends StatelessWidget {
 
                             style: TextStyle(
                               color: Color(0xFF64748B),
+
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -191,6 +231,7 @@ class RegisterScreen extends StatelessWidget {
 
                               style: TextStyle(
                                 color: Color(0xFF00D1FF),
+
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -203,6 +244,7 @@ class RegisterScreen extends StatelessWidget {
                       /// CREATE ACCOUNT BUTTON
                       CustomButton.loginButton(
                         text: 'Create Account',
+
                         onPressed: () {},
                       ),
 
@@ -256,7 +298,7 @@ class RegisterScreen extends StatelessWidget {
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => LoginScreen(),
+                            builder: (context) => const LoginScreen(),
                           ),
                         );
                       },
