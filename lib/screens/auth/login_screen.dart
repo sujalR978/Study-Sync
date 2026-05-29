@@ -348,17 +348,23 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 AuthService login = AuthService();
-                                await login.loginUser(
-                                  context: context,
+                                final error = await login.loginUser(
                                   email: email.text.trim(),
                                   password: password.text.trim(),
                                 );
-
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (context) => HomeScreen(),
-                                  ),
-                                );
+                                if (!mounted) return;
+                                
+                                if (error == null) {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (context) => HomeScreen(),
+                                    ),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(error)),
+                                  );
+                                }
                               }
                             },
                           ),
