@@ -260,22 +260,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         /// CHECKBOX
                         Row(
                           children: [
-                            Checkbox(
-                              value: rememberMe,
-                              onChanged: (value) {
-                                setState(() {
-                                  rememberMe = value!;
-                                });
-                              },
-                              activeColor: const Color(0xFF0052FF),
-                            ),
-                            const Text(
-                              "Remember Me",
-                              style: TextStyle(
-                                color: Color(0xFF64748B),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
                             const Spacer(),
                             TextButton(
                               onPressed: () {},
