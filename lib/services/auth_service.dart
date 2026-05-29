@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:study_sync/models/user_model.dart';
 
 class AuthService {
@@ -14,15 +15,35 @@ class AuthService {
     required String email,
     required String phone,
     required String password,
-  }) async{
+  }) async {
+    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
 
-UserCredential userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+    String uid = userCredential.user!.uid;
 
-  String uid = userCredential.user!.uid;
+    UserModel user = UserModel(
+      uid: uid,
+      fullname: fullname,
+      username: username,
+      email: email,
+      phone: phone,
+    );
 
-  UserModel user = UserModel(uid: uid, fullname: fullname, username: username, email: email, phone: phone);
+    await _firestore.collection('users').doc(uid).set(user.toMap());
+  }
 
-  await _firestore.collection('users').doc(uid).set(user.toMap());
-
+  Future<void> loginUser({
+    required BuildContext context,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      return null;
+    } on FirebaseAuthException catch (e) {
+      
+    }
   }
 }
