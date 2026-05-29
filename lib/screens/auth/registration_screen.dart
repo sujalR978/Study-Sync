@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:study_sync/screens/auth/login_screen.dart';
+import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/widgets/custom_button.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 
@@ -16,6 +18,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool rememberMe = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  final TextEditingController fullname = TextEditingController();
+  final TextEditingController username = TextEditingController();
+  final TextEditingController email = TextEditingController();
+  final TextEditingController phone = TextEditingController();
+  final TextEditingController password = TextEditingController();
+  final TextEditingController Cpassword = TextEditingController();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    fullname.dispose();
+    username.dispose();
+    email.dispose();
+    phone.dispose();
+    password.dispose();
+    Cpassword.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +123,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       children: [
                         /// FULL NAME
                         CustomTextfield.customTextField(
+                          controller: fullname,
                           hintText: 'Full Name',
                           icon: Icons.person_outline,
                           valideter: (value) {
@@ -121,6 +143,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                         /// USERNAME
                         CustomTextfield.customTextField(
+                          controller: username,
                           hintText: "Username",
                           icon: Icons.alternate_email,
                           valideter: (value) {
@@ -135,6 +158,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                         /// EMAIL
                         CustomTextfield.customTextField(
+                          controller: email,
                           hintText: "Email Address",
                           icon: Icons.mail_outline,
                           valideter: (value) {
@@ -161,6 +185,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                         /// PHONE
                         CustomTextfield.customTextField(
+                          controller: phone,
                           hintText: "Phone Number",
                           icon: Icons.phone_outlined,
                           valideter: (value) {
@@ -188,12 +213,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                         /// PASSWORD
                         CustomTextfield.customTextField(
+                          controller: password,
                           hintText: "Password",
                           icon: Icons.lock_outline,
                           obscureText: true,
                           valideter: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Enter password.';
+                            }
+                            if (value.length > 7) {
+                              return 'password length must be 7';
                             }
                             return null;
                           },
@@ -207,12 +236,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                         /// CONFIRM PASSWORD
                         CustomTextfield.customTextField(
+                          controller: Cpassword,
                           hintText: "Confirm Password",
                           icon: Icons.lock_outline,
                           obscureText: true,
                           valideter: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Confirm password';
+                            }
+                            if (value == password) {
+                              return 'confirm password is not match with password';
                             }
                             return null;
                           },
@@ -265,6 +298,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               // All fields are valid
+
+                              final AuthService _register = AuthService();
+                              _register.registerUser(
+                                fullname: fullname.text.trim(),
+                                username: username.text.trim(),
+                                email: email.text.trim(),
+                                phone: phone.text.trim(),
+                                password: password.text.trim(),
+                              );
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (context) => LoginScreen(),
+                                ),
+                              );
                             }
                           },
                         ),
