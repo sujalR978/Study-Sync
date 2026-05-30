@@ -56,6 +56,11 @@ class AuthService {
 
   Future googleSingIn() async {
     try {
+      await GoogleSignIn.instance.initialize(
+        serverClientId:
+            '687051857629-h4f322mvlloj96b8701nr5l220uvg9l2.apps.googleusercontent.com',
+      );
+
       final GoogleSignInAccount gUser = await GoogleSignIn.instance
           .authenticate();
 
