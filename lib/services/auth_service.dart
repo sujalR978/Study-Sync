@@ -32,7 +32,7 @@ class AuthService {
       email: email,
       phone: phone,
       loginMethod: 'registor',
-      photoUrl: '',
+      photoUrl: 'assets/icons/ic_appIcon.png',
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
@@ -45,6 +45,7 @@ class AuthService {
     String uid = US!.uid;
     String email = US.email ?? '';
     String fullname = US.displayName ?? '';
+    String photoUrl = US.photoURL ?? '';
     UserModel user = UserModel(
       uid: uid,
       fullname: fullname,
@@ -52,7 +53,7 @@ class AuthService {
       email: email,
       phone: phone,
       loginMethod: 'google',
-      photoUrl: '',
+      photoUrl: photoUrl,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
