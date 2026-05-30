@@ -40,10 +40,31 @@ class AuthService {
     await _firestore.collection('users').doc(uid).set(user.toMap());
   }
 
-  Future<void> googleUser({required username,required phone, })async {
+  Future<void> googleUser({required username, required phone}) async {
+    final GoogleSignInAccount gUser = await GoogleSignIn.instance
+        .authenticate();
+    final GoogleSignInAuthentication gAuth = gUser.authentication;
+    final credential = GoogleAuthProvider.credential(idToken: gAuth.idToken);
+    UserCredential userCredential = await FirebaseAuth.instance
+        .signInWithCredential(credential);
 
-    
-    
+    String uid = userCredential.user!.uid;
+
+    UserModel user = UserModel(
+      uid: uid,
+      fullname: '',
+      username: username,
+      email: '',
+      phone: phone,
+      loginMethod: 'google',
+      photoUrl: '',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    await _firestore.collection('users').doc(uid).set(user.toMap());
+    // User? user = _auth.currentUser;
+    // String uid = user!.uid;
   }
 
   Future loginUser({required String email, required String password}) async {
