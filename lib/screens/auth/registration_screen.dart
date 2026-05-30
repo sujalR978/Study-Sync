@@ -303,58 +303,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
 
                         const SizedBox(height: 28),
-
-                        /// DIVIDER
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Divider(color: Colors.grey.shade300),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                              child: Text(
-                                "OR",
-                                style: TextStyle(
-                                  color: Colors.grey.shade500,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Divider(color: Colors.grey.shade300),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 28),
-
-                        /// GOOGLE BUTTON
-                        CustomButton.gogalButton(
-                           onPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                AuthService login = AuthService();
-                                final error = await login.loginUser(
-                                  email: email.text.trim(),
-                                  password: password.text.trim(),
-                                );
-                                if (!mounted) return;
-
-                                if (error == null) {
-                                  Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                      builder: (context) => googleInfoscreen(),
-                                    ),
-                                  );
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(error)),
-                                  );
-                                }
-                              }
-                            },
-                        ),
                       ],
                     ),
                   ),
