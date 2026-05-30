@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/services/auth_service.dart';
 
@@ -14,7 +15,7 @@ class _googleInfoscreenState extends State<googleInfoscreen> {
   final GlobalKey<FormState> keyForm = GlobalKey<FormState>();
   final TextEditingController username = TextEditingController();
   final TextEditingController phone = TextEditingController();
-
+  bool rememberme = false;
   @override
   void dispose() {
     // TODO: implement dispose
@@ -54,18 +55,34 @@ class _googleInfoscreenState extends State<googleInfoscreen> {
                         if (value == null || value.isEmpty) {
                           return 'Enter username.';
                         }
-                        if (value.length == 10) {
+                        if (value.length != 10) {
                           return 'Enter 10 digit';
                         }
                         return null;
                       },
                     ),
 
+                    Checkbox(
+                      value: rememberme,
+                      onChanged: (value) {
+                        setState(() {
+                          rememberme = true;
+                        });
+                      },
+                    ),
+                    Text('remember me '),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (keyForm.currentState!.validate()) {
+                          SharedPreferences sp =
+                              await SharedPreferences.getInstance();
+                          sp.setBool('logIn', rememberme);
+
                           AuthService auth = AuthService();
-                          auth.googleUser(username: username, phone: phone);
+                          auth.googleUser(
+                            username: username.text,
+                            phone: phone.text,
+                          );
 
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
