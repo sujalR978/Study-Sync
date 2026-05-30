@@ -403,7 +403,24 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 28),
 
                           /// GOOGLE BUTTON
-                          CustomButton.gogalButton(),
+                          CustomButton.gogalButton(
+                            onPressed: () async {
+          AuthService auth = AuthService();
+          final logIn = await auth.googleSingIn();
+          if (!mounted) return;
+
+          if (logIn != null) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => HomeScreen()),
+            );
+          } else {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text("Google Sign-In Failed")));
+          }
+        },
+                          ),
                         ],
                       ),
                     ),
