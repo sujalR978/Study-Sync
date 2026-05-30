@@ -41,14 +41,8 @@ class AuthService {
   }
 
   Future<void> googleUser({required username, required phone}) async {
-    final GoogleSignInAccount gUser = await GoogleSignIn.instance
-        .authenticate();
-    final GoogleSignInAuthentication gAuth = gUser.authentication;
-    final credential = GoogleAuthProvider.credential(idToken: gAuth.idToken);
-    UserCredential userCredential = await FirebaseAuth.instance
-        .signInWithCredential(credential);
-
-    String uid = userCredential.user!.uid;
+    User? US = _auth.currentUser;
+    String uid = US!.uid;
 
     UserModel user = UserModel(
       uid: uid,
@@ -63,8 +57,6 @@ class AuthService {
     );
 
     await _firestore.collection('users').doc(uid).set(user.toMap());
-    // User? user = _auth.currentUser;
-    // String uid = user!.uid;
   }
 
   Future loginUser({required String email, required String password}) async {
@@ -114,5 +106,6 @@ class AuthService {
     SharedPreferences spSet = await SharedPreferences.getInstance();
 
     spSet.setBool('logIn', false);
+    
   }
 }
