@@ -331,26 +331,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                         /// GOOGLE BUTTON
                         CustomButton.gogalButton(
-                          onPressed: () async {
-                            AuthService auth = AuthService();
-                            final login = await auth.googleSingIn();
+                           onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                AuthService login = AuthService();
+                                final error = await login.loginUser(
+                                  email: email.text.trim(),
+                                  password: password.text.trim(),
+                                );
+                                if (!mounted) return;
 
-                            if (!mounted) return;
-
-                            if (login != null) {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => HomeScreen(),
-                                ),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Google Sing-In failed'),
-                                ),
-                              );
-                            }
-                          },
+                                if (error == null) {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (context) => HomeScreen(),
+                                    ),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(error)),
+                                  );
+                                }
+                              }
+                            },
                         ),
                       ],
                     ),
