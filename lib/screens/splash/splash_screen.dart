@@ -15,28 +15,28 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  bool remember = false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    navigation();
+
     getData();
   }
 
   void getData() async {
     final SharedPreferences spget = await SharedPreferences.getInstance();
-    remember = spget.getBool('logIn') ?? false;
-  }
+    bool remember = spget.getBool('logIn') ?? false;
 
-  void navigation() {
-    Timer(Duration(milliseconds: 2000), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => remember ? HomeScreen() : LoginScreen(),
-        ),
-      );
-    });
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (!mounted) return;
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => remember ? HomeScreen() : LoginScreen(),
+      ),
+    );
   }
 
   @override
