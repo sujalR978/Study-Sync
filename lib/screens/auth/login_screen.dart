@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:study_sync/screens/auth/googleInfo_screen.dart';
+import 'package:study_sync/screens/auth/rememberMe_screen.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/widgets/custom_button.dart';
@@ -364,7 +367,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 if (error == null) {
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                      builder: (context) => googleInfoscreen(),
+                                      builder: (context) => HomeScreen(),
                                     ),
                                   );
                                 } else {
@@ -417,12 +420,29 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (!mounted) return;
 
                               if (logIn == null) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => HomeScreen(),
-                                  ),
-                                );
+                                User? US = FirebaseAuth.instance.currentUser;
+                                String uid = US!.uid;
+                                DocumentSnapshot doc = await FirebaseFirestore
+                                    .instance
+                                    .collection('users')
+                                    .doc(uid)
+                                    .get();
+
+                                if (!doc.exists) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => googleInfoscreen(),
+                                    ),
+                                  );
+                                } else {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => RememberMeScreen(),
+                                    ),
+                                  );
+                                }
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text(logIn.toString())),
