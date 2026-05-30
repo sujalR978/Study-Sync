@@ -353,7 +353,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   password: password.text.trim(),
                                 );
                                 if (!mounted) return;
-                                
+
                                 if (error == null) {
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
@@ -405,21 +405,23 @@ class _LoginScreenState extends State<LoginScreen> {
                           /// GOOGLE BUTTON
                           CustomButton.gogalButton(
                             onPressed: () async {
-          AuthService auth = AuthService();
-          final logIn = await auth.googleSingIn();
-          if (!mounted) return;
+                              AuthService auth = AuthService();
+                              final logIn = await auth.googleSingIn();
+                              if (!mounted) return;
 
-          if (logIn != null) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => HomeScreen()),
-            );
-          } else {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text("Google Sign-In Failed")));
-          }
-        },
+                              if (logIn == null) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => HomeScreen(),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(logIn.toString())),
+                                );
+                              }
+                            },
                           ),
                         ],
                       ),
