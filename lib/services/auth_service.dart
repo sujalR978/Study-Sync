@@ -63,10 +63,10 @@ class AuthService {
 
       final credential = GoogleAuthProvider.credential(idToken: gAuth.idToken);
 
-      return await _auth.signInWithCredential(credential);
-    } catch (e) {
-      print("Google Sign-In Error: $e");
+      await _auth.signInWithCredential(credential);
       return null;
+    } catch (e) {
+      return e;
     }
     ;
   }
