@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:study_sync/screens/auth/login_screen.dart';
+import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 import 'package:study_sync/constants/app_colors.dart';
 
@@ -13,18 +15,27 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  bool remember = false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     navigation();
+    getData();
+  }
+
+  void getData() async {
+    final SharedPreferences spget = await SharedPreferences.getInstance();
+    remember = spget.getBool('logIn') ?? false;
   }
 
   void navigation() {
     Timer(Duration(milliseconds: 2000), () {
-      Navigator.of(
-        context,
-      ).pushReplacement(MaterialPageRoute(builder: (context) => LoginScreen()));
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => remember ? HomeScreen() : LoginScreen(),
+        ),
+      );
     });
   }
 
