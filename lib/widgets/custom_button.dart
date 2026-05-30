@@ -4,9 +4,7 @@ import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/services/auth_service.dart';
 
 class CustomButton {
-  static gogalButton(
-    {required VoidCallback onPressed}
-  ) {
+  static gogalButton({required VoidCallback onPressed}) {
     return Container(
       height: 56,
       width: double.infinity,
@@ -28,9 +26,7 @@ class CustomButton {
       ),
 
       child: ElevatedButton(
-       onPressed: onPressed
-         
-       ,
+        onPressed: onPressed,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
 
