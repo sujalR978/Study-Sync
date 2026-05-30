@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/widgets/custom_button.dart';
@@ -347,6 +348,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             text: 'Log In',
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
+                                final SharedPreferences sp =
+                                    await SharedPreferences.getInstance();
+
+                                sp.setBool('logIn', rememberMe);
+
                                 AuthService login = AuthService();
                                 final error = await login.loginUser(
                                   email: email.text.trim(),
