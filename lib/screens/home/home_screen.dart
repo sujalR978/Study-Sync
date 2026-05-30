@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:study_sync/screens/auth/googleInfo_screen.dart';
 import 'package:study_sync/screens/auth/logout_screen.dart';
 import 'package:study_sync/screens/profile/profileScreen.dart';
 
