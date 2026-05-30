@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:study_sync/screens/auth/login_screen.dart';
+import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/widgets/custom_button.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
@@ -329,7 +330,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 28),
 
                         /// GOOGLE BUTTON
-                        CustomButton.gogalButton(),
+                        CustomButton.gogalButton(
+                          onPressed: () async {
+                            AuthService auth = AuthService();
+                            final login = await auth.googleSingIn();
+
+                            if (!mounted) return;
+
+                            if (login != null) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => HomeScreen(),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Google Sing-In failed'),
+                                ),
+                              );
+                            }
+                          },
+                        ),
                       ],
                     ),
                   ),
