@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:study_sync/screens/auth/googleInfo_screen.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/widgets/custom_button.dart';
@@ -363,7 +364,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 if (error == null) {
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                      builder: (context) => HomeScreen(),
+                                      builder: (context) => googleInfoscreen(),
                                     ),
                                   );
                                 } else {
