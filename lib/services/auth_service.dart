@@ -31,9 +31,19 @@ class AuthService {
       username: username,
       email: email,
       phone: phone,
+      loginMethod: 'registor',
+      photoUrl: '',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
     );
 
     await _firestore.collection('users').doc(uid).set(user.toMap());
+  }
+
+  Future<void> googleUser({required username,required phone, })async {
+
+    
+    
   }
 
   Future loginUser({required String email, required String password}) async {
