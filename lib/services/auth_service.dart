@@ -43,12 +43,13 @@ class AuthService {
   Future<void> googleUser({required username, required phone}) async {
     User? US = _auth.currentUser;
     String uid = US!.uid;
-
+    String email = US.email ?? '';
+    String fullname = US.displayName ?? '';
     UserModel user = UserModel(
       uid: uid,
-      fullname: '',
+      fullname: fullname,
       username: username,
-      email: '',
+      email: email,
       phone: phone,
       loginMethod: 'google',
       photoUrl: '',
@@ -106,6 +107,5 @@ class AuthService {
     SharedPreferences spSet = await SharedPreferences.getInstance();
 
     spSet.setBool('logIn', false);
-    
   }
 }
