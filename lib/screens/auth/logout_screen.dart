@@ -24,249 +24,226 @@ class _LogoutScreenState extends State<LogoutScreen> {
   void getData() async {}
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-
-      body: Stack(
-        children: [
-          /// BACKGROUND CIRCLES
-          Positioned(
-            top: 120,
-            left: -80,
-
-            child: Container(
-              height: 250,
-              width: 250,
-
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-
-                color: const Color(0xFF7DD3FC).withOpacity(0.15),
+      body: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFFF8FAFF), Color(0xFFFFFFFF)],
+          ),
+        ),
+        child: Stack(
+          children: [
+            /// TOP BLUE GLOW
+            Positioned(
+              top: -120,
+              left: -120,
+              child: Container(
+                height: 260,
+                width: 260,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF0052FF).withOpacity(0.08),
+                ),
               ),
             ),
-          ),
 
-          Positioned(
-            bottom: 120,
-            right: -80,
-
-            child: Container(
-              height: 220,
-              width: 220,
-
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-
-                color: const Color(0xFF6B4A9E).withOpacity(0.08),
+            /// BOTTOM CYAN GLOW
+            Positioned(
+              bottom: -120,
+              right: -120,
+              child: Container(
+                height: 280,
+                width: 280,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF00D1FF).withOpacity(0.08),
+                ),
               ),
             ),
-          ),
 
-          /// MAIN CONTENT
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-
-                children: [
-                  /// CARD
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(28),
-
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
-
-                      borderRadius: BorderRadius.circular(30),
-
-                      border: Border.all(
-                        color: const Color(0xFF0E4D6E).withOpacity(0.08),
-                      ),
-
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-
-                          blurRadius: 30,
-
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-
-                    child: Column(
-                      children: [
-                        /// ICON
-                        Container(
-                          height: 90,
-                          width: 90,
-
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-
-                            color: const Color(0xFF7DD3FC).withOpacity(0.15),
-
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(
-                                  0xFF7DD3FC,
-                                ).withOpacity(0.25),
-
-                                blurRadius: 25,
-                                spreadRadius: 3,
-                              ),
-                            ],
-                          ),
-
-                          child: const Icon(
-                            Icons.account_circle,
-                            size: 50,
-                            color: Color(0xFF0E4D6E),
-                          ),
+            SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      /// LOGOUT CARD
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(28),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(32),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.06),
+                              blurRadius: 30,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
                         ),
 
-                        const SizedBox(height: 24),
-
-                        /// TITLE
-                        customText.titalText('Log out?'),
-
-                        const SizedBox(height: 12),
-
-                        /// SUBTITLE
-                        const Text(
-                          "Are you sure you want to log out?\nYour current study session progress is saved.",
-
-                          textAlign: TextAlign.center,
-
-                          style: TextStyle(
-                            color: Color(0xFF4A6070),
-
-                            fontSize: 15,
-
-                            height: 1.5,
-                          ),
-                        ),
-
-                        const SizedBox(height: 35),
-
-                        /// LOGOUT BUTTON
-                        ///
-                        CustomButton.loginButton(
-                          text: 'Log out',
-                          onPressed: () async {
-                            final AuthService logout = await AuthService();
-                            logout.logOut();
-
-                            if (!mounted) return;
-
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) => LoginScreen(),
-                              ),
-                            );
-                          },
-                        ),
-
-                        const SizedBox(height: 14),
-
-                        /// CANCEL BUTTON
-                        SizedBox(
-                          width: double.infinity,
-                          height: 54,
-
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => HomeScreen(),
+                        child: Column(
+                          children: [
+                            /// ICON
+                            Container(
+                              height: 100,
+                              width: 100,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF0052FF),
+                                    Color(0xFF00D1FF),
+                                  ],
                                 ),
-                              );
-                            },
-
-                            style: TextButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(18),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(
+                                      0xFF00D1FF,
+                                    ).withOpacity(0.25),
+                                    blurRadius: 30,
+                                    spreadRadius: 3,
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.logout_rounded,
+                                size: 48,
+                                color: Colors.white,
                               ),
                             ),
 
-                            child: const Text(
-                              "Cancel",
+                            const SizedBox(height: 24),
 
+                            /// TITLE
+                            const Text(
+                              "See You Soon 👋",
                               style: TextStyle(
-                                color: Color(0xFF4A6070),
-
-                                fontWeight: FontWeight.w600,
-
-                                fontSize: 15,
+                                fontSize: 28,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF0F172A),
                               ),
                             ),
-                          ),
+
+                            const SizedBox(height: 10),
+
+                            /// SUBTITLE
+                            const Text(
+                              "Are you sure you want to log out?\nYour study data has been safely synced.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Color(0xFF64748B),
+                                fontSize: 15,
+                                height: 1.5,
+                              ),
+                            ),
+
+                            const SizedBox(height: 32),
+
+                            /// LOGOUT BUTTON
+                            CustomButton.loginButton(
+                              text: 'Log out',
+                              onPressed: () async {
+                                final AuthService logout = await AuthService();
+
+                                logout.logOut();
+
+                                if (!mounted) return;
+
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) => LoginScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            const SizedBox(height: 14),
+
+                            /// CANCEL BUTTON
+                            SizedBox(
+                              width: double.infinity,
+                              height: 54,
+                              child: TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => HomeScreen(),
+                                    ),
+                                  );
+                                },
+                                style: TextButton.styleFrom(
+                                  backgroundColor: const Color(0xFFF8FAFC),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                ),
+                                child: const Text(
+                                  "Cancel",
+                                  style: TextStyle(
+                                    color: Color(0xFF475569),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  /// SYNC INFO
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 18,
-                      vertical: 12,
-                    ),
-
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-
-                      borderRadius: BorderRadius.circular(50),
-
-                      border: Border.all(
-                        color: const Color(0xFF0E4D6E).withOpacity(0.08),
                       ),
 
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
+                      const SizedBox(height: 24),
 
-                          blurRadius: 10,
+                      /// SYNC STATUS
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 12,
                         ),
-                      ],
-                    ),
-
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-
-                      children: const [
-                        Icon(
-                          Icons.cloud_done,
-                          color: Color(0xFF0E4D6E),
-                          size: 18,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(50),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.03),
+                              blurRadius: 12,
+                            ),
+                          ],
                         ),
-
-                        SizedBox(width: 8),
-
-                        Text(
-                          "Last session synced 2 mins ago",
-
-                          style: TextStyle(
-                            color: Color(0xFF4A6070),
-
-                            fontSize: 13,
-
-                            fontWeight: FontWeight.w500,
-                          ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Icon(
+                              Icons.cloud_done_rounded,
+                              color: Color(0xFF0052FF),
+                              size: 18,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              "All changes synced",
+                              style: TextStyle(
+                                color: Color(0xFF64748B),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
