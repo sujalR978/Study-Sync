@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:study_sync/models/user_model.dart';
 
 class AuthService {
@@ -74,5 +75,13 @@ class AuthService {
       return e;
     }
     ;
+  }
+
+  Future logOut() async {
+    await _auth.signOut();
+    await GoogleSignIn.instance.signOut();
+    SharedPreferences spSet = await SharedPreferences.getInstance();
+
+    spSet.setBool('logIn', false);
   }
 }

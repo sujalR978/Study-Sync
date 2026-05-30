@@ -1,9 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:study_sync/screens/auth/login_screen.dart';
+import 'package:study_sync/screens/home/home_screen.dart';
+import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/widgets/custom_button.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 
-class LogoutScreen extends StatelessWidget {
+class LogoutScreen extends StatefulWidget {
   const LogoutScreen({super.key});
+
+  @override
+  State<LogoutScreen> createState() => _LogoutScreenState();
+}
+
+class _LogoutScreenState extends State<LogoutScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getData();
+  }
+
+  void getData() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +156,18 @@ class LogoutScreen extends StatelessWidget {
                         ///
                         CustomButton.loginButton(
                           text: 'Log out',
-                          onPressed: () {},
+                          onPressed: () async {
+                            final AuthService logout = await AuthService();
+                            logout.logOut();
+
+                            if (!mounted) return;
+
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => LoginScreen(),
+                              ),
+                            );
+                          },
                         ),
 
                         const SizedBox(height: 14),
@@ -149,7 +178,13 @@ class LogoutScreen extends StatelessWidget {
                           height: 54,
 
                           child: TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => HomeScreen(),
+                                ),
+                              );
+                            },
 
                             style: TextButton.styleFrom(
                               shape: RoundedRectangleBorder(
