@@ -16,54 +16,35 @@ class Profilescreen extends StatefulWidget {
 class _ProfilescreenState extends State<Profilescreen> {
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<Authprovider>().user;
+
+    if (user == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
     return Scaffold(
       body: SafeArea(
-        child: FutureBuilder(
-          future: AuthService().getCurrentUserData(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            }
-            if (snapshot.hasError) {
-              return Text(snapshot.error.toString());
-            }
-            if (!snapshot.hasData) {
-              return const Text('No data found');
-            }
-            UserModel? user = snapshot.data!;
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(user.fullname),
+            Text(user.username),
+            Text(user.email),
+            Text(user.phone),
 
-            if (user != null) {
-              context.read<Authprovider>().setUser(user);
-            }
+            if (user.loginMethod == 'registor')
+              Image.asset(user.photoUrl)
+            else
+              Image.network(user.photoUrl),
 
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(user.fullname),
-                  Text(user.username),
-                  Text(user.email),
-                  Text(user.phone),
-
-                  if (user.loginMethod == 'registor')
-                    Image.asset(user.photoUrl)
-                  else
-                    Image.network(user.photoUrl),
-
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => Editprofilescreen(),
-                        ),
-                      );
-                    },
-                    child: Text('Edit'),
-                  ),
-                ],
-              ),
-            );
-          },
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => Editprofilescreen()),
+                );
+              },
+              child: Text('Edit'),
+            ),
+          ],
         ),
       ),
     );
