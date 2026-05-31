@@ -1,6 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:study_sync/models/user_model.dart';
+import 'package:study_sync/providers/auth_provider.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/services/auth_service.dart';
 
@@ -26,6 +30,16 @@ class _GoogleInfoScreenState extends State<GoogleInfoScreen> {
     super.dispose();
   }
 
+  Future<void> loadUser() async {
+    if (FirebaseAuth.instance.currentUser != null) {
+      UserModel? userData = await AuthService().getCurrentUserData();
+
+      if (userData != null) {
+        context.read<Authprovider>().setUser(userData);
+      }
+    }
+  }
+
   Future<void> saveData() async {
     if (!keyForm.currentState!.validate()) return;
 
@@ -41,7 +55,7 @@ class _GoogleInfoScreenState extends State<GoogleInfoScreen> {
     );
 
     if (!mounted) return;
-
+    loadUser();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const HomeScreen()),
