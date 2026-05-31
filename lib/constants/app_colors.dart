@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const Color primary = Color(0xFF0052FF);
-  static const Color secondary = Color(0xFF00D1FF);
-  static const Color tertiary = Color(0xFF7000FF);
+  // Lucid Flow Core Palette
+  static const Color primary = Color(0xFF6366F1);
+  static const Color secondary = Color(0xFF0EA5E9);
+  static const Color tertiary = Color(0xFFB95F00);
+  static const Color neutral = Color(0xFF1F2937);
 
-  static const Color background = Color(0xFF0F172A);
-  static const Color cardColor = Color(0xFF1E293B);
-
-  static const Color white = Colors.white;
-  static const Color greyText = Color(0xFF94A3B8);
+  // Surface & Backgrounds (Derived from your layout)
+  static const Color background = Color(0xFFF0F4F8); // The light blue/grey app background
+  static const Color surface = Colors.white;         // Card background
+  static const Color inputFill = Color(0xFFF1F5F9);  // Input field background
+  
+  // Text
+  static const Color textBody = Color(0xFF6B7280);
 }
