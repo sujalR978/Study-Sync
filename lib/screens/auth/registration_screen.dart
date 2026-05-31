@@ -223,7 +223,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             if (value == null || value.isEmpty) {
                               return 'Enter password.';
                             }
-                            if (value.length > 7) {
+                            if (value.length >= 7) {
                               return 'password length must be 7';
                             }
                             return null;
