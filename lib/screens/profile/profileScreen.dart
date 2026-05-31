@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:study_sync/models/user_model.dart';
+import 'package:study_sync/screens/profile/editProfileScreen.dart';
 import 'package:study_sync/services/auth_service.dart';
 
 class Profilescreen extends StatefulWidget {
@@ -36,6 +37,22 @@ class _ProfilescreenState extends State<Profilescreen> {
                   Text(user.username),
                   Text(user.email),
                   Text(user.phone),
+
+                  if (user.loginMethod == 'registor')
+                    Image.asset(user.photoUrl)
+                  else
+                    Image.network(user.photoUrl),
+
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => Editprofilescreen(),
+                        ),
+                      );
+                    },
+                    child: Text('Edit'),
+                  ),
                 ],
               ),
             );
