@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:study_sync/providers/auth_provider.dart';
+import 'package:study_sync/screens/profile/profileScreen.dart';
+import 'package:study_sync/services/update_auth_data.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +18,8 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
   late TextEditingController fullname;
   late TextEditingController username;
   late TextEditingController phone;
+  String? updatedphotoUrl;
+  String? photoUrl;
 
   @override
   void dispose() {
@@ -35,6 +39,7 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
     fullname = TextEditingController();
     username = TextEditingController();
     phone = TextEditingController();
+    updatedphotoUrl = photoUrl;
   }
 
   @override
@@ -46,6 +51,7 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
     fullname.text = user?.fullname ?? '';
     username.text = user?.username ?? '';
     phone.text = user?.phone ?? '';
+    photoUrl = user?.photoUrl ?? '';
   }
 
   @override
@@ -97,9 +103,24 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
 
             ElevatedButton(
               onPressed: () {
-                if (keyForm.currentState!.validate()) {}
+                if (keyForm.currentState!.validate()) {
+                  UpdateAuthData().updateAuthData(
+                    fullname: fullname.text,
+                    username: username.text,
+                    phone: phone.text,
+                    photoUrl: photoUrl,
+                  );
+                }
               },
               child: Text('Save'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => Profilescreen()),
+                );
+              },
+              child: Text('Cancal'),
             ),
           ],
         ),
