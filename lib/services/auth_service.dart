@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:study_sync/models/user_model.dart';
+import 'package:study_sync/providers/auth_provider.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -108,6 +109,7 @@ class AuthService {
     SharedPreferences spSet = await SharedPreferences.getInstance();
 
     spSet.setBool('logIn', false);
+   
   }
 
   Future<UserModel?> getCurrentUserData() async {
@@ -122,5 +124,5 @@ class AuthService {
     return null;
   }
 
-  
+
 }
