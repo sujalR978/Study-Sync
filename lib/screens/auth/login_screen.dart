@@ -1,7 +1,10 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:study_sync/providers/auth_provider.dart';
 import 'package:study_sync/screens/auth/googleInfo_screen.dart';
 import 'package:study_sync/screens/auth/rememberMe_screen.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
@@ -9,6 +12,8 @@ import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/widgets/custom_button.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 import 'package:study_sync/screens/auth/registration_screen.dart';
+import 'package:study_sync/models/user_model.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,7 +25,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool isPasswordVisible = false;
   bool rememberMe = false;
-  
 
   final TextEditingController email = TextEditingController();
 
@@ -366,6 +370,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 if (!mounted) return;
 
                                 if (error == null) {
+                                  UserModel? userData = await AuthService()
+                                      .getCurrentUserData();
+
+                                  if (userData != null) {
+                                    context.read<Authprovider>().setUser(
+                                      userData,
+                                    );
+                                  }
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                       builder: (context) => HomeScreen(),
@@ -421,6 +433,15 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (!mounted) return;
 
                               if (logIn == null) {
+                                UserModel? userData = await AuthService()
+                                    .getCurrentUserData();
+
+                                if (userData != null) {
+                                  context.read<Authprovider>().setUser(
+                                    userData,
+                                  );
+                                }
+
                                 User? US = FirebaseAuth.instance.currentUser;
                                 String uid = US!.uid;
                                 DocumentSnapshot doc = await FirebaseFirestore
