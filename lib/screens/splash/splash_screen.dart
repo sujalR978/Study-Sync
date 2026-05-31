@@ -1,9 +1,14 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:study_sync/models/user_model.dart';
+import 'package:study_sync/providers/auth_provider.dart';
 import 'package:study_sync/screens/auth/login_screen.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
+import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 import 'package:study_sync/constants/app_colors.dart';
 
@@ -19,8 +24,19 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadUser();
 
     getData();
+  }
+
+  Future<void> loadUser() async {
+    if (FirebaseAuth.instance.currentUser != null) {
+      UserModel? userData = await AuthService().getCurrentUserData();
+
+      if (userData != null) {
+        context.read<Authprovider>().setUser(userData);
+      }
+    }
   }
 
   void getData() async {
