@@ -8,16 +8,13 @@ import 'package:study_sync/screens/splash/splash_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
- 
- MultiProvider(
-  providers: [
-    ChangeNotifierProvider(
-      create: (_) => Authprovider(),
+  runApp(
+    MultiProvider(
+      providers: [ChangeNotifierProvider(create: (_) => Authprovider())],
+
+      child: const MyApp(),
     ),
-  ],
- 
-child:  const MyApp(),
- );
+  );
 }
 
 class MyApp extends StatelessWidget {
