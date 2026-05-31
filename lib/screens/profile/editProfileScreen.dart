@@ -274,11 +274,14 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                   child: ElevatedButton(
                     onPressed: () async {
                       if (keyForm.currentState!.validate()) {
+                        String finalImageUrl = Imagepath.isNotEmpty
+                            ? Imagepath
+                            : (photoUrl ?? '');
                         UpdateAuthData().updateAuthData(
                           fullname: fullname.text,
                           username: username.text,
                           phone: phone.text,
-                          photoUrl: Imagepath,
+                          photoUrl: finalImageUrl,
                         );
                         if (FirebaseAuth.instance.currentUser != null) {
                           UserModel? userData = await AuthService()
