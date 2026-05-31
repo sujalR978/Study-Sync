@@ -109,4 +109,18 @@ class AuthService {
 
     spSet.setBool('logIn', false);
   }
+
+  Future<UserModel?> getCurrentUserData() async {
+    String uid = _auth.currentUser!.uid;
+
+    DocumentSnapshot doc = await _firestore.collection('users').doc(uid).get();
+
+    if (doc.exists) {
+      return UserModel.fromMap(doc.data() as Map<String, dynamic>);
+    }
+
+    return null;
+  }
+
+  
 }
