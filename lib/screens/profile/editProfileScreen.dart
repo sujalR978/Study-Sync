@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:study_sync/providers/auth_provider.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
+import 'package:provider/provider.dart';
 
 class Editprofilescreen extends StatefulWidget {
   const Editprofilescreen({super.key});
@@ -11,9 +13,9 @@ class Editprofilescreen extends StatefulWidget {
 
 class _EditprofilescreenState extends State<Editprofilescreen> {
   final GlobalKey<FormState> keyForm = GlobalKey<FormState>();
-  final TextEditingController fullname = TextEditingController();
-  final TextEditingController username = TextEditingController();
-  final TextEditingController phone = TextEditingController();
+  late TextEditingController fullname;
+  late TextEditingController username;
+  late TextEditingController phone;
 
   @override
   void dispose() {
@@ -23,6 +25,27 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
     username.dispose();
 
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    fullname = TextEditingController();
+    username = TextEditingController();
+    phone = TextEditingController();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    final user = context.watch<Authprovider>().user;
+
+    fullname.text = user?.fullname ?? '';
+    username.text = user?.username ?? '';
+    phone.text = user?.phone ?? '';
   }
 
   @override
