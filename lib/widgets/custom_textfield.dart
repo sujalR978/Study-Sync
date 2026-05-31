@@ -24,8 +24,8 @@ class CustomTextfield {
     bool obscureText = false,
     Widget? suffixIcon,
     String? Function(String?)? valideter,
-    List<TextInputFormatter>?  regex,
-   required TextEditingController controller,
+    List<TextInputFormatter>? regex,
+    required TextEditingController controller,
   }) {
     return TextFormField(
       controller: controller,
