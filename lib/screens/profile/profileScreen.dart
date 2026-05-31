@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:study_sync/providers/auth_provider.dart';
+import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/screens/profile/editProfileScreen.dart';
 import 'package:study_sync/constants/app_colors.dart'; // Adjust path if needed
 
@@ -43,7 +44,9 @@ class _ProfilescreenState extends State<Profilescreen> {
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.neutral),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => HomeScreen())),
         ),
       ),
       body: SafeArea(
