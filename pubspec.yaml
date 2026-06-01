@@ -45,6 +45,7 @@ dependencies:
   google_sign_in: ^7.2.0
   shared_preferences: ^2.5.5
   image_picker: ^1.2.2
+  custom_popup_dialog: ^0.0.3
   
 
 dev_dependencies:
