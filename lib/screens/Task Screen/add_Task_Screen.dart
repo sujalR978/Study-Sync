@@ -17,7 +17,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   final GlobalKey<FormState> keyForm = GlobalKey<FormState>();
   List<String> category = ["Study", "Work", "Personal", "Health", "Shopping"];
   String _selectdvalue = '';
-
+  DateTime? selectedDate = DateTime.now();
+  TimeOfDay? SelectedTime = TimeOfDay.now();
+  String? priority;
   @override
   void dispose() {
     // TODO: implement dispose
@@ -25,11 +27,39 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     super.dispose();
   }
 
+  void _showDatePicker() {
+    showDatePicker(
+      context: context,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+      initialDate: DateTime.now(),
+    ).then(
+      (value) => setState(() {
+        selectedDate = value;
+      }),
+    );
+  }
+
+  void _showTimePicker() {
+    showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(
+        hour: DateTime.now().hour,
+        minute: DateTime.now().minute + 1,
+      ),
+    ).then(
+      (Value) => setState(() {
+        SelectedTime = Value;
+      }),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Center(
+        child: Form(
+          key: keyForm,
           child: Column(
             children: [
               Text('Task title'),
@@ -144,6 +174,77 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     );
                   },
                 ),
+              ),
+
+              Text('due date'),
+              ElevatedButton(
+                onPressed: () {
+                  _showDatePicker();
+                },
+                child: Row(
+                  children: [
+                    Icon(Icons.calendar_month),
+                    Text(selectedDate.toString()),
+                  ],
+                ),
+              ),
+
+              Text('due time'),
+              ElevatedButton(
+                onPressed: () {
+                  _showTimePicker();
+                },
+                child: Row(
+                  children: [Icon(Icons.watch), Text(SelectedTime.toString())],
+                ),
+              ),
+              Text('priority'),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    priority = 'high';
+                  });
+                },
+                child: Text('High'),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    priority = 'meduim';
+                  });
+                },
+                child: Text('Meduim'),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    priority = 'Low';
+                  });
+                },
+                child: Text('Low'),
+              ),
+
+              ElevatedButton(
+                onPressed: () {
+                  int selectedMinutes =
+                      SelectedTime!.hour * 60 + SelectedTime!.minute;
+                  int currentMinutes =
+                      TimeOfDay.now().hour * 60 + TimeOfDay.now().minute;
+                  if (keyForm.currentState!.validate() &&
+                      SelectedTime != null) {
+                    if (selectedMinutes <= currentMinutes) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please select a future time'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    
+                  }
+                },
+                child: Text('save task'),
               ),
             ],
           ),
