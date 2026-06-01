@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:study_sync/screens/Task%20Screen/add_Task_Screen.dart';
 import 'package:study_sync/screens/auth/googleInfo_screen.dart';
 import 'package:study_sync/screens/auth/logout_screen.dart';
 import 'package:study_sync/screens/profile/profileScreen.dart';
@@ -32,6 +33,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
               child: Text('profile'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => AddTaskScreen()),
+                );
+              },
+              child: Text('Task add'),
             ),
           ],
         ),
