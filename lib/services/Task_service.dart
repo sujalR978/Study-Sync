@@ -75,4 +75,15 @@ class TaskService {
         .doc(taskId)
         .update({'order': newIndex});
   }
+
+  Future<void> updateTaskComplete(String taskId, bool iscompleted) async {
+    String uid = _auth.currentUser!.uid;
+
+    await _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('tasks')
+        .doc(taskId)
+        .update({'isCompleted': iscompleted, 'updatedAt': DateTime.now()});
+  }
 }
