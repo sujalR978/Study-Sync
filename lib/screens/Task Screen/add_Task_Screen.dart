@@ -8,7 +8,6 @@ import 'package:study_sync/services/Task_service.dart';
 import 'package:study_sync/widgets/category_card.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 import 'package:custom_popup_dialog/custom_popup_dialog.dart';
-// Make sure your colors are imported!
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key});
@@ -338,9 +337,19 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    _buildPriorityButton('high', Colors.redAccent),
-                    _buildPriorityButton('medium', Colors.orangeAccent),
-                    _buildPriorityButton('low', Colors.green),
+                    // REPLACED default colors with premium matte hex codes
+                    _buildPriorityButton(
+                      'high',
+                      const Color(0xFFEF4444),
+                    ), // Premium Red
+                    _buildPriorityButton(
+                      'medium',
+                      const Color(0xFFF59E0B),
+                    ), // Premium Orange
+                    _buildPriorityButton(
+                      'low',
+                      const Color(0xFF10B981),
+                    ), // Premium Green
                   ],
                 ),
 
@@ -464,10 +473,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       elevation: 0,
                     ),
                     onPressed: () {
-                      // 1. VALIDATE TEXT FIELDS
                       if (!taskFormKey.currentState!.validate()) return;
 
-                      // 2. VALIDATE CATEGORY
                       if (_selectdvalue.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -478,7 +485,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                         return;
                       }
 
-                      // 3. VALIDATE DATE & TIME EXIST
                       if (selectedDate == null || SelectedTime == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -489,7 +495,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                         return;
                       }
 
-                      // 4. YOUR EXACT TIME LOGIC
                       int selectedMinutes =
                           SelectedTime!.hour * 60 + SelectedTime!.minute;
                       int currentMinutes =
@@ -511,7 +516,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                         }
                       }
 
-                      // 5. YOUR EXACT SAVING LOGIC
                       TaskService().addTask(
                         title: title.text,
                         description: description.text,
@@ -521,11 +525,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                         dueTime: SelectedTime.toString(),
                       );
 
-                      // 6. --- NEW SUCCESS DIALOG ---
                       showDialog(
                         context: context,
-                        barrierDismissible:
-                            false, // Prevents closing without clicking the button
+                        barrierDismissible: false,
                         builder: (context) {
                           return AlertDialog(
                             shape: RoundedRectangleBorder(
@@ -579,7 +581,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                       elevation: 0,
                                     ),
                                     onPressed: () {
-                                      // Navigate back to HomeScreen after clicking "Done"
                                       Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
                                           builder: (context) =>
