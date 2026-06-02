@@ -14,6 +14,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  void updateMyTiel(int oldindex, int newindex, List tasks) async {
+    if (newindex > oldindex) {
+      newindex--;
+    }
+
+    final item = tasks.removeAt(oldindex);
+
+    tasks.insert(newindex, item);
+
+    for (int i = 0; i < tasks.length; i++) {
+      await TaskService().updateTaskOrder(tasks[i].id, i);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,7 +76,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           title: Text(task['title']),
                         ),
                     ],
-                    onReorder: (oldindex, newindex) => () {},
+                    onReorder: (oldindex, newindex) =>
+                        updateMyTiel(oldindex, newindex, tasks),
                   ),
                 );
               },

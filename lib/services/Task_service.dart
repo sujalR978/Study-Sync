@@ -64,4 +64,15 @@ class TaskService {
         .orderBy('order')
         .snapshots();
   }
+
+  Future<void> updateTaskOrder(String taskId, int newIndex) async {
+    String uid = _auth.currentUser!.uid;
+
+    await _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('tasks')
+        .doc(taskId)
+        .update({'order': newIndex});
+  }
 }
