@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:study_sync/providers/auth_provider.dart';
+import 'package:study_sync/screens/auth/logout_screen.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/screens/profile/editProfileScreen.dart';
 import 'package:study_sync/constants/app_colors.dart'; // Adjust path if needed
@@ -159,6 +160,40 @@ class _ProfilescreenState extends State<Profilescreen> {
                   ),
                   label: const Text(
                     'Edit Profile',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const LogoutScreen(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.exit_to_app,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  label: const Text(
+                    'Log out',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
