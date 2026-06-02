@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:study_sync/models/Task_model.dart';
+import 'package:study_sync/providers/auth_provider.dart';
+import 'package:study_sync/screens/Task%20Screen/Edit_Task_Screen.dart';
 import 'package:study_sync/screens/Task%20Screen/add_Task_Screen.dart';
 import 'package:study_sync/screens/auth/googleInfo_screen.dart';
 import 'package:study_sync/screens/auth/logout_screen.dart';
@@ -46,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<Authprovider>().user;
     return Scaffold(
       backgroundColor: AppColors.background,
 
@@ -121,9 +125,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: 2,
                         ),
                       ),
-                      child: const Icon(
-                        Icons.person_rounded,
-                        color: AppColors.primary,
+
+                      child: CircleAvatar(
+                        radius: 25, // Adjust this to make it bigger or smaller
+                        backgroundColor: AppColors
+                            .inputFill, // Optional background color while loading
+                        backgroundImage: user!.loginMethod == 'google'
+                            ? NetworkImage(user!.photoUrl) as ImageProvider
+                            : AssetImage(user!.photoUrl),
                       ),
                     ),
                   ),
@@ -186,8 +195,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: child,
                       );
                     },
+
                     onReorder: (oldindex, newindex) =>
                         updateMyTiel(oldindex, newindex, tasks),
+
                     children: [
                       for (final task in tasks)
                         Container(
@@ -205,6 +216,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                           ),
                           child: ListTile(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(builder: (_)=>EditTaskScreen(taskid: task.id,)));
+                            },
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
                               vertical: 12,
