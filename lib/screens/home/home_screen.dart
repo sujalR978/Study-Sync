@@ -14,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  
   void updateMyTiel(int oldindex, int newindex, List tasks) async {
     if (newindex > oldindex) {
       newindex--;
@@ -27,6 +28,8 @@ class _HomeScreenState extends State<HomeScreen> {
       await TaskService().updateTaskOrder(tasks[i].id, i);
     }
   }
+
+  bool isClick = false;
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +77,23 @@ class _HomeScreenState extends State<HomeScreen> {
                         ListTile(
                           key: ValueKey(task.id),
                           title: Text(task['title']),
+                          leading: Checkbox(
+                            value: task['isCompleted'],
+                            onChanged: (value) {
+                              setState(() {
+                                isClick = value!;
+                              });
+                            },
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(task['category']),
+                              Text(task['priority']),
+                              Text(task['dueDate'].toString()),
+                            ],
+                          ),
+                          trailing: const Icon(Icons.drag_handle),
                         ),
                     ],
                     onReorder: (oldindex, newindex) =>
