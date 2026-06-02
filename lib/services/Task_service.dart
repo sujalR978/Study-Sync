@@ -53,4 +53,15 @@ class TaskService {
         .doc(id)
         .set(task.TaskMap());
   }
+
+  Stream<QuerySnapshot> getTask() {
+    String uid = _auth.currentUser!.uid;
+
+    return _firestore
+        .collection('user')
+        .doc(uid)
+        .collection('tasks')
+        .orderBy('order')
+        .snapshots();
+  }
 }
