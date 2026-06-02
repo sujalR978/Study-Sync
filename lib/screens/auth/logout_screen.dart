@@ -16,16 +16,17 @@ class LogoutScreen extends StatefulWidget {
 }
 
 class _LogoutScreenState extends State<LogoutScreen> {
+  // --- NEW: Loading state variable ---
+  bool isLoading = false;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getData();
   }
 
   void getData() async {}
 
-  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -153,12 +154,23 @@ class _LogoutScreenState extends State<LogoutScreen> {
                             CustomButton.loginButton(
                               text: 'Log out',
                               onPressed: () async {
+                                // --- NEW: Start Loading ---
+                                setState(() {
+                                  isLoading = true;
+                                });
+
                                 final AuthService logout = await AuthService();
 
-                                logout.logOut();
+                                await logout
+                                    .logOut(); // Added await to ensure it finishes before moving on
                                 context.read<Authprovider>().clearUser();
 
                                 if (!mounted) return;
+
+                                // --- NEW: Stop Loading (Optional since we navigate, but good practice) ---
+                                setState(() {
+                                  isLoading = false;
+                                });
 
                                 Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
@@ -245,6 +257,19 @@ class _LogoutScreenState extends State<LogoutScreen> {
                 ),
               ),
             ),
+
+            /// --- NEW: THE LOADING OVERLAY ---
+            if (isLoading)
+              Container(
+                color: Colors.white.withOpacity(
+                  0.6,
+                ), // Matches the clean white theme
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xFF0052FF), // Primary blue color
+                  ),
+                ),
+              ),
           ],
         ),
       ),
