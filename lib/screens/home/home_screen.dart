@@ -20,14 +20,6 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             ElevatedButton(
               onPressed: () {
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (context) => LogoutScreen()));
-              },
-              child: Text('logout'),
-            ),
-            ElevatedButton(
-              onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => Profilescreen()),
                 );
