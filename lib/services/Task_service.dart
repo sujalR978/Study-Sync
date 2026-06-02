@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:study_sync/models/Task_model.dart';
 
 class TaskService {
@@ -85,5 +86,45 @@ class TaskService {
         .collection('tasks')
         .doc(taskId)
         .update({'isCompleted': iscompleted, 'updatedAt': DateTime.now()});
+  }
+
+  Future<void> taskDelete(String taskid) async {
+    String uid = _auth.currentUser!.uid;
+    await _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('tasks')
+        .doc(taskid)
+        .delete();
+  }
+
+  Future<void> updateTask({
+    required title,
+    required description,
+    required category,
+    required priority,
+    required dueDate,
+    required dueTime,
+    required updatedAt,
+    required taskid,
+  }) async {
+    String uid = _auth.currentUser!.uid;
+
+    updateTaskModel task = updateTaskModel(
+      title: title,
+      description: description,
+      category: category,
+      priority: priority,
+      dueDate: dueDate,
+      dueTime: dueTime,
+      updatedAt: updatedAt,
+    );
+
+    await _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('tasks')
+        .doc(taskid)
+        .update(task.toMap());
   }
 }
