@@ -27,7 +27,7 @@ class TaskModel {
     required this.updatedAt,
   });
 
-  Map<dynamic, dynamic> TaskMap() {
+  Map<String, dynamic> TaskMap() {
     return {
       'id' : id,
       'title' : title,
