@@ -58,7 +58,7 @@ class TaskService {
     String uid = _auth.currentUser!.uid;
 
     return _firestore
-        .collection('user')
+        .collection('users')
         .doc(uid)
         .collection('tasks')
         .orderBy('order')
