@@ -52,12 +52,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 final tasks = snapshot.data!.docs;
 
-                return ReorderableListView(
-                  children: [
-                    for (final task in tasks)
-                      ListTile(key: ValueKey(task), title: Text(task['title'])),
-                  ],
-                  onReorder: (oldindex, newindex) => () {},
+                return SizedBox(
+                  height: 300,
+                  child: ReorderableListView(
+                    children: [
+                      for (final task in tasks)
+                        ListTile(
+                          key: ValueKey(task.id),
+                          title: Text(task['title']),
+                        ),
+                    ],
+                    onReorder: (oldindex, newindex) => () {},
+                  ),
                 );
               },
             ),
