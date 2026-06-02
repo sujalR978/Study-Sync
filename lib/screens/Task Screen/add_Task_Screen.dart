@@ -1,13 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+
 import 'package:flutter/services.dart';
 import 'package:study_sync/constants/app_colors.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/services/Task_service.dart';
 import 'package:study_sync/widgets/category_card.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
-import 'package:custom_popup_dialog/custom_popup_dialog.dart';
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key});
