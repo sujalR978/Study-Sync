@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:study_sync/screens/home/home_screen.dart';
+import 'package:study_sync/services/Task_service.dart';
 import 'package:study_sync/widgets/category_card.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 import 'package:custom_popup_dialog/custom_popup_dialog.dart';
@@ -14,16 +17,22 @@ class AddTaskScreen extends StatefulWidget {
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
   final TextEditingController newcategory = TextEditingController();
+  final TextEditingController title = TextEditingController();
+  final TextEditingController description = TextEditingController();
   final GlobalKey<FormState> keyForm = GlobalKey<FormState>();
+  final GlobalKey<FormState> taskFormKey = GlobalKey<FormState>();
+
   List<String> category = ["Study", "Work", "Personal", "Health", "Shopping"];
   String _selectdvalue = '';
   DateTime? selectedDate = DateTime.now();
   TimeOfDay? SelectedTime = TimeOfDay.now();
-  String? priority;
+  String priority = 'meduim';
   @override
   void dispose() {
     // TODO: implement dispose
     newcategory.dispose();
+    title.dispose();
+    description.dispose();
     super.dispose();
   }
 
@@ -56,19 +65,23 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(title.hashCode);
+    print(description.hashCode);
+    print(title.text);
     return Scaffold(
       body: SafeArea(
         child: Form(
-          key: keyForm,
+          key: taskFormKey,
           child: Column(
             children: [
               Text('Task title'),
+
               CustomTextfield.customTextField(
                 hintText: 'add task',
                 icon: Icons.add,
-                controller: TextEditingController(),
+                controller: title,
                 regex: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9a-zA-Z]')),
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9a-zA-Z ]')),
                 ],
                 valideter: (value) {
                   if (value == null || value.isEmpty) {
@@ -81,7 +94,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               CustomTextfield.customTextField(
                 hintText: 'add  Description',
                 icon: Icons.add,
-                controller: TextEditingController(),
+                controller: description,
                 valideter: (value) {
                   if (value == null || value.isEmpty) {
                     return "Enter Description";
@@ -230,7 +243,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       SelectedTime!.hour * 60 + SelectedTime!.minute;
                   int currentMinutes =
                       TimeOfDay.now().hour * 60 + TimeOfDay.now().minute;
-                  if (keyForm.currentState!.validate() &&
+                  if (taskFormKey.currentState!.validate() &&
                       SelectedTime != null) {
                     if (selectedMinutes <= currentMinutes) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -241,7 +254,17 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       return;
                     }
 
-                    
+                    TaskService().addTask(
+                      title: title.text,
+                      description: description.text,
+                      category: _selectdvalue,
+                      priority: priority,
+                      dueDate: selectedDate!,
+                      dueTime: SelectedTime.toString(),
+                    );
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => HomeScreen()),
+                    );
                   }
                 },
                 child: Text('save task'),
