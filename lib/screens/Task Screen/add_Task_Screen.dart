@@ -2,11 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:study_sync/constants/app_colors.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/services/Task_service.dart';
 import 'package:study_sync/widgets/category_card.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 import 'package:custom_popup_dialog/custom_popup_dialog.dart';
+// Make sure your colors are imported!
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key});
@@ -19,17 +21,21 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   final TextEditingController newcategory = TextEditingController();
   final TextEditingController title = TextEditingController();
   final TextEditingController description = TextEditingController();
+
   final GlobalKey<FormState> keyForm = GlobalKey<FormState>();
   final GlobalKey<FormState> taskFormKey = GlobalKey<FormState>();
 
   List<String> category = ["Study", "Work", "Personal", "Health", "Shopping"];
   String _selectdvalue = '';
+
   DateTime? selectedDate = DateTime.now();
   TimeOfDay? SelectedTime = TimeOfDay.now();
-  String priority = 'meduim';
+
+  // Set default priority to medium
+  String priority = 'medium';
+
   @override
   void dispose() {
-    // TODO: implement dispose
     newcategory.dispose();
     title.dispose();
     description.dispose();
@@ -42,11 +48,21 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
       initialDate: DateTime.now(),
-    ).then(
-      (value) => setState(() {
-        selectedDate = value;
-      }),
-    );
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(primary: AppColors.primary),
+          ),
+          child: child!,
+        );
+      },
+    ).then((value) {
+      if (value != null) {
+        setState(() {
+          selectedDate = value;
+        });
+      }
+    });
   }
 
   void _showTimePicker() {
@@ -56,121 +72,241 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         hour: DateTime.now().hour,
         minute: DateTime.now().minute + 1,
       ),
-    ).then(
-      (Value) => setState(() {
-        SelectedTime = Value;
-      }),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(primary: AppColors.primary),
+          ),
+          child: child!,
+        );
+      },
+    ).then((value) {
+      if (value != null) {
+        setState(() {
+          SelectedTime = value;
+        });
+      }
+    });
+  }
+
+  // Helper Widget for Priority Buttons
+  Widget _buildPriorityButton(String level, Color activeColor) {
+    bool isSelected = priority == level;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            priority = level;
+          });
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(
+            color: isSelected ? activeColor : AppColors.inputFill,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isSelected ? activeColor : Colors.transparent,
+              width: 2,
+            ),
+          ),
+          child: Center(
+            child: Text(
+              level.toUpperCase(),
+              style: TextStyle(
+                color: isSelected ? Colors.white : AppColors.textBody,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+                letterSpacing: 1.0,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    print(title.hashCode);
-    print(description.hashCode);
-    print(title.text);
     return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: const Text(
+          'New Task',
+          style: TextStyle(
+            color: AppColors.neutral,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.neutral),
+          onPressed: () => Navigator.pop(context),
+        ),
+        centerTitle: true,
+      ),
       body: SafeArea(
-        child: Form(
-          key: taskFormKey,
-          child: Column(
-            children: [
-              Text('Task title'),
-
-              CustomTextfield.customTextField(
-                hintText: 'add task',
-                icon: Icons.add,
-                controller: title,
-                regex: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9a-zA-Z ]')),
-                ],
-                valideter: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Enter task";
-                  }
-                  return null;
-                },
-              ),
-              Text('Task Description'),
-              CustomTextfield.customTextField(
-                hintText: 'add  Description',
-                icon: Icons.add,
-                controller: description,
-                valideter: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Enter Description";
-                  }
-                  return null;
-                },
-              ),
-              Text('Category'),
-              TextButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: const Text('Add Category'),
-                        content: Form(
-                          key: keyForm,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              CustomTextfield.customTextField(
-                                hintText: 'Enter category',
-                                icon: Icons.category,
-                                controller: newcategory,
-                                valideter: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Enter Category';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text('Cancel'),
-                          ),
-
-                          ElevatedButton(
-                            onPressed: () {
-                              if (keyForm.currentState!.validate()) {
-                                setState(() {
-                                  category.add(newcategory.text);
-                                });
-
-                                Navigator.pop(context);
-                                newcategory.clear();
-                              }
-                            },
-                            child: const Text('Save'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-                child: const Text('Add Category'),
-              ),
-
-              SizedBox(
-                width: 350,
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: category.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 6,
-                    childAspectRatio: 2.7,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+          child: Form(
+            key: taskFormKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // --- TASK TITLE ---
+                const Text(
+                  'Task Title',
+                  style: TextStyle(
+                    color: AppColors.neutral,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
                   ),
-                  itemBuilder: (context, index) {
+                ),
+                const SizedBox(height: 8),
+                CustomTextfield.customTextField(
+                  hintText: 'What needs to be done?',
+                  icon: Icons.title_rounded,
+                  controller: title,
+                  regex: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9a-zA-Z ]')),
+                  ],
+                  valideter: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter a task title.";
+                    }
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 24),
+
+                // --- TASK DESCRIPTION ---
+                const Text(
+                  'Description',
+                  style: TextStyle(
+                    color: AppColors.neutral,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                CustomTextfield.customTextField(
+                  hintText: 'Add extra details...',
+                  icon: Icons.description_outlined,
+                  controller: description,
+                  valideter: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter a description.";
+                    }
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 32),
+
+                // --- CATEGORY ---
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Category',
+                      style: TextStyle(
+                        color: AppColors.neutral,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              title: const Text(
+                                'Add Category',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              content: Form(
+                                key: keyForm,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    CustomTextfield.customTextField(
+                                      hintText: 'Enter new category',
+                                      icon: Icons.category,
+                                      controller: newcategory,
+                                      valideter: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Name cannot be empty';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text(
+                                    'Cancel',
+                                    style: TextStyle(color: AppColors.textBody),
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primary,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    if (keyForm.currentState!.validate()) {
+                                      setState(() {
+                                        category.add(newcategory.text);
+                                      });
+                                      Navigator.pop(context);
+                                      newcategory.clear();
+                                    }
+                                  },
+                                  child: const Text(
+                                    'Save',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.add,
+                        size: 18,
+                        color: AppColors.primary,
+                      ),
+                      label: const Text(
+                        'Add New',
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 8),
+
+                // Display Categories using Wrap
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: List.generate(category.length, (index) {
                     return CategoryCard(
                       category: category[index],
                       isSelected: _selectdvalue == category[index],
@@ -185,91 +321,302 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                         });
                       },
                     );
-                  },
+                  }),
                 ),
-              ),
 
-              Text('due date'),
-              ElevatedButton(
-                onPressed: () {
-                  _showDatePicker();
-                },
-                child: Row(
+                const SizedBox(height: 32),
+
+                // --- PRIORITY ---
+                const Text(
+                  'Priority',
+                  style: TextStyle(
+                    color: AppColors.neutral,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
                   children: [
-                    Icon(Icons.calendar_month),
-                    Text(selectedDate.toString()),
+                    _buildPriorityButton('high', Colors.redAccent),
+                    _buildPriorityButton('medium', Colors.orangeAccent),
+                    _buildPriorityButton('low', Colors.green),
                   ],
                 ),
-              ),
 
-              Text('due time'),
-              ElevatedButton(
-                onPressed: () {
-                  _showTimePicker();
-                },
-                child: Row(
-                  children: [Icon(Icons.watch), Text(SelectedTime.toString())],
+                const SizedBox(height: 32),
+
+                // --- DATE & TIME ---
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Due Date',
+                            style: TextStyle(
+                              color: AppColors.neutral,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          GestureDetector(
+                            onTap: _showDatePicker,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.inputFill,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.calendar_today_rounded,
+                                    color: AppColors.primary,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    selectedDate != null
+                                        ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
+                                        : "Select Date",
+                                    style: const TextStyle(
+                                      color: AppColors.neutral,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Due Time',
+                            style: TextStyle(
+                              color: AppColors.neutral,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          GestureDetector(
+                            onTap: _showTimePicker,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.inputFill,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.access_time_rounded,
+                                    color: AppColors.primary,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    SelectedTime != null
+                                        ? SelectedTime!.format(context)
+                                        : "Select Time",
+                                    style: const TextStyle(
+                                      color: AppColors.neutral,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              Text('priority'),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    priority = 'high';
-                  });
-                },
-                child: Text('High'),
-              ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    priority = 'meduim';
-                  });
-                },
-                child: Text('Meduim'),
-              ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    priority = 'Low';
-                  });
-                },
-                child: Text('Low'),
-              ),
 
-              ElevatedButton(
-                onPressed: () {
-                  int selectedMinutes =
-                      SelectedTime!.hour * 60 + SelectedTime!.minute;
-                  int currentMinutes =
-                      TimeOfDay.now().hour * 60 + TimeOfDay.now().minute;
-                  if (taskFormKey.currentState!.validate() &&
-                      SelectedTime != null) {
-                    if (selectedMinutes <= currentMinutes) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please select a future time'),
-                        ),
+                const SizedBox(height: 48),
+
+                // --- SAVE BUTTON ---
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ),
+                    onPressed: () {
+                      // 1. VALIDATE TEXT FIELDS
+                      if (!taskFormKey.currentState!.validate()) return;
+
+                      // 2. VALIDATE CATEGORY
+                      if (_selectdvalue.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please select a Category'),
+                            backgroundColor: Colors.redAccent,
+                          ),
+                        );
+                        return;
+                      }
+
+                      // 3. VALIDATE DATE & TIME EXIST
+                      if (selectedDate == null || SelectedTime == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please select Date and Time'),
+                            backgroundColor: Colors.redAccent,
+                          ),
+                        );
+                        return;
+                      }
+
+                      // 4. YOUR EXACT TIME LOGIC
+                      int selectedMinutes =
+                          SelectedTime!.hour * 60 + SelectedTime!.minute;
+                      int currentMinutes =
+                          TimeOfDay.now().hour * 60 + TimeOfDay.now().minute;
+
+                      if (selectedDate!.day == DateTime.now().day &&
+                          selectedDate!.month == DateTime.now().month &&
+                          selectedDate!.year == DateTime.now().year) {
+                        if (selectedMinutes <= currentMinutes) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Please select a future time for today.',
+                              ),
+                              backgroundColor: Colors.redAccent,
+                            ),
+                          );
+                          return;
+                        }
+                      }
+
+                      // 5. YOUR EXACT SAVING LOGIC
+                      TaskService().addTask(
+                        title: title.text,
+                        description: description.text,
+                        category: _selectdvalue,
+                        priority: priority,
+                        dueDate: selectedDate!,
+                        dueTime: SelectedTime.toString(),
                       );
-                      return;
-                    }
 
-                    TaskService().addTask(
-                      title: title.text,
-                      description: description.text,
-                      category: _selectdvalue,
-                      priority: priority,
-                      dueDate: selectedDate!,
-                      dueTime: SelectedTime.toString(),
-                    );
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => HomeScreen()),
-                    );
-                  }
-                },
-                child: Text('save task'),
-              ),
-            ],
+                      // 6. --- NEW SUCCESS DIALOG ---
+                      showDialog(
+                        context: context,
+                        barrierDismissible:
+                            false, // Prevents closing without clicking the button
+                        builder: (context) {
+                          return AlertDialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            backgroundColor: AppColors.surface,
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const SizedBox(height: 10),
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.check_circle_rounded,
+                                    color: Colors.green,
+                                    size: 60,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                const Text(
+                                  'Task Saved!',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.neutral,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'Your new task has been successfully added to your list.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: AppColors.textBody,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                const SizedBox(height: 30),
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 50,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.primary,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      elevation: 0,
+                                    ),
+                                    onPressed: () {
+                                      // Navigate back to HomeScreen after clicking "Done"
+                                      Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const HomeScreen(),
+                                        ),
+                                      );
+                                    },
+                                    child: const Text(
+                                      'Awesome',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    child: const Text(
+                      'Create Task',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       ),
