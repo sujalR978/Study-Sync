@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:study_sync/firebase_options.dart';
 import 'package:provider/provider.dart';
 import 'package:study_sync/providers/auth_provider.dart';
-import 'package:study_sync/screens/Task%20Screen/add_Task_Screen.dart';
-import 'package:study_sync/screens/home/home_screen.dart';
-import 'package:study_sync/screens/profile/profileScreen.dart';
+
 import 'package:study_sync/screens/splash/splash_screen.dart';
 
 void main() async {
