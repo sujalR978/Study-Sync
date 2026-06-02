@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:study_sync/providers/auth_provider.dart';
 import 'package:study_sync/screens/auth/login_screen.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
+import 'package:study_sync/screens/profile/profileScreen.dart';
 import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/widgets/custom_button.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
@@ -190,7 +191,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
                                 onPressed: () {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (context) => HomeScreen(),
+                                      builder: (context) => Profilescreen(),
                                     ),
                                   );
                                 },
