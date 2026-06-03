@@ -7,7 +7,6 @@ import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/screens/profile/profileScreen.dart';
 import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/widgets/custom_button.dart';
-import 'package:study_sync/widgets/custom_textfield.dart';
 
 class LogoutScreen extends StatefulWidget {
   const LogoutScreen({super.key});
