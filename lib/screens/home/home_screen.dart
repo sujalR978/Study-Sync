@@ -4,7 +4,6 @@ import 'package:study_sync/models/Task_model.dart';
 import 'package:study_sync/providers/auth_provider.dart';
 import 'package:study_sync/screens/Task%20Screen/Edit_Task_Screen.dart';
 import 'package:study_sync/screens/Task%20Screen/add_Task_Screen.dart';
-import 'package:study_sync/screens/auth/googleInfo_screen.dart';
 
 import 'package:study_sync/screens/profile/profileScreen.dart';
 import 'package:study_sync/services/Task_service.dart';
