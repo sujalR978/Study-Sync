@@ -217,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           child: ListTile(
                             onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(builder: (_)=>EditTaskScreen(taskid: task.id,)));
+                              Navigator.of(context).push(MaterialPageRoute(builder: (_)=>EditTaskScreen(taskid: task.i,)));
                             },
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
