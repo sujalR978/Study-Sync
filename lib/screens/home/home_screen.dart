@@ -131,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             .inputFill, // Optional background color while loading
                         backgroundImage: user!.loginMethod == 'google'
                             ? NetworkImage(user!.photoUrl) as ImageProvider
-                            : AssetImage(user!.photoUrl),
+                            : AssetImage(user.photoUrl),
                       ),
                     ),
                   ),
