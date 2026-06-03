@@ -5,7 +5,7 @@ import 'package:study_sync/providers/auth_provider.dart';
 import 'package:study_sync/screens/Task%20Screen/Edit_Task_Screen.dart';
 import 'package:study_sync/screens/Task%20Screen/add_Task_Screen.dart';
 import 'package:study_sync/screens/auth/googleInfo_screen.dart';
-import 'package:study_sync/screens/auth/logout_screen.dart';
+
 import 'package:study_sync/screens/profile/profileScreen.dart';
 import 'package:study_sync/services/Task_service.dart';
 import 'package:study_sync/constants/app_colors.dart'; // Adjust path if needed
