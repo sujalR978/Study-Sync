@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:study_sync/models/user_model.dart';
-import 'package:study_sync/services/auth_service.dart';
+
 
 class Authprovider extends ChangeNotifier {
 
