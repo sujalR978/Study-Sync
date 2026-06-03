@@ -98,7 +98,6 @@ class AuthService {
     } catch (e) {
       return e;
     }
-    ;
   }
 
   Future logOut() async {
