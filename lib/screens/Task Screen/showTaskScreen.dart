@@ -4,11 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:study_sync/constants/app_colors.dart'; // Make sure this path is correct
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:study_sync/constants/app_colors.dart'; // Make sure this path is correct
+// Make sure this path is correct
 
 class EditTaskScreen extends StatefulWidget {
   final String taskid;

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:study_sync/providers/auth_provider.dart';
-import 'package:study_sync/screens/Task%20Screen/Edit_Task_Screen.dart';
+import 'package:study_sync/screens/Task%20Screen/showTaskScreen.dart';
 import 'package:study_sync/screens/Task%20Screen/add_Task_Screen.dart';
 
 import 'package:study_sync/screens/profile/profileScreen.dart';
