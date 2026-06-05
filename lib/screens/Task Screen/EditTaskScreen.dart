@@ -21,7 +21,7 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
   List<String> Category = [];
   String categorySelected = '';
   DateTime? selectedDate;
-  TimeOfDay? selectedTime;
+  String? selectedTime;
   void _showDatePicker() {
     showDatePicker(
       context: context,
@@ -38,7 +38,7 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
   void _showTimePicker() {
     showTimePicker(context: context, initialTime: TimeOfDay.now()).then(
       (value) => setState(() {
-        selectedTime = value!;
+        selectedTime = value!.toString();
       }),
     );
   }
