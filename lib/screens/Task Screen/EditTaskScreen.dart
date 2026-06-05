@@ -196,7 +196,7 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                   description: taskDescription.text,
                   category: categorySelected.toString(),
                   priority: setpriority.toString(),
-                  dueDate: selectedDate.toString(),
+                  dueDate: selectedDate,
                   dueTime: selectedTime.toString(),
                   updatedAt: DateTime.now(),
                   taskid: widget.taskId.toString(),
