@@ -423,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 ).pushReplacement(
                                                   MaterialPageRoute(
                                                     builder: (context) =>
-                                                        Edittaskscreen(),
+                                                        Edittaskscreen(taskId: task.id,),
                                                   ),
                                                 ); // Close dialog
                                                 // Add your Edit Screen navigation code right here!

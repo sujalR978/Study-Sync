@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:study_sync/constants/app_colors.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/services/Task_service.dart';
@@ -578,7 +579,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                       ),
                                       elevation: 0,
                                     ),
-                                    onPressed: () {
+                                    onPressed: () async {
+                                      SharedPreferences sp =
+                                          await SharedPreferences.getInstance();
+
+                                      sp.setStringList('category', category);
+
                                       Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
                                           builder: (context) =>
