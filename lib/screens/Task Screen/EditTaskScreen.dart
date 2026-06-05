@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:study_sync/screens/home/home_screen.dart';
+import 'package:study_sync/services/Task_service.dart';
 import 'package:study_sync/widgets/category_card.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 
@@ -22,8 +25,8 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
   String categorySelected = '';
   DateTime? selectedDate;
   String? selectedTime;
-  List<String> priorityList = [];
-  String priority = '';
+  String setpriority = '';
+
   void _showDatePicker() {
     showDatePicker(
       context: context,
@@ -85,12 +88,10 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
       taskName.text = taskData['title'] ?? '';
       taskDescription.text = taskData['description'] ?? '';
       categorySelected = taskData['category'] ?? '';
-
-      setState(() {
-        selectedDate = (taskData['dueDate'] as Timestamp).toDate();
-        selectedTime = taskData['dueTime'];
-        priority = taskData['priority'];
-      });
+      selectedDate = (taskData['dueDate'] as Timestamp).toDate();
+      selectedTime = taskData['dueTime'];
+      setpriority = taskData['priority'] ?? '';
+      setState(() {});
     }
   }
 
@@ -170,16 +171,41 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
               child: Text(selectedTime.toString()),
             ),
 
-            SizedBox(
-              height: 300,
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                ),
-                itemBuilder: (context, index) {
-                  return 
-                },
-              ),
+            ElevatedButton(
+              onPressed: () {
+                setpriority = 'High';
+              },
+              child: Text('High'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setpriority = 'Low';
+              },
+              child: Text('Low'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setpriority = 'Miduim';
+              },
+              child: Text('meduim'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                TaskService().updateTask(
+                  title: taskName.text,
+                  description: taskDescription.text,
+                  category: categorySelected.toString(),
+                  priority: setpriority.toString(),
+                  dueDate: selectedDate.toString(),
+                  dueTime: selectedTime.toString(),
+                  updatedAt: DateTime.now(),
+                  taskid: widget.taskId.toString(),
+                );
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => HomeScreen()),
+                );
+              },
+              child: Text('edit task'),
             ),
           ],
         ),
