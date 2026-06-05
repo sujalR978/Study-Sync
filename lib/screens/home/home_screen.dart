@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -39,11 +41,66 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'high':
         return const Color(0xFFEF4444); // Premium Red
       case 'medium':
+      case 'miduim':
         return const Color(0xFFF59E0B); // Premium Orange
       case 'low':
         return const Color(0xFF10B981); // Premium Green
       default:
         return AppColors.primary;
+    }
+  }
+
+  // Helper utility to safely calculate expiration states at runtime
+  bool _checkIsExpired(Timestamp dueDateTimestamp, dynamic dueTimeRaw) {
+    try {
+      final now = DateTime.now();
+      final DateTime dueDate = dueDateTimestamp.toDate();
+      String rawTime = dueTimeRaw
+          .toString()
+          .replaceAll('TimeOfDay(', '')
+          .replaceAll(')', '')
+          .trim();
+
+      int hour = 12;
+      int minute = 0;
+
+      bool isPM = rawTime.toLowerCase().contains('pm');
+      bool isAM = rawTime.toLowerCase().contains('am');
+      rawTime = rawTime
+          .toLowerCase()
+          .replaceAll('am', '')
+          .replaceAll('pm', '')
+          .trim();
+
+      List<String> timeParts = rawTime.split(':');
+      if (timeParts.length == 2) {
+        hour = int.parse(timeParts[0].trim());
+        minute = int.parse(timeParts[1].trim());
+
+        if (isPM && hour < 12) hour += 12;
+        if (isAM && hour == 12) hour = 0;
+      }
+
+      final taskDeadline = DateTime(
+        dueDate.year,
+        dueDate.month,
+        dueDate.day,
+        hour,
+        minute,
+      );
+      return now.isAfter(taskDeadline);
+    } catch (e) {
+      // Graceful fallback to day-level matching if timestamp formatting exceptions happen
+      final now = DateTime.now();
+      final DateTime dueDate = dueDateTimestamp.toDate();
+      final targetDateOnly = DateTime(
+        dueDate.year,
+        dueDate.month,
+        dueDate.day,
+        23,
+        59,
+      );
+      return now.isAfter(targetDateOnly);
     }
   }
 
@@ -182,7 +239,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }
 
-                  // Used .toList() to ensure the drag-and-drop reorder logic doesn't crash on immutable stream data
                   final tasks = snapshot.data!.docs.toList();
 
                   return ReorderableListView(
@@ -203,757 +259,826 @@ class _HomeScreenState extends State<HomeScreen> {
                         updateMyTiel(oldindex, newindex, tasks),
 
                     children: [
-                      for (final task in tasks)
-                        Container(
-                          key: ValueKey(task.id),
-                          margin: const EdgeInsets.only(bottom: 16),
-                          decoration: BoxDecoration(
-                            color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.04),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: ListTile(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      Showtaskscreen(taskid: task.id),
-                                ),
+                      for (final task in tasks) ...[
+                        () {
+                          final bool isCompleted = task['isCompleted'] ?? false;
+                          final bool isExpired =
+                              !isCompleted &&
+                              _checkIsExpired(
+                                task['dueDate'] as Timestamp,
+                                task['dueTime'],
                               );
-                            },
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
-                            ),
 
-                            // --- CHECKBOX ---
-                            leading: Transform.scale(
-                              scale: 1.2,
-                              child: Checkbox(
-                                value: task['isCompleted'],
-                                activeColor: AppColors.primary,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                side: BorderSide(
-                                  color: AppColors.textBody.withOpacity(0.5),
-                                  width: 1.5,
-                                ),
-                                onChanged: (value) async {
-                                  await TaskService().updateTaskComplete(
-                                    task.id,
-                                    value!,
-                                  );
-                                },
+                          // Set display status metadata values
+                          String statusLabel = "PENDING";
+                          Color statusColor = AppColors.primary;
+
+                          if (isCompleted) {
+                            statusLabel = "COMPLETED";
+                            statusColor = const Color(0xFF10B981);
+                          } else if (isExpired) {
+                            statusLabel = "EXPIRED";
+                            statusColor = const Color(0xFFEF4444);
+                          }
+
+                          return Opacity(
+                            key: ValueKey(task.id),
+                            // Reduces card visibility to 0.5 if task expired past deadline bounds
+                            opacity: isExpired ? 0.5 : 1.0,
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 16),
+                              decoration: BoxDecoration(
+                                color: AppColors.surface,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.04),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
-                            ),
-
-                            // --- TASK TITLE ---
-                            title: Text(
-                              task['title'],
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                // Add strikethrough if completed
-                                decoration: task['isCompleted']
-                                    ? TextDecoration.lineThrough
-                                    : null,
-                                color: task['isCompleted']
-                                    ? AppColors.textBody
-                                    : AppColors.neutral,
-                              ),
-                            ),
-
-                            // --- METADATA (CATEGORY, PRIORITY, DATE) ---
-                            subtitle: Padding(
-                              padding: const EdgeInsets.only(top: 12),
-                              child: Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                crossAxisAlignment: WrapCrossAlignment.center,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // Priority Pill
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 4,
+                                  // --- TOP ACCENT CORNER STATUS BAR ---
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                      16,
+                                      12,
+                                      16,
+                                      0,
                                     ),
-                                    decoration: BoxDecoration(
-                                      color: _getPriorityColor(
-                                        task['priority'],
-                                      ).withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(10),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: statusColor.withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            statusLabel,
+                                            style: TextStyle(
+                                              fontSize: 9,
+                                              fontWeight: FontWeight.w900,
+                                              color: statusColor,
+                                              letterSpacing: 0.5,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    child: Text(
-                                      task['priority'].toString().toUpperCase(),
+                                  ),
+
+                                  ListTile(
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              Showtaskscreen(taskid: task.id),
+                                        ),
+                                      );
+                                    },
+                                    contentPadding: const EdgeInsets.fromLTRB(
+                                      16,
+                                      0,
+                                      16,
+                                      12,
+                                    ),
+
+                                    // --- LEADING ACTION LOGIC CHECKBOX OR EXPIRED WARNING ---
+                                    leading: isExpired
+                                        ? const Padding(
+                                            padding: EdgeInsets.all(4.0),
+                                            child: Icon(
+                                              Icons.error_outline_rounded,
+                                              color: Color(0xFFEF4444),
+                                              size: 24,
+                                            ),
+                                          )
+                                        : Transform.scale(
+                                            scale: 1.2,
+                                            child: Checkbox(
+                                              value: isCompleted,
+                                              activeColor: AppColors.primary,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                              ),
+                                              side: BorderSide(
+                                                color: AppColors.textBody
+                                                    .withOpacity(0.5),
+                                                width: 1.5,
+                                              ),
+                                              onChanged: (value) async {
+                                                await TaskService()
+                                                    .updateTaskComplete(
+                                                      task.id,
+                                                      value!,
+                                                    );
+                                              },
+                                            ),
+                                          ),
+
+                                    // --- TASK TITLE ---
+                                    title: Text(
+                                      task['title'],
                                       style: TextStyle(
-                                        fontSize: 10,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.bold,
-                                        color: _getPriorityColor(
-                                          task['priority'],
-                                        ),
+                                        decoration: isCompleted
+                                            ? TextDecoration.lineThrough
+                                            : null,
+                                        color: isCompleted
+                                            ? AppColors.textBody
+                                            : AppColors.neutral,
                                       ),
                                     ),
-                                  ),
 
-                                  // Category Pill
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.inputFill,
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Text(
-                                      task['category'],
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.textBody,
-                                      ),
-                                    ),
-                                  ),
+                                    // --- METADATA (CATEGORY, PRIORITY, DATE) ---
+                                    subtitle: Padding(
+                                      padding: const EdgeInsets.only(top: 12),
+                                      child: Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        crossAxisAlignment:
+                                            WrapCrossAlignment.center,
+                                        children: [
+                                          // Priority Pill
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: _getPriorityColor(
+                                                task['priority'],
+                                              ).withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: Text(
+                                              task['priority']
+                                                  .toString()
+                                                  .toUpperCase(),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                                color: _getPriorityColor(
+                                                  task['priority'],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
 
-                                  // Date
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const Icon(
-                                        Icons.calendar_today_rounded,
-                                        size: 12,
-                                        color: AppColors.textBody,
+                                          // Category Pill
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.inputFill,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: Text(
+                                              task['category'],
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w600,
+                                                color: AppColors.textBody,
+                                              ),
+                                            ),
+                                          ),
+
+                                          // Date
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(
+                                                Icons.calendar_today_rounded,
+                                                size: 12,
+                                                color: AppColors.textBody,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                "${task['dueDate'].toDate().day}/${task['dueDate'].toDate().month}/${task['dueDate'].toDate().year}",
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: AppColors.textBody,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        "${task['dueDate'].toDate().day}/${task['dueDate'].toDate().month}/${task['dueDate'].toDate().year}",
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w600,
-                                          color: AppColors.textBody,
-                                        ),
-                                      ),
-                                    ],
+                                    ),
+
+                                    // --- OPTIONS POPUP TRIGGER ---
+                                    trailing: IconButton(
+                                      icon: const Icon(Icons.more_vert_rounded),
+                                      color: AppColors.neutral,
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              scrollable: true,
+                                              insetPadding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 60,
+                                                  ),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 16,
+                                                    vertical: 20,
+                                                  ),
+                                              backgroundColor:
+                                                  AppColors.surface,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(24),
+                                              ),
+                                              content: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          horizontal: 8.0,
+                                                        ),
+                                                    child: Text(
+                                                      task['title'],
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: const TextStyle(
+                                                        color:
+                                                            AppColors.neutral,
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w800,
+                                                        letterSpacing: -0.3,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 4),
+                                                  Text(
+                                                    "Task Options",
+                                                    style: TextStyle(
+                                                      color: AppColors.textBody
+                                                          .withOpacity(0.7),
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                          vertical: 12,
+                                                        ),
+                                                    child: Divider(
+                                                      color:
+                                                          AppColors.inputFill,
+                                                      thickness: 1.2,
+                                                    ),
+                                                  ),
+                                                  if (isCompleted != true) ...[
+                                                    SizedBox(
+                                                      width: double.infinity,
+                                                      height: 48,
+                                                      child: TextButton.icon(
+                                                        onPressed: () {
+                                                          Navigator.of(
+                                                            context,
+                                                          ).pushReplacement(
+                                                            MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  Edittaskscreen(
+                                                                    taskId:
+                                                                        task.id,
+                                                                  ),
+                                                            ),
+                                                          );
+                                                        },
+                                                        icon: const Icon(
+                                                          Icons
+                                                              .edit_calendar_rounded,
+                                                          color:
+                                                              AppColors.primary,
+                                                          size: 20,
+                                                        ),
+                                                        label: const Text(
+                                                          'Edit Details',
+                                                          style: TextStyle(
+                                                            color: AppColors
+                                                                .primary,
+                                                            fontWeight:
+                                                                FontWeight.w700,
+                                                            fontSize: 15,
+                                                          ),
+                                                        ),
+                                                        style: TextButton.styleFrom(
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  12,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+
+                                                    SizedBox(
+                                                      width: double.infinity,
+                                                      height: 48,
+                                                      child: TextButton.icon(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                            context,
+                                                          );
+                                                          showDialog(
+                                                            context: context,
+                                                            barrierDismissible:
+                                                                true,
+                                                            builder: (context) {
+                                                              return AlertDialog(
+                                                                insetPadding:
+                                                                    const EdgeInsets.symmetric(
+                                                                      horizontal:
+                                                                          40,
+                                                                    ),
+                                                                contentPadding:
+                                                                    const EdgeInsets.fromLTRB(
+                                                                      24,
+                                                                      24,
+                                                                      24,
+                                                                      16,
+                                                                    ),
+                                                                backgroundColor:
+                                                                    AppColors
+                                                                        .surface,
+                                                                shape: RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius.circular(
+                                                                        28,
+                                                                      ),
+                                                                ),
+                                                                content: Column(
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .min,
+                                                                  children: [
+                                                                    Container(
+                                                                      padding:
+                                                                          const EdgeInsets.all(
+                                                                            14,
+                                                                          ),
+                                                                      decoration: BoxDecoration(
+                                                                        color: const Color(
+                                                                          0xFFEF4444,
+                                                                        ).withOpacity(0.1),
+                                                                        shape: BoxShape
+                                                                            .circle,
+                                                                      ),
+                                                                      child: const Icon(
+                                                                        Icons
+                                                                            .delete_sweep_rounded,
+                                                                        color: Color(
+                                                                          0xFFEF4444,
+                                                                        ),
+                                                                        size:
+                                                                            32,
+                                                                      ),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                      height:
+                                                                          20,
+                                                                    ),
+                                                                    const Text(
+                                                                      'Delete Task?',
+                                                                      style: TextStyle(
+                                                                        fontSize:
+                                                                            20,
+                                                                        fontWeight:
+                                                                            FontWeight.w800,
+                                                                        color: AppColors
+                                                                            .neutral,
+                                                                        letterSpacing:
+                                                                            -0.5,
+                                                                      ),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                      height: 8,
+                                                                    ),
+                                                                    RichText(
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center,
+                                                                      text: TextSpan(
+                                                                        style: const TextStyle(
+                                                                          color:
+                                                                              AppColors.textBody,
+                                                                          fontSize:
+                                                                              14,
+                                                                          height:
+                                                                              1.4,
+                                                                        ),
+                                                                        children: [
+                                                                          const TextSpan(
+                                                                            text:
+                                                                                'Are you sure you want to permanently delete ',
+                                                                          ),
+                                                                          TextSpan(
+                                                                            text:
+                                                                                '"${task['title']}"',
+                                                                            style: const TextStyle(
+                                                                              fontWeight: FontWeight.bold,
+                                                                              color: AppColors.neutral,
+                                                                            ),
+                                                                          ),
+                                                                          const TextSpan(
+                                                                            text:
+                                                                                '? This action cannot be undone.',
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                      height:
+                                                                          28,
+                                                                    ),
+                                                                    Row(
+                                                                      children: [
+                                                                        Expanded(
+                                                                          child: SizedBox(
+                                                                            height:
+                                                                                48,
+                                                                            child: TextButton(
+                                                                              onPressed: () => Navigator.pop(
+                                                                                context,
+                                                                              ),
+                                                                              style: TextButton.styleFrom(
+                                                                                shape: RoundedRectangleBorder(
+                                                                                  borderRadius: BorderRadius.circular(
+                                                                                    14,
+                                                                                  ),
+                                                                                ),
+                                                                                backgroundColor: AppColors.inputFill.withOpacity(
+                                                                                  0.5,
+                                                                                ),
+                                                                              ),
+                                                                              child: const Text(
+                                                                                'Cancel',
+                                                                                style: TextStyle(
+                                                                                  color: AppColors.neutral,
+                                                                                  fontWeight: FontWeight.w700,
+                                                                                  fontSize: 15,
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        const SizedBox(
+                                                                          width:
+                                                                              12,
+                                                                        ),
+                                                                        Expanded(
+                                                                          child: SizedBox(
+                                                                            height:
+                                                                                48,
+                                                                            child: ElevatedButton(
+                                                                              onPressed: () async {
+                                                                                Navigator.pop(
+                                                                                  context,
+                                                                                );
+                                                                                // Target delete call here
+                                                                              },
+                                                                              style: ElevatedButton.styleFrom(
+                                                                                backgroundColor: const Color(
+                                                                                  0xFFEF4444,
+                                                                                ),
+                                                                                elevation: 0,
+                                                                                shape: RoundedRectangleBorder(
+                                                                                  borderRadius: BorderRadius.circular(
+                                                                                    14,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                              child: const Text(
+                                                                                'Delete',
+                                                                                style: TextStyle(
+                                                                                  color: Colors.white,
+                                                                                  fontWeight: FontWeight.bold,
+                                                                                  fontSize: 15,
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                        icon: const Icon(
+                                                          Icons
+                                                              .delete_outline_rounded,
+                                                          color: Color(
+                                                            0xFFEF4444,
+                                                          ),
+                                                          size: 20,
+                                                        ),
+                                                        label: const Text(
+                                                          'Delete Task',
+                                                          style: TextStyle(
+                                                            color: Color(
+                                                              0xFFEF4444,
+                                                            ),
+                                                            fontWeight:
+                                                                FontWeight.w700,
+                                                            fontSize: 15,
+                                                          ),
+                                                        ),
+                                                        style: TextButton.styleFrom(
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  12,
+                                                                ),
+                                                          ),
+                                                          overlayColor:
+                                                              const Color(
+                                                                0xFFEF4444,
+                                                              ).withOpacity(
+                                                                0.1,
+                                                              ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ] else ...[
+                                                    SizedBox(
+                                                      width: double.infinity,
+                                                      height: 48,
+                                                      child: TextButton.icon(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                            context,
+                                                          );
+                                                          showDialog(
+                                                            context: context,
+                                                            barrierDismissible:
+                                                                true,
+                                                            builder: (context) {
+                                                              return AlertDialog(
+                                                                insetPadding:
+                                                                    const EdgeInsets.symmetric(
+                                                                      horizontal:
+                                                                          40,
+                                                                    ),
+                                                                contentPadding:
+                                                                    const EdgeInsets.fromLTRB(
+                                                                      24,
+                                                                      24,
+                                                                      24,
+                                                                      16,
+                                                                    ),
+                                                                backgroundColor:
+                                                                    AppColors
+                                                                        .surface,
+                                                                shape: RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius.circular(
+                                                                        28,
+                                                                      ),
+                                                                ),
+                                                                content: Column(
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .min,
+                                                                  children: [
+                                                                    Container(
+                                                                      padding:
+                                                                          const EdgeInsets.all(
+                                                                            14,
+                                                                          ),
+                                                                      decoration: BoxDecoration(
+                                                                        color: const Color(
+                                                                          0xFFEF4444,
+                                                                        ).withOpacity(0.1),
+                                                                        shape: BoxShape
+                                                                            .circle,
+                                                                      ),
+                                                                      child: const Icon(
+                                                                        Icons
+                                                                            .delete_sweep_rounded,
+                                                                        color: Color(
+                                                                          0xFFEF4444,
+                                                                        ),
+                                                                        size:
+                                                                            32,
+                                                                      ),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                      height:
+                                                                          20,
+                                                                    ),
+                                                                    const Text(
+                                                                      'Delete Task?',
+                                                                      style: TextStyle(
+                                                                        fontSize:
+                                                                            20,
+                                                                        fontWeight:
+                                                                            FontWeight.w800,
+                                                                        color: AppColors
+                                                                            .neutral,
+                                                                        letterSpacing:
+                                                                            -0.5,
+                                                                      ),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                      height: 8,
+                                                                    ),
+                                                                    RichText(
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center,
+                                                                      text: TextSpan(
+                                                                        style: const TextStyle(
+                                                                          color:
+                                                                              AppColors.textBody,
+                                                                          fontSize:
+                                                                              14,
+                                                                          height:
+                                                                              1.4,
+                                                                        ),
+                                                                        children: [
+                                                                          const TextSpan(
+                                                                            text:
+                                                                                'Are you sure you want to permanently delete ',
+                                                                          ),
+                                                                          TextSpan(
+                                                                            text:
+                                                                                '"${task['title']}"',
+                                                                            style: const TextStyle(
+                                                                              fontWeight: FontWeight.bold,
+                                                                              color: AppColors.neutral,
+                                                                            ),
+                                                                          ),
+                                                                          const TextSpan(
+                                                                            text:
+                                                                                '? This action cannot be undone.',
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                      height:
+                                                                          28,
+                                                                    ),
+                                                                    Row(
+                                                                      children: [
+                                                                        Expanded(
+                                                                          child: SizedBox(
+                                                                            height:
+                                                                                48,
+                                                                            child: TextButton(
+                                                                              onPressed: () => Navigator.pop(
+                                                                                context,
+                                                                              ),
+                                                                              style: TextButton.styleFrom(
+                                                                                shape: RoundedRectangleBorder(
+                                                                                  borderRadius: BorderRadius.circular(
+                                                                                    14,
+                                                                                  ),
+                                                                                ),
+                                                                                backgroundColor: AppColors.inputFill.withOpacity(
+                                                                                  0.5,
+                                                                                ),
+                                                                              ),
+                                                                              child: const Text(
+                                                                                'Cancel',
+                                                                                style: TextStyle(
+                                                                                  color: AppColors.neutral,
+                                                                                  fontWeight: FontWeight.w700,
+                                                                                  fontSize: 15,
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        const SizedBox(
+                                                                          width:
+                                                                              12,
+                                                                        ),
+                                                                        Expanded(
+                                                                          child: SizedBox(
+                                                                            height:
+                                                                                48,
+                                                                            child: ElevatedButton(
+                                                                              onPressed: () async {
+                                                                                Navigator.pop(
+                                                                                  context,
+                                                                                );
+                                                                                // Target delete call here
+                                                                              },
+                                                                              style: ElevatedButton.styleFrom(
+                                                                                backgroundColor: const Color(
+                                                                                  0xFFEF4444,
+                                                                                ),
+                                                                                elevation: 0,
+                                                                                shape: RoundedRectangleBorder(
+                                                                                  borderRadius: BorderRadius.circular(
+                                                                                    14,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                              child: const Text(
+                                                                                'Delete',
+                                                                                style: TextStyle(
+                                                                                  color: Colors.white,
+                                                                                  fontWeight: FontWeight.bold,
+                                                                                  fontSize: 15,
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                        icon: const Icon(
+                                                          Icons
+                                                              .delete_outline_rounded,
+                                                          color: Color(
+                                                            0xFFEF4444,
+                                                          ),
+                                                          size: 20,
+                                                        ),
+                                                        label: const Text(
+                                                          'Delete Task',
+                                                          style: TextStyle(
+                                                            color: Color(
+                                                              0xFFEF4444,
+                                                            ),
+                                                            fontWeight:
+                                                                FontWeight.w700,
+                                                            fontSize: 15,
+                                                          ),
+                                                        ),
+                                                        style: TextButton.styleFrom(
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  12,
+                                                                ),
+                                                          ),
+                                                          overlayColor:
+                                                              const Color(
+                                                                0xFFEF4444,
+                                                              ).withOpacity(
+                                                                0.1,
+                                                              ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 6),
+                                                  ],
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
-
-                            // --- DRAG HANDLE ---
-                            trailing: IconButton(
-                              icon: const Icon(Icons.more_vert_rounded),
-                              color: AppColors.neutral,
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      // Tightens the dialog perfectly around its contents
-                                      scrollable: true,
-                                      insetPadding: const EdgeInsets.symmetric(
-                                        horizontal: 60,
-                                      ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                            horizontal: 16,
-                                            vertical: 20,
-                                          ),
-                                      backgroundColor: AppColors.surface,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(24),
-                                      ),
-                                      content: Column(
-                                        mainAxisSize: MainAxisSize
-                                            .min, // Shrinks height to fit content exactly
-                                        children: [
-                                          // --- TASK TITLE HEADER ---
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0,
-                                            ),
-                                            child: Text(
-                                              task['title'],
-                                              textAlign: TextAlign.center,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                color: AppColors.neutral,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w800,
-                                                letterSpacing: -0.3,
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            "Task Options",
-                                            style: TextStyle(
-                                              color: AppColors.textBody
-                                                  .withOpacity(0.7),
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-
-                                          const Padding(
-                                            padding: EdgeInsets.symmetric(
-                                              vertical: 12,
-                                            ),
-                                            child: Divider(
-                                              color: AppColors.inputFill,
-                                              thickness: 1.2,
-                                            ),
-                                          ),
-                                          if (task['isCompleted'] != true) ...[
-                                            // --- EDIT BUTTON ---
-                                            SizedBox(
-                                              width: double.infinity,
-                                              height: 48,
-                                              child: TextButton.icon(
-                                                onPressed: () {
-                                                  Navigator.of(
-                                                    context,
-                                                  ).pushReplacement(
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          Edittaskscreen(
-                                                            taskId: task.id,
-                                                          ),
-                                                    ),
-                                                  ); // Close dialog
-                                                  // Add your Edit Screen navigation code right here!
-                                                },
-                                                icon: const Icon(
-                                                  Icons.edit_calendar_rounded,
-                                                  color: AppColors.primary,
-                                                  size: 20,
-                                                ),
-                                                label: const Text(
-                                                  'Edit Details',
-                                                  style: TextStyle(
-                                                    color: AppColors.primary,
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 15,
-                                                  ),
-                                                ),
-                                                style: TextButton.styleFrom(
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          12,
-                                                        ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-
-                                            SizedBox(
-                                              width: double.infinity,
-                                              height: 48,
-                                              child: TextButton.icon(
-                                                onPressed: () {
-                                                  // 1. Close the main options menu dialog first
-                                                  Navigator.pop(context);
-
-                                                  // 2. Open the beautiful confirmation dialog box
-                                                  showDialog(
-                                                    context: context,
-                                                    barrierDismissible:
-                                                        true, // Let the user tap outside to cancel safely
-                                                    builder: (context) {
-                                                      return AlertDialog(
-                                                        insetPadding:
-                                                            const EdgeInsets.symmetric(
-                                                              horizontal: 40,
-                                                            ),
-                                                        contentPadding:
-                                                            const EdgeInsets.fromLTRB(
-                                                              24,
-                                                              24,
-                                                              24,
-                                                              16,
-                                                            ),
-                                                        backgroundColor:
-                                                            AppColors.surface,
-                                                        shape: RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                28,
-                                                              ),
-                                                        ),
-                                                        content: Column(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          children: [
-                                                            // Warning Icon Accent Container
-                                                            Container(
-                                                              padding:
-                                                                  const EdgeInsets.all(
-                                                                    14,
-                                                                  ),
-                                                              decoration: BoxDecoration(
-                                                                color:
-                                                                    const Color(
-                                                                      0xFFEF4444,
-                                                                    ).withOpacity(
-                                                                      0.1,
-                                                                    ),
-                                                                shape: BoxShape
-                                                                    .circle,
-                                                              ),
-                                                              child: const Icon(
-                                                                Icons
-                                                                    .delete_sweep_rounded,
-                                                                color: Color(
-                                                                  0xFFEF4444,
-                                                                ),
-                                                                size: 32,
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                              height: 20,
-                                                            ),
-
-                                                            // Title Text
-                                                            const Text(
-                                                              'Delete Task?',
-                                                              style: TextStyle(
-                                                                fontSize: 20,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w800,
-                                                                color: AppColors
-                                                                    .neutral,
-                                                                letterSpacing:
-                                                                    -0.5,
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                              height: 8,
-                                                            ),
-
-                                                            // Subtitle Text displaying the dynamic title name
-                                                            RichText(
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                              text: TextSpan(
-                                                                style: const TextStyle(
-                                                                  color: AppColors
-                                                                      .textBody,
-                                                                  fontSize: 14,
-                                                                  height: 1.4,
-                                                                ),
-                                                                children: [
-                                                                  const TextSpan(
-                                                                    text:
-                                                                        'Are you sure you want to permanently delete ',
-                                                                  ),
-                                                                  TextSpan(
-                                                                    text:
-                                                                        '"${task['title']}"',
-                                                                    style: const TextStyle(
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      color: AppColors
-                                                                          .neutral,
-                                                                    ),
-                                                                  ),
-                                                                  const TextSpan(
-                                                                    text:
-                                                                        '? This action cannot be undone.',
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                              height: 28,
-                                                            ),
-
-                                                            // Actions Row (Cancel vs Confirm Delete)
-                                                            Row(
-                                                              children: [
-                                                                // --- CANCEL BUTTON ---
-                                                                Expanded(
-                                                                  child: SizedBox(
-                                                                    height: 48,
-                                                                    child: TextButton(
-                                                                      onPressed: () =>
-                                                                          Navigator.pop(
-                                                                            context,
-                                                                          ),
-                                                                      style: TextButton.styleFrom(
-                                                                        shape: RoundedRectangleBorder(
-                                                                          borderRadius: BorderRadius.circular(
-                                                                            14,
-                                                                          ),
-                                                                        ),
-                                                                        backgroundColor: AppColors
-                                                                            .inputFill
-                                                                            .withOpacity(
-                                                                              0.5,
-                                                                            ),
-                                                                      ),
-                                                                      child: const Text(
-                                                                        'Cancel',
-                                                                        style: TextStyle(
-                                                                          color:
-                                                                              AppColors.neutral,
-                                                                          fontWeight:
-                                                                              FontWeight.w700,
-                                                                          fontSize:
-                                                                              15,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                                const SizedBox(
-                                                                  width: 12,
-                                                                ),
-
-                                                                // --- CONFIRM ACTION BUTTON ---
-                                                                Expanded(
-                                                                  child: SizedBox(
-                                                                    height: 48,
-                                                                    child: ElevatedButton(
-                                                                      onPressed: () async {
-                                                                        Navigator.pop(
-                                                                          context,
-                                                                        ); // Close this confirmation box safely
-
-                                                                        // --- PLACE YOUR FIRESTORE DELETE METHOD HERE ---
-                                                                        // Example: await TaskService().deleteTask(task.id);
-                                                                      },
-                                                                      style: ElevatedButton.styleFrom(
-                                                                        backgroundColor:
-                                                                            const Color(
-                                                                              0xFFEF4444,
-                                                                            ),
-                                                                        elevation:
-                                                                            0,
-                                                                        shape: RoundedRectangleBorder(
-                                                                          borderRadius: BorderRadius.circular(
-                                                                            14,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      child: const Text(
-                                                                        'Delete',
-                                                                        style: TextStyle(
-                                                                          color:
-                                                                              Colors.white,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                          fontSize:
-                                                                              15,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                                icon: const Icon(
-                                                  Icons.delete_outline_rounded,
-                                                  color: Color(0xFFEF4444),
-                                                  size: 20,
-                                                ),
-                                                label: const Text(
-                                                  'Delete Task',
-                                                  style: TextStyle(
-                                                    color: Color(
-                                                      0xFFEF4444,
-                                                    ), // Matte red alert color
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 15,
-                                                  ),
-                                                ),
-                                                style: TextButton.styleFrom(
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          12,
-                                                        ),
-                                                  ),
-                                                  // Gives a soft red ripple effect when clicked
-                                                  overlayColor: const Color(
-                                                    0xFFEF4444,
-                                                  ).withOpacity(0.1),
-                                                ),
-                                              ),
-                                            ),
-                                          ] else ...[
-                                            // --- DELETE BUTTON ---
-                                            SizedBox(
-                                              width: double.infinity,
-                                              height: 48,
-                                              child: TextButton.icon(
-                                                onPressed: () {
-                                                  // 1. Close the main options menu dialog first
-                                                  Navigator.pop(context);
-
-                                                  // 2. Open the beautiful confirmation dialog box
-                                                  showDialog(
-                                                    context: context,
-                                                    barrierDismissible:
-                                                        true, // Let the user tap outside to cancel safely
-                                                    builder: (context) {
-                                                      return AlertDialog(
-                                                        insetPadding:
-                                                            const EdgeInsets.symmetric(
-                                                              horizontal: 40,
-                                                            ),
-                                                        contentPadding:
-                                                            const EdgeInsets.fromLTRB(
-                                                              24,
-                                                              24,
-                                                              24,
-                                                              16,
-                                                            ),
-                                                        backgroundColor:
-                                                            AppColors.surface,
-                                                        shape: RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                28,
-                                                              ),
-                                                        ),
-                                                        content: Column(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          children: [
-                                                            // Warning Icon Accent Container
-                                                            Container(
-                                                              padding:
-                                                                  const EdgeInsets.all(
-                                                                    14,
-                                                                  ),
-                                                              decoration: BoxDecoration(
-                                                                color:
-                                                                    const Color(
-                                                                      0xFFEF4444,
-                                                                    ).withOpacity(
-                                                                      0.1,
-                                                                    ),
-                                                                shape: BoxShape
-                                                                    .circle,
-                                                              ),
-                                                              child: const Icon(
-                                                                Icons
-                                                                    .delete_sweep_rounded,
-                                                                color: Color(
-                                                                  0xFFEF4444,
-                                                                ),
-                                                                size: 32,
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                              height: 20,
-                                                            ),
-
-                                                            // Title Text
-                                                            const Text(
-                                                              'Delete Task?',
-                                                              style: TextStyle(
-                                                                fontSize: 20,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w800,
-                                                                color: AppColors
-                                                                    .neutral,
-                                                                letterSpacing:
-                                                                    -0.5,
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                              height: 8,
-                                                            ),
-
-                                                            // Subtitle Text displaying the dynamic title name
-                                                            RichText(
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                              text: TextSpan(
-                                                                style: const TextStyle(
-                                                                  color: AppColors
-                                                                      .textBody,
-                                                                  fontSize: 14,
-                                                                  height: 1.4,
-                                                                ),
-                                                                children: [
-                                                                  const TextSpan(
-                                                                    text:
-                                                                        'Are you sure you want to permanently delete ',
-                                                                  ),
-                                                                  TextSpan(
-                                                                    text:
-                                                                        '"${task['title']}"',
-                                                                    style: const TextStyle(
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      color: AppColors
-                                                                          .neutral,
-                                                                    ),
-                                                                  ),
-                                                                  const TextSpan(
-                                                                    text:
-                                                                        '? This action cannot be undone.',
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                              height: 28,
-                                                            ),
-
-                                                            // Actions Row (Cancel vs Confirm Delete)
-                                                            Row(
-                                                              children: [
-                                                                // --- CANCEL BUTTON ---
-                                                                Expanded(
-                                                                  child: SizedBox(
-                                                                    height: 48,
-                                                                    child: TextButton(
-                                                                      onPressed: () =>
-                                                                          Navigator.pop(
-                                                                            context,
-                                                                          ),
-                                                                      style: TextButton.styleFrom(
-                                                                        shape: RoundedRectangleBorder(
-                                                                          borderRadius: BorderRadius.circular(
-                                                                            14,
-                                                                          ),
-                                                                        ),
-                                                                        backgroundColor: AppColors
-                                                                            .inputFill
-                                                                            .withOpacity(
-                                                                              0.5,
-                                                                            ),
-                                                                      ),
-                                                                      child: const Text(
-                                                                        'Cancel',
-                                                                        style: TextStyle(
-                                                                          color:
-                                                                              AppColors.neutral,
-                                                                          fontWeight:
-                                                                              FontWeight.w700,
-                                                                          fontSize:
-                                                                              15,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                                const SizedBox(
-                                                                  width: 12,
-                                                                ),
-
-                                                                // --- CONFIRM ACTION BUTTON ---
-                                                                Expanded(
-                                                                  child: SizedBox(
-                                                                    height: 48,
-                                                                    child: ElevatedButton(
-                                                                      onPressed: () async {
-                                                                        Navigator.pop(
-                                                                          context,
-                                                                        ); // Close this confirmation box safely
-
-                                                                        // --- PLACE YOUR FIRESTORE DELETE METHOD HERE ---
-                                                                        // Example: await TaskService().deleteTask(task.id);
-                                                                      },
-                                                                      style: ElevatedButton.styleFrom(
-                                                                        backgroundColor:
-                                                                            const Color(
-                                                                              0xFFEF4444,
-                                                                            ),
-                                                                        elevation:
-                                                                            0,
-                                                                        shape: RoundedRectangleBorder(
-                                                                          borderRadius: BorderRadius.circular(
-                                                                            14,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      child: const Text(
-                                                                        'Delete',
-                                                                        style: TextStyle(
-                                                                          color:
-                                                                              Colors.white,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                          fontSize:
-                                                                              15,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                                icon: const Icon(
-                                                  Icons.delete_outline_rounded,
-                                                  color: Color(0xFFEF4444),
-                                                  size: 20,
-                                                ),
-                                                label: const Text(
-                                                  'Delete Task',
-                                                  style: TextStyle(
-                                                    color: Color(
-                                                      0xFFEF4444,
-                                                    ), // Matte red alert color
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 15,
-                                                  ),
-                                                ),
-                                                style: TextButton.styleFrom(
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          12,
-                                                        ),
-                                                  ),
-                                                  // Gives a soft red ripple effect when clicked
-                                                  overlayColor: const Color(
-                                                    0xFFEF4444,
-                                                  ).withOpacity(0.1),
-                                                ),
-                                              ),
-                                            ),
-
-                                            const SizedBox(height: 6),
-                                          ],
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ),
+                          );
+                        }(),
+                      ],
                     ],
                   );
                 },
