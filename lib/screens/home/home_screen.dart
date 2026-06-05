@@ -347,17 +347,144 @@ class _HomeScreenState extends State<HomeScreen> {
 
                             // --- DRAG HANDLE ---
                             trailing: IconButton(
-                              icon: Icon(Icons.more_vert),
+                              icon: const Icon(Icons.more_vert_rounded),
                               color: AppColors.neutral,
                               onPressed: () {
                                 showDialog(
                                   context: context,
                                   builder: (context) {
-                                    return Container(
-                                      height: 300,
-                                      color: (Colors.amberAccent),
-                                      child: Column(
-                                        children: [Text(task['title'])],
+                                    return AlertDialog(
+                                      // Tightens the dialog perfectly around its contents
+                                      scrollable: true,
+                                      insetPadding: const EdgeInsets.symmetric(
+                                        horizontal: 60,
+                                      ),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 20,
+                                          ),
+                                      backgroundColor: AppColors.surface,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(24),
+                                      ),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize
+                                            .min, // Shrinks height to fit content exactly
+                                        children: [
+                                          // --- TASK TITLE HEADER ---
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0,
+                                            ),
+                                            child: Text(
+                                              task['title'],
+                                              textAlign: TextAlign.center,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                color: AppColors.neutral,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w800,
+                                                letterSpacing: -0.3,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            "Task Options",
+                                            style: TextStyle(
+                                              color: AppColors.textBody
+                                                  .withOpacity(0.7),
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+
+                                          const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 12,
+                                            ),
+                                            child: Divider(
+                                              color: AppColors.inputFill,
+                                              thickness: 1.2,
+                                            ),
+                                          ),
+
+                                          // --- EDIT BUTTON ---
+                                          SizedBox(
+                                            width: double.infinity,
+                                            height: 48,
+                                            child: TextButton.icon(
+                                              onPressed: () {
+                                                Navigator.pop(
+                                                  context,
+                                                ); // Close dialog
+                                                // Add your Edit Screen navigation code right here!
+                                              },
+                                              icon: const Icon(
+                                                Icons.edit_calendar_rounded,
+                                                color: AppColors.primary,
+                                                size: 20,
+                                              ),
+                                              label: const Text(
+                                                'Edit Details',
+                                                style: TextStyle(
+                                                  color: AppColors.primary,
+                                                  fontWeight: FontWeight.w700,
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                              style: TextButton.styleFrom(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+
+                                          const SizedBox(height: 6),
+
+                                          // --- DELETE BUTTON ---
+                                          SizedBox(
+                                            width: double.infinity,
+                                            height: 48,
+                                            child: TextButton.icon(
+                                              onPressed: () {
+                                                Navigator.pop(
+                                                  context,
+                                                ); // Close dialog
+                                                // Add your Firebase delete logic right here!
+                                              },
+                                              icon: const Icon(
+                                                Icons.delete_outline_rounded,
+                                                color: Color(0xFFEF4444),
+                                                size: 20,
+                                              ),
+                                              label: const Text(
+                                                'Delete Task',
+                                                style: TextStyle(
+                                                  color: Color(
+                                                    0xFFEF4444,
+                                                  ), // Matte red alert color
+                                                  fontWeight: FontWeight.w700,
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                              style: TextButton.styleFrom(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                // Gives a soft red ripple effect when clicked
+                                                overlayColor: const Color(
+                                                  0xFFEF4444,
+                                                ).withOpacity(0.1),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     );
                                   },
