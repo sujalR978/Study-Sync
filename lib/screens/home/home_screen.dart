@@ -126,12 +126,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
 
                       child: CircleAvatar(
-                        radius: 25, // Adjust this to make it bigger or smaller
-                        backgroundColor: AppColors
-                            .inputFill, // Optional background color while loading
-                        backgroundImage: user!.loginMethod == 'google'
+                        radius: 25,
+                        backgroundColor: AppColors.inputFill,
+                        backgroundImage: user!= null && user.loginMethod == 'google'
                             ? NetworkImage(user.photoUrl) as ImageProvider
-                            : AssetImage(user.photoUrl),
+                            : null,
+                        child: user == null || user.loginMethod != 'google'
+                            ? const Icon(Icons.person_off)
+                            : null,
                       ),
                     ),
                   ),
