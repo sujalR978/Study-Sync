@@ -85,7 +85,7 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
       categorySelected = taskData['category'] ?? '';
 
       setState(() {
-        selectedDate = taskData['dueDate'];
+        selectedDate = (taskData['dueDate'] as Timestamp).toDate();
         selectedTime = taskData['dueTime'];
       });
     }
