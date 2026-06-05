@@ -411,88 +411,540 @@ class _HomeScreenState extends State<HomeScreen> {
                                               thickness: 1.2,
                                             ),
                                           ),
-
-                                          // --- EDIT BUTTON ---
-                                          SizedBox(
-                                            width: double.infinity,
-                                            height: 48,
-                                            child: TextButton.icon(
-                                              onPressed: () {
-                                                Navigator.of(
-                                                  context,
-                                                ).pushReplacement(
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        Edittaskscreen(taskId: task.id,),
-                                                  ),
-                                                ); // Close dialog
-                                                // Add your Edit Screen navigation code right here!
-                                              },
-                                              icon: const Icon(
-                                                Icons.edit_calendar_rounded,
-                                                color: AppColors.primary,
-                                                size: 20,
-                                              ),
-                                              label: const Text(
-                                                'Edit Details',
-                                                style: TextStyle(
+                                          if (task['isCompleted'] != true) ...[
+                                            // --- EDIT BUTTON ---
+                                            SizedBox(
+                                              width: double.infinity,
+                                              height: 48,
+                                              child: TextButton.icon(
+                                                onPressed: () {
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pushReplacement(
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          Edittaskscreen(
+                                                            taskId: task.id,
+                                                          ),
+                                                    ),
+                                                  ); // Close dialog
+                                                  // Add your Edit Screen navigation code right here!
+                                                },
+                                                icon: const Icon(
+                                                  Icons.edit_calendar_rounded,
                                                   color: AppColors.primary,
-                                                  fontWeight: FontWeight.w700,
-                                                  fontSize: 15,
+                                                  size: 20,
                                                 ),
-                                              ),
-                                              style: TextButton.styleFrom(
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
+                                                label: const Text(
+                                                  'Edit Details',
+                                                  style: TextStyle(
+                                                    color: AppColors.primary,
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 15,
+                                                  ),
+                                                ),
+                                                style: TextButton.styleFrom(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12,
+                                                        ),
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                          ),
 
-                                          const SizedBox(height: 6),
+                                            SizedBox(
+                                              width: double.infinity,
+                                              height: 48,
+                                              child: TextButton.icon(
+                                                onPressed: () {
+                                                  // 1. Close the main options menu dialog first
+                                                  Navigator.pop(context);
 
-                                          // --- DELETE BUTTON ---
-                                          SizedBox(
-                                            width: double.infinity,
-                                            height: 48,
-                                            child: TextButton.icon(
-                                              onPressed: () {
-                                                TaskService().taskDelete(
-                                                  task.id,
-                                                );
-                                                Navigator.pop(
-                                                  context,
-                                                ); // Close dialog
-                                                // Add your Firebase delete logic right here!
-                                              },
-                                              icon: const Icon(
-                                                Icons.delete_outline_rounded,
-                                                color: Color(0xFFEF4444),
-                                                size: 20,
-                                              ),
-                                              label: const Text(
-                                                'Delete Task',
-                                                style: TextStyle(
-                                                  color: Color(
+                                                  // 2. Open the beautiful confirmation dialog box
+                                                  showDialog(
+                                                    context: context,
+                                                    barrierDismissible:
+                                                        true, // Let the user tap outside to cancel safely
+                                                    builder: (context) {
+                                                      return AlertDialog(
+                                                        insetPadding:
+                                                            const EdgeInsets.symmetric(
+                                                              horizontal: 40,
+                                                            ),
+                                                        contentPadding:
+                                                            const EdgeInsets.fromLTRB(
+                                                              24,
+                                                              24,
+                                                              24,
+                                                              16,
+                                                            ),
+                                                        backgroundColor:
+                                                            AppColors.surface,
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                28,
+                                                              ),
+                                                        ),
+                                                        content: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            // Warning Icon Accent Container
+                                                            Container(
+                                                              padding:
+                                                                  const EdgeInsets.all(
+                                                                    14,
+                                                                  ),
+                                                              decoration: BoxDecoration(
+                                                                color:
+                                                                    const Color(
+                                                                      0xFFEF4444,
+                                                                    ).withOpacity(
+                                                                      0.1,
+                                                                    ),
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                              ),
+                                                              child: const Icon(
+                                                                Icons
+                                                                    .delete_sweep_rounded,
+                                                                color: Color(
+                                                                  0xFFEF4444,
+                                                                ),
+                                                                size: 32,
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                              height: 20,
+                                                            ),
+
+                                                            // Title Text
+                                                            const Text(
+                                                              'Delete Task?',
+                                                              style: TextStyle(
+                                                                fontSize: 20,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w800,
+                                                                color: AppColors
+                                                                    .neutral,
+                                                                letterSpacing:
+                                                                    -0.5,
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                              height: 8,
+                                                            ),
+
+                                                            // Subtitle Text displaying the dynamic title name
+                                                            RichText(
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                              text: TextSpan(
+                                                                style: const TextStyle(
+                                                                  color: AppColors
+                                                                      .textBody,
+                                                                  fontSize: 14,
+                                                                  height: 1.4,
+                                                                ),
+                                                                children: [
+                                                                  const TextSpan(
+                                                                    text:
+                                                                        'Are you sure you want to permanently delete ',
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text:
+                                                                        '"${task['title']}"',
+                                                                    style: const TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: AppColors
+                                                                          .neutral,
+                                                                    ),
+                                                                  ),
+                                                                  const TextSpan(
+                                                                    text:
+                                                                        '? This action cannot be undone.',
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                              height: 28,
+                                                            ),
+
+                                                            // Actions Row (Cancel vs Confirm Delete)
+                                                            Row(
+                                                              children: [
+                                                                // --- CANCEL BUTTON ---
+                                                                Expanded(
+                                                                  child: SizedBox(
+                                                                    height: 48,
+                                                                    child: TextButton(
+                                                                      onPressed: () =>
+                                                                          Navigator.pop(
+                                                                            context,
+                                                                          ),
+                                                                      style: TextButton.styleFrom(
+                                                                        shape: RoundedRectangleBorder(
+                                                                          borderRadius: BorderRadius.circular(
+                                                                            14,
+                                                                          ),
+                                                                        ),
+                                                                        backgroundColor: AppColors
+                                                                            .inputFill
+                                                                            .withOpacity(
+                                                                              0.5,
+                                                                            ),
+                                                                      ),
+                                                                      child: const Text(
+                                                                        'Cancel',
+                                                                        style: TextStyle(
+                                                                          color:
+                                                                              AppColors.neutral,
+                                                                          fontWeight:
+                                                                              FontWeight.w700,
+                                                                          fontSize:
+                                                                              15,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(
+                                                                  width: 12,
+                                                                ),
+
+                                                                // --- CONFIRM ACTION BUTTON ---
+                                                                Expanded(
+                                                                  child: SizedBox(
+                                                                    height: 48,
+                                                                    child: ElevatedButton(
+                                                                      onPressed: () async {
+                                                                        Navigator.pop(
+                                                                          context,
+                                                                        ); // Close this confirmation box safely
+
+                                                                        // --- PLACE YOUR FIRESTORE DELETE METHOD HERE ---
+                                                                        // Example: await TaskService().deleteTask(task.id);
+                                                                      },
+                                                                      style: ElevatedButton.styleFrom(
+                                                                        backgroundColor:
+                                                                            const Color(
+                                                                              0xFFEF4444,
+                                                                            ),
+                                                                        elevation:
+                                                                            0,
+                                                                        shape: RoundedRectangleBorder(
+                                                                          borderRadius: BorderRadius.circular(
+                                                                            14,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      child: const Text(
+                                                                        'Delete',
+                                                                        style: TextStyle(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                          fontSize:
+                                                                              15,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                icon: const Icon(
+                                                  Icons.delete_outline_rounded,
+                                                  color: Color(0xFFEF4444),
+                                                  size: 20,
+                                                ),
+                                                label: const Text(
+                                                  'Delete Task',
+                                                  style: TextStyle(
+                                                    color: Color(
+                                                      0xFFEF4444,
+                                                    ), // Matte red alert color
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 15,
+                                                  ),
+                                                ),
+                                                style: TextButton.styleFrom(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12,
+                                                        ),
+                                                  ),
+                                                  // Gives a soft red ripple effect when clicked
+                                                  overlayColor: const Color(
                                                     0xFFEF4444,
-                                                  ), // Matte red alert color
-                                                  fontWeight: FontWeight.w700,
-                                                  fontSize: 15,
+                                                  ).withOpacity(0.1),
                                                 ),
-                                              ),
-                                              style: TextButton.styleFrom(
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                ),
-                                                // Gives a soft red ripple effect when clicked
-                                                overlayColor: const Color(
-                                                  0xFFEF4444,
-                                                ).withOpacity(0.1),
                                               ),
                                             ),
-                                          ),
+                                          ] else ...[
+                                            // --- DELETE BUTTON ---
+                                            SizedBox(
+                                              width: double.infinity,
+                                              height: 48,
+                                              child: TextButton.icon(
+                                                onPressed: () {
+                                                  // 1. Close the main options menu dialog first
+                                                  Navigator.pop(context);
+
+                                                  // 2. Open the beautiful confirmation dialog box
+                                                  showDialog(
+                                                    context: context,
+                                                    barrierDismissible:
+                                                        true, // Let the user tap outside to cancel safely
+                                                    builder: (context) {
+                                                      return AlertDialog(
+                                                        insetPadding:
+                                                            const EdgeInsets.symmetric(
+                                                              horizontal: 40,
+                                                            ),
+                                                        contentPadding:
+                                                            const EdgeInsets.fromLTRB(
+                                                              24,
+                                                              24,
+                                                              24,
+                                                              16,
+                                                            ),
+                                                        backgroundColor:
+                                                            AppColors.surface,
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                28,
+                                                              ),
+                                                        ),
+                                                        content: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            // Warning Icon Accent Container
+                                                            Container(
+                                                              padding:
+                                                                  const EdgeInsets.all(
+                                                                    14,
+                                                                  ),
+                                                              decoration: BoxDecoration(
+                                                                color:
+                                                                    const Color(
+                                                                      0xFFEF4444,
+                                                                    ).withOpacity(
+                                                                      0.1,
+                                                                    ),
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                              ),
+                                                              child: const Icon(
+                                                                Icons
+                                                                    .delete_sweep_rounded,
+                                                                color: Color(
+                                                                  0xFFEF4444,
+                                                                ),
+                                                                size: 32,
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                              height: 20,
+                                                            ),
+
+                                                            // Title Text
+                                                            const Text(
+                                                              'Delete Task?',
+                                                              style: TextStyle(
+                                                                fontSize: 20,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w800,
+                                                                color: AppColors
+                                                                    .neutral,
+                                                                letterSpacing:
+                                                                    -0.5,
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                              height: 8,
+                                                            ),
+
+                                                            // Subtitle Text displaying the dynamic title name
+                                                            RichText(
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                              text: TextSpan(
+                                                                style: const TextStyle(
+                                                                  color: AppColors
+                                                                      .textBody,
+                                                                  fontSize: 14,
+                                                                  height: 1.4,
+                                                                ),
+                                                                children: [
+                                                                  const TextSpan(
+                                                                    text:
+                                                                        'Are you sure you want to permanently delete ',
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text:
+                                                                        '"${task['title']}"',
+                                                                    style: const TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: AppColors
+                                                                          .neutral,
+                                                                    ),
+                                                                  ),
+                                                                  const TextSpan(
+                                                                    text:
+                                                                        '? This action cannot be undone.',
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                              height: 28,
+                                                            ),
+
+                                                            // Actions Row (Cancel vs Confirm Delete)
+                                                            Row(
+                                                              children: [
+                                                                // --- CANCEL BUTTON ---
+                                                                Expanded(
+                                                                  child: SizedBox(
+                                                                    height: 48,
+                                                                    child: TextButton(
+                                                                      onPressed: () =>
+                                                                          Navigator.pop(
+                                                                            context,
+                                                                          ),
+                                                                      style: TextButton.styleFrom(
+                                                                        shape: RoundedRectangleBorder(
+                                                                          borderRadius: BorderRadius.circular(
+                                                                            14,
+                                                                          ),
+                                                                        ),
+                                                                        backgroundColor: AppColors
+                                                                            .inputFill
+                                                                            .withOpacity(
+                                                                              0.5,
+                                                                            ),
+                                                                      ),
+                                                                      child: const Text(
+                                                                        'Cancel',
+                                                                        style: TextStyle(
+                                                                          color:
+                                                                              AppColors.neutral,
+                                                                          fontWeight:
+                                                                              FontWeight.w700,
+                                                                          fontSize:
+                                                                              15,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(
+                                                                  width: 12,
+                                                                ),
+
+                                                                // --- CONFIRM ACTION BUTTON ---
+                                                                Expanded(
+                                                                  child: SizedBox(
+                                                                    height: 48,
+                                                                    child: ElevatedButton(
+                                                                      onPressed: () async {
+                                                                        Navigator.pop(
+                                                                          context,
+                                                                        ); // Close this confirmation box safely
+
+                                                                        // --- PLACE YOUR FIRESTORE DELETE METHOD HERE ---
+                                                                        // Example: await TaskService().deleteTask(task.id);
+                                                                      },
+                                                                      style: ElevatedButton.styleFrom(
+                                                                        backgroundColor:
+                                                                            const Color(
+                                                                              0xFFEF4444,
+                                                                            ),
+                                                                        elevation:
+                                                                            0,
+                                                                        shape: RoundedRectangleBorder(
+                                                                          borderRadius: BorderRadius.circular(
+                                                                            14,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      child: const Text(
+                                                                        'Delete',
+                                                                        style: TextStyle(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                          fontSize:
+                                                                              15,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                icon: const Icon(
+                                                  Icons.delete_outline_rounded,
+                                                  color: Color(0xFFEF4444),
+                                                  size: 20,
+                                                ),
+                                                label: const Text(
+                                                  'Delete Task',
+                                                  style: TextStyle(
+                                                    color: Color(
+                                                      0xFFEF4444,
+                                                    ), // Matte red alert color
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 15,
+                                                  ),
+                                                ),
+                                                style: TextButton.styleFrom(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12,
+                                                        ),
+                                                  ),
+                                                  // Gives a soft red ripple effect when clicked
+                                                  overlayColor: const Color(
+                                                    0xFFEF4444,
+                                                  ).withOpacity(0.1),
+                                                ),
+                                              ),
+                                            ),
+
+                                            const SizedBox(height: 6),
+                                          ],
                                         ],
                                       ),
                                     );
