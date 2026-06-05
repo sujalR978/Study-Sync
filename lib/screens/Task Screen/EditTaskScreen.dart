@@ -22,6 +22,8 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
   String categorySelected = '';
   DateTime? selectedDate;
   String? selectedTime;
+  List<String> priorityList = [];
+  String priority = '';
   void _showDatePicker() {
     showDatePicker(
       context: context,
@@ -87,6 +89,7 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
       setState(() {
         selectedDate = (taskData['dueDate'] as Timestamp).toDate();
         selectedTime = taskData['dueTime'];
+        priority = taskData['priority'];
       });
     }
   }
@@ -165,6 +168,18 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                 _showTimePicker();
               },
               child: Text(selectedTime.toString()),
+            ),
+
+            SizedBox(
+              height: 300,
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                ),
+                itemBuilder: (context, index) {
+                  return 
+                },
+              ),
             ),
           ],
         ),
