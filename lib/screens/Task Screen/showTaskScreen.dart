@@ -6,16 +6,16 @@ import 'package:study_sync/constants/app_colors.dart'; // Make sure this path is
 
 // Make sure this path is correct
 
-class EditTaskScreen extends StatefulWidget {
+class Showtaskscreen extends StatefulWidget {
   final String taskid;
 
-  const EditTaskScreen({super.key, required this.taskid});
+  const Showtaskscreen({super.key, required this.taskid});
 
   @override
-  State<EditTaskScreen> createState() => _EditTaskScreenState();
+  State<Showtaskscreen> createState() => _ShowtaskscreenState();
 }
 
-class _EditTaskScreenState extends State<EditTaskScreen> {
+class _ShowtaskscreenState extends State<Showtaskscreen> {
   Future<DocumentSnapshot<Map<String, dynamic>>> loadTask() async {
     String uid = FirebaseAuth.instance.currentUser!.uid;
 
@@ -117,7 +117,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             final updateDate = (doc['updatedAt'] as Timestamp).toDate();
 
             createdAt = DateFormat('dd MMM, yyyy').format(date);
-            updatedAt = DateFormat('dd MMM, yyyy').format(updateDate);
+            updatedAt = DateFormat('dd MMM yyyy, hh:mm a').format(updateDate);
           }
           if (doc['dueTime'] != null) {
             final time = doc['dueTime'] ?? '';

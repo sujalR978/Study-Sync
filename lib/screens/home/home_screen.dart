@@ -128,7 +128,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: CircleAvatar(
                         radius: 25,
                         backgroundColor: AppColors.inputFill,
-                        backgroundImage: user!= null && user.loginMethod == 'google'
+                        backgroundImage:
+                            user != null && user.loginMethod == 'google'
                             ? NetworkImage(user.photoUrl) as ImageProvider
                             : null,
                         child: user == null || user.loginMethod != 'google'
@@ -221,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (_) =>
-                                      EditTaskScreen(taskid: task.id),
+                                      Showtaskscreen(taskid: task.id),
                                 ),
                               );
                             },
@@ -345,9 +346,23 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
 
                             // --- DRAG HANDLE ---
-                            trailing: const Icon(
-                              Icons.drag_indicator_rounded,
-                              color: AppColors.textBody,
+                            trailing: IconButton(
+                              icon: Icon(Icons.more_vert),
+                              color: AppColors.neutral,
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return Container(
+                                      height: 300,
+                                      color: (Colors.amberAccent),
+                                      child: Column(
+                                        children: [Text(task['title'])],
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
                             ),
                           ),
                         ),
