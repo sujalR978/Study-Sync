@@ -48,10 +48,19 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           // safe timestamp handling
           String formattedDate = '';
           String formetedTime = '';
+          String createdAt = '';
+          String updatedAt = '';
 
           if (doc['dueDate'] != null) {
             final date = (doc['dueDate'] as Timestamp).toDate();
             formattedDate = DateFormat('dd/MM/yyyy').format(date);
+          }
+          if (doc['createdAt'] != null && doc['updatedAt'] != null) {
+            final date = (doc['createdAt'] as Timestamp).toDate();
+            final updateDate = (doc['updatedAt'] as Timestamp).toDate();
+
+            createdAt = DateFormat('dd/MM/yyyy').format(date);
+            updatedAt = DateFormat('dd/MM/yyyy').format(date);
           }
           if (doc['dueTime'] != null) {
             final time = doc['dueTime'] ?? '';
@@ -86,6 +95,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
                 Text("Due Date: $formattedDate"),
                 Text("Due Date: $formetedTime"),
+                Text("Created At: $createdAt"),
+                Text("Created At: $updatedAt"),
+                Text("isComplete: ${doc['isCompleted']}"),
               ],
             ),
           );
