@@ -33,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> loadUser() async {
     if (FirebaseAuth.instance.currentUser != null) {
       UserModel? userData = await AuthService().getCurrentUserData();
-
+      if (!mounted) return;
       if (userData != null) {
         context.read<Authprovider>().setUser(userData);
       }
