@@ -26,7 +26,7 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
   String categorySelected = '';
   DateTime? selectedDate;
   String? selectedTime;
-  String setpriority = 'Medium'; // Fallback default text
+  String setpriority = 'Medium';
 
   void _showDatePicker() {
     showDatePicker(
@@ -66,7 +66,6 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
     ).then((value) {
       if (value != null) {
         setState(() {
-          // Standardizes time display format safely
           selectedTime = value.format(context);
         });
       }
@@ -112,7 +111,6 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
       categorySelected = taskData['category'] ?? '';
       selectedDate = (taskData['dueDate'] as Timestamp).toDate();
 
-      // Cleans raw Firestore TimeOfDay wrapper text safely if present
       String rawTime = taskData['dueTime'] ?? '';
       if (rawTime.contains('TimeOfDay(')) {
         selectedTime = rawTime.replaceAll('TimeOfDay(', '').replaceAll(')', '');
@@ -120,7 +118,6 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
         selectedTime = rawTime;
       }
 
-      // Pre-sets priority selection dynamically directly from Firestore field string
       setpriority = taskData['priority'] ?? 'Medium';
       setState(() {});
     }
@@ -141,17 +138,13 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
   }
 
   Widget _buildPriorityButton(String level) {
-    // --- UPDATED LOGIC: Standardizes strings to lowercase for a reliable match ---
     bool isSelected = false;
-
     String currentPriorityLower = setpriority.toLowerCase().trim();
     String buttonLevelLower = level.toLowerCase().trim();
 
     if (buttonLevelLower == currentPriorityLower) {
       isSelected = true;
-    }
-    // Safe fall-through patch to bridge spelling variations for Medium
-    else if (buttonLevelLower == 'miduim' || buttonLevelLower == 'medium') {
+    } else if (buttonLevelLower == 'miduim' || buttonLevelLower == 'medium') {
       if (currentPriorityLower == 'miduim' ||
           currentPriorityLower == 'medium') {
         isSelected = true;
@@ -164,7 +157,6 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
       child: GestureDetector(
         onTap: () {
           setState(() {
-            // Saves exactly what the user clicks
             setpriority = level;
           });
         },
@@ -449,6 +441,68 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                     ),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
+                        // --- NEW: FUTURE TIME VALIDATION ENGINE ---
+                        if (selectedDate != null && selectedTime != null) {
+                          DateTime now = DateTime.now();
+
+                          // Check if selected date is explicitly today
+                          if (selectedDate!.day == now.day &&
+                              selectedDate!.month == now.month &&
+                              selectedDate!.year == now.year) {
+                            int currentMinutes = now.hour * 60 + now.minute;
+                            int targetMinutes = 0;
+
+                            // Safely extract hours and minutes out of format variations (AM/PM string format parsing check)
+                            try {
+                              String cleanTime = selectedTime!.trim();
+                              bool isPM = cleanTime.toLowerCase().contains(
+                                'pm',
+                              );
+                              bool isAM = cleanTime.toLowerCase().contains(
+                                'am',
+                              );
+
+                              // Clear suffix text elements
+                              cleanTime = cleanTime
+                                  .toLowerCase()
+                                  .replaceAll('am', '')
+                                  .replaceAll('pm', '')
+                                  .trim();
+                              List<String> timeParts = cleanTime.split(':');
+
+                              if (timeParts.length == 2) {
+                                int hour = int.parse(timeParts[0].trim());
+                                int minute = int.parse(timeParts[1].trim());
+
+                                // Adjust clock indexing to 24-hour constraints if AM/PM handles are active
+                                if (isPM && hour < 12) hour += 12;
+                                if (isAM && hour == 12) hour = 0;
+
+                                targetMinutes = hour * 60 + minute;
+                              }
+                            } catch (e) {
+                              // Secondary raw conversion fallback strategy if format parsing encounters string abnormalities
+                              targetMinutes =
+                                  TimeOfDay.now().hour * 60 +
+                                  TimeOfDay.now().minute;
+                            }
+
+                            // Block transaction processing if validation parameters are violated
+                            if (targetMinutes <= currentMinutes) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Validation Failure: Please pick a future time window for today.',
+                                  ),
+                                  backgroundColor: Color(0xFFEF4444),
+                                ),
+                              );
+                              return; // Exits logic cleanly without spawning confirm box
+                            }
+                          }
+                        }
+
+                        // Spawns confirmation interactive window safely if conditions check out
                         showDialog(
                           context: context,
                           barrierDismissible: true,
@@ -505,7 +559,6 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                                   const SizedBox(height: 28),
                                   Row(
                                     children: [
-                                      // Cancel Choice: Closes box and safely drops user right back to home screen cleanly
                                       Expanded(
                                         child: SizedBox(
                                           height: 48,
