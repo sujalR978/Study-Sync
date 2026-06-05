@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:study_sync/providers/auth_provider.dart';
+import 'package:study_sync/screens/Task%20Screen/EditTaskScreen.dart';
 import 'package:study_sync/screens/Task%20Screen/showTaskScreen.dart';
 import 'package:study_sync/screens/Task%20Screen/add_Task_Screen.dart';
 
@@ -417,8 +418,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                             height: 48,
                                             child: TextButton.icon(
                                               onPressed: () {
-                                                Navigator.pop(
+                                                Navigator.of(
                                                   context,
+                                                ).pushReplacement(
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        Edittaskscreen(),
+                                                  ),
                                                 ); // Close dialog
                                                 // Add your Edit Screen navigation code right here!
                                               },
@@ -452,6 +458,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                             height: 48,
                                             child: TextButton.icon(
                                               onPressed: () {
+                                                TaskService().taskDelete(
+                                                  task.id,
+                                                );
                                                 Navigator.pop(
                                                   context,
                                                 ); // Close dialog
