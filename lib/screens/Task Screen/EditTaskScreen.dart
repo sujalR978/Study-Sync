@@ -141,13 +141,30 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
   }
 
   Widget _buildPriorityButton(String level) {
-    bool isSelected = setpriority.toLowerCase() == level.toLowerCase();
+    // --- UPDATED LOGIC: Standardizes strings to lowercase for a reliable match ---
+    bool isSelected = false;
+
+    String currentPriorityLower = setpriority.toLowerCase().trim();
+    String buttonLevelLower = level.toLowerCase().trim();
+
+    if (buttonLevelLower == currentPriorityLower) {
+      isSelected = true;
+    }
+    // Safe fall-through patch to bridge spelling variations for Medium
+    else if (buttonLevelLower == 'miduim' || buttonLevelLower == 'medium') {
+      if (currentPriorityLower == 'miduim' ||
+          currentPriorityLower == 'medium') {
+        isSelected = true;
+      }
+    }
+
     Color targetColor = _getPriorityColor(level);
 
     return Expanded(
       child: GestureDetector(
         onTap: () {
           setState(() {
+            // Saves exactly what the user clicks
             setpriority = level;
           });
         },
