@@ -33,7 +33,9 @@ class NotificationService {
     );
 
     await notificationPlugin.initialize(settings: settings);
+
     _isInitialized = true;
+    print('Notification service initialized');
   }
 
   NotificationDetails _notificationDetails() {
@@ -41,26 +43,35 @@ class NotificationService {
       android: AndroidNotificationDetails(
         'channelId',
         'channelName',
-        channelDescription: 'none',
+        channelDescription: 'App notifications',
         importance: Importance.max,
         priority: Priority.high,
+        showProgress: false,
       ),
-      iOS: DarwinNotificationDetails(),
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      ),
     );
   }
 
-Future<void> showNotification({
-  int id = 0,
-  String? title,
-  String? body,
-}) async {
-  print("Initialized: $_isInitialized");
-
-  await notificationPlugin.show(
-    id,
-    title,
-    body,
-    _notificationDetails(),
-  );
-}
+  Future<void> showNotification({
+    int id = 0,
+    String? title,
+    String? body,
+  }) async {
+    try {
+      print('Showing notification: title=$title, body=$body');
+      await notificationPlugin.show(
+        id: id,
+        title: title,
+        body: body,
+        notificationDetails: _notificationDetails(),
+      );
+      print('Notification shown successfully');
+    } catch (e) {
+      print('Error showing notification: $e');
+    }
+  }
 }

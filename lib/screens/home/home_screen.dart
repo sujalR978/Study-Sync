@@ -106,7 +106,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
@@ -119,26 +118,19 @@ class _HomeScreenState extends State<HomeScreen> {
       // --- MODERN FLOATING ACTION BUTTON ---
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment
-            .end, // Aligns both buttons perfectly to the right side
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           // --- AI UTILITY ACTION BUTTON ---
           FloatingActionButton.extended(
-            heroTag:
-                'ai_task_btn', // Unique hero tag avoids crash transitions between screens
+            heroTag: 'ai_task_btn',
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => const AiChatScreen()),
               );
-              // Handle your AI features or screen navigation here
             },
-            backgroundColor:
-                AppColors.primary, // Or use a unique color to make AI stand out
+            backgroundColor: AppColors.primary,
             elevation: 4,
-            icon: const Icon(
-              Icons.auto_awesome_rounded,
-              color: Colors.white,
-            ), // Beautiful premium AI cluster icon
+            icon: const Icon(Icons.auto_awesome_rounded, color: Colors.white),
             label: const Text(
               "AI",
               style: TextStyle(
@@ -149,13 +141,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          const SizedBox(
-            height: 12,
-          ), // Elegant spacing separation matching layout rhythm
+          const SizedBox(height: 12),
+
           // --- STANDARD NEW TASK ACTION BUTTON ---
           FloatingActionButton.extended(
-            heroTag:
-                'add_task_btn', // Unique hero tag prevents transition collisions
+            heroTag: 'add_task_btn',
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => const AddTaskScreen()),
@@ -228,7 +218,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: 2,
                         ),
                       ),
-
                       child: CircleAvatar(
                         radius: 25,
                         backgroundColor: AppColors.inputFill,
@@ -300,10 +289,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: child,
                       );
                     },
-
                     onReorder: (oldindex, newindex) =>
                         updateMyTiel(oldindex, newindex, tasks),
-
                     children: [
                       for (final task in tasks) ...[
                         () {
@@ -396,7 +383,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                       16,
                                       12,
                                     ),
-
                                     leading: isExpired
                                         ? const Padding(
                                             padding: EdgeInsets.all(4.0),
@@ -594,7 +580,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     ),
                                                   ),
 
-                                                  // --- NEW LOGIC: Only show Edit if task is NOT completed AND NOT expired ---
+                                                  // --- Only show Edit if task is NOT completed AND NOT expired ---
                                                   if (isCompleted != true &&
                                                       isExpired != true) ...[
                                                     SizedBox(
@@ -801,12 +787,49 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                           height:
                                                                               48,
                                                                           child: ElevatedButton(
+                                                                            // --- INTEGRATED DATABASE CALL HERE ---
                                                                             onPressed: () async {
                                                                               Navigator.pop(
                                                                                 context,
-                                                                              );
-                                                                              // Target delete call here
+                                                                              ); // Close dialog
+                                                                              try {
+                                                                                await TaskService().taskDelete(
+                                                                                  task.id,
+                                                                                );
+                                                                                if (context.mounted) {
+                                                                                  ScaffoldMessenger.of(
+                                                                                    context,
+                                                                                  ).showSnackBar(
+                                                                                    SnackBar(
+                                                                                      content: Text(
+                                                                                        '"${task['title']}" deleted successfully',
+                                                                                      ),
+                                                                                      backgroundColor: Colors.black87,
+                                                                                      behavior: SnackBarBehavior.floating,
+                                                                                    ),
+                                                                                  );
+                                                                                }
+                                                                              } catch (
+                                                                                e
+                                                                              ) {
+                                                                                if (context.mounted) {
+                                                                                  ScaffoldMessenger.of(
+                                                                                    context,
+                                                                                  ).showSnackBar(
+                                                                                    SnackBar(
+                                                                                      content: Text(
+                                                                                        'Failed to delete: $e',
+                                                                                      ),
+                                                                                      backgroundColor: const Color(
+                                                                                        0xFFEF4444,
+                                                                                      ),
+                                                                                      behavior: SnackBarBehavior.floating,
+                                                                                    ),
+                                                                                  );
+                                                                                }
+                                                                              }
                                                                             },
+
                                                                             style: ElevatedButton.styleFrom(
                                                                               backgroundColor: const Color(
                                                                                 0xFFEF4444,

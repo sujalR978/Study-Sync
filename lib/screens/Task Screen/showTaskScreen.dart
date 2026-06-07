@@ -92,7 +92,6 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
           final doc = snapshot.data!.data()!;
 
           // Primary Variable extractions (Kept intact)
-          String formattedDate = '';
           String formetedTime = '';
           String createdAt = '';
           String updatedAt = '';
@@ -107,7 +106,6 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
 
           if (doc['dueDate'] != null) {
             final date = (doc['dueDate'] as Timestamp).toDate();
-            formattedDate = DateFormat('dd child, yyyy').format(date);
             dayStr = DateFormat('dd').format(date);
             monthStr = DateFormat('MMM').format(date).toUpperCase();
             yearStr = DateFormat('yyyy').format(date);
