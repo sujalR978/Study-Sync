@@ -49,16 +49,18 @@ class NotificationService {
     );
   }
 
-  Future<void> showNotification({
-    int id = 0,
-    String? title,
-    String? body,
-  }) async {
-    await notificationPlugin.show(
-      id: id,
-      title: title,
-      body: body,
-      notificationDetails: _notificationDetails(),
-    );
-  }
+Future<void> showNotification({
+  int id = 0,
+  String? title,
+  String? body,
+}) async {
+  print("Initialized: $_isInitialized");
+
+  await notificationPlugin.show(
+    id,
+    title,
+    body,
+    _notificationDetails(),
+  );
+}
 }
