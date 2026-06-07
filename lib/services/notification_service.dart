@@ -25,8 +25,6 @@ class NotificationService {
     );
 
     await notificationPlugin.initialize(settings: settings);
-
-    _isInitialized = true;
   }
 
   NotificationDetails _notificationDetails() {

@@ -32,6 +32,9 @@ class _MainState extends State<Bottomnavigation> {
             currentIndex = value;
           });
         },
+        backgroundColor: Colors.white,
+        selectedItemColor: const Color.fromARGB(255, 89, 33, 243),
+        unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(
