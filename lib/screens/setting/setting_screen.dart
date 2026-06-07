@@ -9,6 +9,8 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
+  final notificationService = NotificationService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,13 +19,13 @@ class _SettingScreenState extends State<SettingScreen> {
           Padding(
             padding: const EdgeInsets.all(80),
             child: ElevatedButton(
-              onPressed: () {
-                NotificationService().showNotification(
-                  title: 'howae',
-                  body: 'khkjdshkdhfhsdf',
+              onPressed: () async {
+                await notificationService.showNotification(
+                  title: 'Study Sync',
+                  body: 'Notification is working!',
                 );
               },
-              child: Text('turn on notification'),
+              child: const Text('turn on notification'),
             ),
           ),
         ],

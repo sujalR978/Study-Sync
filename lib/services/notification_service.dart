@@ -1,8 +1,16 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
+  static final NotificationService _instance = NotificationService._internal();
+
   final notificationPlugin = FlutterLocalNotificationsPlugin();
   bool _isInitialized = false;
+
+  factory NotificationService() {
+    return _instance;
+  }
+
+  NotificationService._internal();
 
   bool get isInitialized => _isInitialized;
 
@@ -25,6 +33,7 @@ class NotificationService {
     );
 
     await notificationPlugin.initialize(settings: settings);
+    _isInitialized = true;
   }
 
   NotificationDetails _notificationDetails() {
