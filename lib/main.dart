@@ -5,10 +5,12 @@ import 'package:provider/provider.dart';
 import 'package:study_sync/providers/auth_provider.dart';
 
 import 'package:study_sync/screens/splash/splash_screen.dart';
+import 'package:study_sync/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  NotificationService().initializeNotification();
   runApp(
     MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => Authprovider())],

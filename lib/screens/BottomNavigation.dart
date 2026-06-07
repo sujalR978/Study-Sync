@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:study_sync/screens/Task%20Screen/add_Task_Screen.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/screens/profile/profileScreen.dart';
+import 'package:study_sync/screens/setting/setting_screen.dart';
 
 class Bottomnavigation extends StatefulWidget {
   const Bottomnavigation({super.key});
@@ -17,6 +18,7 @@ class _MainState extends State<Bottomnavigation> {
     const HomeScreen(),
     const AddTaskScreen(),
     const Profilescreen(),
+    const SettingScreen(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -37,6 +39,7 @@ class _MainState extends State<Bottomnavigation> {
             label: "Add Task",
           ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Setting"),
         ],
       ),
     );
