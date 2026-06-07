@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:study_sync/providers/auth_provider.dart';
+import 'package:study_sync/screens/Ai_screen/ai_chat_screen.dart';
 import 'package:study_sync/screens/Task%20Screen/EditTaskScreen.dart';
 import 'package:study_sync/screens/Task%20Screen/showTaskScreen.dart';
 import 'package:study_sync/screens/Task%20Screen/add_Task_Screen.dart';
@@ -107,7 +108,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    
   }
 
   @override
@@ -117,23 +117,63 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColors.background,
 
       // --- MODERN FLOATING ACTION BUTTON ---
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const AddTaskScreen()),
-          );
-        },
-        backgroundColor: AppColors.primary,
-        elevation: 4,
-        icon: const Icon(Icons.add_rounded, color: Colors.white),
-        label: const Text(
-          "New Task",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 0.5,
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment
+            .end, // Aligns both buttons perfectly to the right side
+        children: [
+          // --- AI UTILITY ACTION BUTTON ---
+          FloatingActionButton.extended(
+            heroTag:
+                'ai_task_btn', // Unique hero tag avoids crash transitions between screens
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const AiChatScreen()),
+              );
+              // Handle your AI features or screen navigation here
+            },
+            backgroundColor:
+                AppColors.primary, // Or use a unique color to make AI stand out
+            elevation: 4,
+            icon: const Icon(
+              Icons.auto_awesome_rounded,
+              color: Colors.white,
+            ), // Beautiful premium AI cluster icon
+            label: const Text(
+              "AI",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
+            ),
           ),
-        ),
+
+          const SizedBox(
+            height: 12,
+          ), // Elegant spacing separation matching layout rhythm
+          // --- STANDARD NEW TASK ACTION BUTTON ---
+          FloatingActionButton.extended(
+            heroTag:
+                'add_task_btn', // Unique hero tag prevents transition collisions
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const AddTaskScreen()),
+              );
+            },
+            backgroundColor: AppColors.primary,
+            elevation: 4,
+            icon: const Icon(Icons.add_rounded, color: Colors.white),
+            label: const Text(
+              "New Task",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
+        ],
       ),
 
       body: SafeArea(
