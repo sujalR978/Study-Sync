@@ -248,6 +248,7 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                 ),
                 const SizedBox(height: 8),
                 CustomTextfield.customTextField(
+                  context: context,
                   hintText: 'Enter Text',
                   icon: Icons.edit_note_rounded,
                   controller: taskName,
@@ -274,6 +275,7 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                 ),
                 const SizedBox(height: 8),
                 CustomTextfield.customTextField(
+                  context: context,
                   hintText: 'Enter description',
                   icon: Icons.description_outlined,
                   controller: taskDescription,
