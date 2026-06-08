@@ -37,7 +37,10 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(primary: AppColors.primary),
+            // FIXED: Automatically adapts to native light/dark profiles
+            colorScheme: Theme.of(
+              context,
+            ).colorScheme.copyWith(primary: AppColors.primary),
           ),
           child: child!,
         );
@@ -58,7 +61,10 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(primary: AppColors.primary),
+            // FIXED: Automatically adapts to native light/dark profiles
+            colorScheme: Theme.of(
+              context,
+            ).colorScheme.copyWith(primary: AppColors.primary),
           ),
           child: child!,
         );
@@ -137,10 +143,11 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
     }
   }
 
-  Widget _buildPriorityButton(String level) {
+  Widget _buildPriorityButton(BuildContext context, String level) {
     bool isSelected = false;
     String currentPriorityLower = setpriority.toLowerCase().trim();
     String buttonLevelLower = level.toLowerCase().trim();
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (buttonLevelLower == currentPriorityLower) {
       isSelected = true;
@@ -165,7 +172,10 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
           margin: const EdgeInsets.symmetric(horizontal: 4),
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
-            color: isSelected ? targetColor : AppColors.inputFill,
+            // FIXED: Adaptive non-selected container fill
+            color: isSelected
+                ? targetColor
+                : (isDark ? AppColors.darkInputFill : AppColors.inputFill),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isSelected ? targetColor : Colors.transparent,
@@ -176,7 +186,9 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
             child: Text(
               level.toUpperCase(),
               style: TextStyle(
-                color: isSelected ? Colors.white : AppColors.textBody,
+                color: isSelected
+                    ? Colors.white
+                    : (isDark ? AppColors.darkTextBody : AppColors.textBody),
                 fontWeight: FontWeight.bold,
                 fontSize: 13,
                 letterSpacing: 1.0,
@@ -190,22 +202,25 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      // FIXED: Adaptive application wrapper canvas
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Modify Task',
           style: TextStyle(
-            color: AppColors.neutral,
+            color: Theme.of(context).colorScheme.onBackground,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: AppColors.neutral,
+            color: Theme.of(context).colorScheme.onBackground,
             size: 20,
           ),
           onPressed: () => Navigator.of(context).pushReplacement(
@@ -223,10 +238,10 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Task Title',
                   style: TextStyle(
-                    color: AppColors.neutral,
+                    color: Theme.of(context).colorScheme.onBackground,
                     fontWeight: FontWeight.w700,
                     fontSize: 16,
                   ),
@@ -249,10 +264,10 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
 
                 const SizedBox(height: 24),
 
-                const Text(
+                Text(
                   'Description',
                   style: TextStyle(
-                    color: AppColors.neutral,
+                    color: Theme.of(context).colorScheme.onBackground,
                     fontWeight: FontWeight.w700,
                     fontSize: 16,
                   ),
@@ -272,10 +287,10 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
 
                 const SizedBox(height: 32),
 
-                const Text(
+                Text(
                   'Category Selection',
                   style: TextStyle(
-                    color: AppColors.neutral,
+                    color: Theme.of(context).colorScheme.onBackground,
                     fontWeight: FontWeight.w700,
                     fontSize: 16,
                   ),
@@ -301,10 +316,10 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
 
                 const SizedBox(height: 32),
 
-                const Text(
+                Text(
                   'Priority Range',
                   style: TextStyle(
-                    color: AppColors.neutral,
+                    color: Theme.of(context).colorScheme.onBackground,
                     fontWeight: FontWeight.w700,
                     fontSize: 16,
                   ),
@@ -312,9 +327,9 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    _buildPriorityButton('High'),
-                    _buildPriorityButton('Miduim'),
-                    _buildPriorityButton('Low'),
+                    _buildPriorityButton(context, 'High'),
+                    _buildPriorityButton(context, 'Miduim'),
+                    _buildPriorityButton(context, 'Low'),
                   ],
                 ),
 
@@ -326,10 +341,10 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Due Date',
                             style: TextStyle(
-                              color: AppColors.neutral,
+                              color: Theme.of(context).colorScheme.onBackground,
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
                             ),
@@ -343,7 +358,9 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                                 vertical: 16,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.inputFill,
+                                color: isDark
+                                    ? AppColors.darkInputFill
+                                    : AppColors.inputFill,
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               child: Row(
@@ -359,8 +376,10 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                                       selectedDate != null
                                           ? "${selectedDate!.day.toString().padLeft(2, '0')}/${selectedDate!.month.toString().padLeft(2, '0')}/${selectedDate!.year}"
                                           : "Set Date",
-                                      style: const TextStyle(
-                                        color: AppColors.neutral,
+                                      style: TextStyle(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onBackground,
                                         fontWeight: FontWeight.w600,
                                       ),
                                       overflow: TextOverflow.ellipsis,
@@ -378,10 +397,10 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Due Time',
                             style: TextStyle(
-                              color: AppColors.neutral,
+                              color: Theme.of(context).colorScheme.onBackground,
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
                             ),
@@ -395,7 +414,9 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                                 vertical: 16,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.inputFill,
+                                color: isDark
+                                    ? AppColors.darkInputFill
+                                    : AppColors.inputFill,
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               child: Row(
@@ -409,8 +430,10 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                                   Expanded(
                                     child: Text(
                                       selectedTime ?? "Set Time",
-                                      style: const TextStyle(
-                                        color: AppColors.neutral,
+                                      style: TextStyle(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onBackground,
                                         fontWeight: FontWeight.w600,
                                       ),
                                       overflow: TextOverflow.ellipsis,
@@ -441,18 +464,15 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                     ),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        // --- NEW: FUTURE TIME VALIDATION ENGINE ---
                         if (selectedDate != null && selectedTime != null) {
                           DateTime now = DateTime.now();
 
-                          // Check if selected date is explicitly today
                           if (selectedDate!.day == now.day &&
                               selectedDate!.month == now.month &&
                               selectedDate!.year == now.year) {
                             int currentMinutes = now.hour * 60 + now.minute;
                             int targetMinutes = 0;
 
-                            // Safely extract hours and minutes out of format variations (AM/PM string format parsing check)
                             try {
                               String cleanTime = selectedTime!.trim();
                               bool isPM = cleanTime.toLowerCase().contains(
@@ -462,7 +482,6 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                                 'am',
                               );
 
-                              // Clear suffix text elements
                               cleanTime = cleanTime
                                   .toLowerCase()
                                   .replaceAll('am', '')
@@ -474,20 +493,17 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                                 int hour = int.parse(timeParts[0].trim());
                                 int minute = int.parse(timeParts[1].trim());
 
-                                // Adjust clock indexing to 24-hour constraints if AM/PM handles are active
                                 if (isPM && hour < 12) hour += 12;
                                 if (isAM && hour == 12) hour = 0;
 
                                 targetMinutes = hour * 60 + minute;
                               }
                             } catch (e) {
-                              // Secondary raw conversion fallback strategy if format parsing encounters string abnormalities
                               targetMinutes =
                                   TimeOfDay.now().hour * 60 +
                                   TimeOfDay.now().minute;
                             }
 
-                            // Block transaction processing if validation parameters are violated
                             if (targetMinutes <= currentMinutes) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -497,12 +513,11 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                                   backgroundColor: Color(0xFFEF4444),
                                 ),
                               );
-                              return; // Exits logic cleanly without spawning confirm box
+                              return;
                             }
                           }
                         }
 
-                        // Spawns confirmation interactive window safely if conditions check out
                         showDialog(
                           context: context,
                           barrierDismissible: true,
@@ -517,7 +532,10 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                                 24,
                                 16,
                               ),
-                              backgroundColor: AppColors.surface,
+                              // FIXED: Uses dynamic theme surfaces inside dialogue modals
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.surface,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(24),
                               ),
@@ -537,21 +555,25 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                                     ),
                                   ),
                                   const SizedBox(height: 20),
-                                  const Text(
+                                  Text(
                                     'Apply Changes?',
                                     style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w800,
-                                      color: AppColors.neutral,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
                                       letterSpacing: -0.5,
                                     ),
                                   ),
                                   const SizedBox(height: 10),
-                                  const Text(
+                                  Text(
                                     'Are you sure you want to edit and overwrite this task definition?',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      color: AppColors.textBody,
+                                      color: isDark
+                                          ? AppColors.darkTextBody
+                                          : AppColors.textBody,
                                       fontSize: 14,
                                       height: 1.4,
                                     ),
@@ -579,14 +601,19 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                                                 borderRadius:
                                                     BorderRadius.circular(14),
                                               ),
-                                              backgroundColor: AppColors
-                                                  .inputFill
-                                                  .withOpacity(0.5),
+                                              backgroundColor:
+                                                  (isDark
+                                                          ? AppColors
+                                                                .darkInputFill
+                                                          : AppColors.inputFill)
+                                                      .withOpacity(0.5),
                                             ),
-                                            child: const Text(
+                                            child: Text(
                                               'Cancel',
                                               style: TextStyle(
-                                                color: AppColors.neutral,
+                                                color: Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurface,
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 15,
                                               ),
