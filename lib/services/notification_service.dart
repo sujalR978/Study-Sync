@@ -14,27 +14,34 @@ class NotificationService {
 
   Future<void> initializeNotification() async {
     if (_isInitialized) return;
-    
+
     tz.initializeTimeZones();
-    
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
     );
 
-    const settings = InitializationSettings(android: androidSettings, iOS: iosSettings);
+    const settings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
+    );
     await notificationPlugin.initialize(settings: settings);
 
     // Resolve the Android implementation to request runtime permissions
     final androidImplementation = notificationPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
 
     if (androidImplementation != null) {
       // 1. Request standard notification permissions (Android 13+)
       await androidImplementation.requestNotificationsPermission();
-      
+
       // 2. --- ADD THIS TO PREVENT CRASHES ON ANDROID 12+ ---
       // Request permission to fire exact alarms for task deadlines
       await androidImplementation.requestExactAlarmsPermission();
@@ -62,14 +69,16 @@ class NotificationService {
     );
   }
 
-  Future<void> showNotification({
-    int id = 0,
-    String? title,
-    String? body,
+  Future<void> scheduleTaskExpiryNotification({
+    required int id,
+    required String title,
+    required String body,
     required DateTime scheduledTime,
   }) async {
+    // Prevent scheduling if the deadline has already passed
+    if (scheduledTime.isBefore(DateTime.now())) return;
+
     try {
-      print('Scheduling notification for: $scheduledTime');
       await notificationPlugin.zonedSchedule(
         id: id,
         title: title,
@@ -79,8 +88,9 @@ class NotificationService {
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         matchDateTimeComponents: DateTimeComponents.dateAndTime,
       );
+      print('Notification successfully scheduled for $title at $scheduledTime');
     } catch (e) {
-      print('Error showing notification: $e');
+      print('Error scheduling notification: $e');
     }
   }
 }

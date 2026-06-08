@@ -20,11 +20,7 @@ class _SettingScreenState extends State<SettingScreen> {
             padding: const EdgeInsets.all(80),
             child: ElevatedButton(
               onPressed: () async {
-                await notificationService.showNotification(
-                  title: 'Study Sync',
-                  body: 'Notification is working!',
-                  scheduledTime: DateTime.now().add(const Duration(seconds: 5))
-                );
+               
               },
               child: const Text('turn on notification'),
             ),

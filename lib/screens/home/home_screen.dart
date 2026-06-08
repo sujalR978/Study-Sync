@@ -95,14 +95,6 @@ class _HomeScreenState extends State<HomeScreen> {
         minute,
       );
 
-      if (taskDeadline == DateTime.now()) {
-        NotificationService().showNotification(
-          scheduledTime: DateTime.now(),
-          title: 'test',
-          body: 'how',
-        );
-      }
-
       return now.isAfter(taskDeadline);
     } catch (e) {
       final now = DateTime.now();
@@ -316,6 +308,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                 task['dueTime'],
                                 task['title'],
                               );
+                          int count = 0;
+                          if (isExpired) {
+                            NotificationService()
+                                .scheduleTaskExpiryNotification(
+                                  id: count,
+                                  title: task['title'],
+                                  body: task['description'],
+                                  scheduledTime: DateTime.now(),
+                                );
+                            count++;
+                          }
 
                           String statusLabel = "PENDING";
                           Color statusColor = AppColors.primary;
