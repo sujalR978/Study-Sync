@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   bool isClick = false;
 
-  // Helper function to color coordinate priority pills
+  // Helper function to color coordinate priority pills (Colors remain vivid in both modes)
   Color _getPriorityColor(String priority) {
     switch (priority.toLowerCase()) {
       case 'high':
@@ -96,8 +96,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final user = context.watch<Authprovider>().user;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      // FIXED: Adaptive background
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       // --- MODERN FLOATING ACTION BUTTON ---
       floatingActionButton: Column(
@@ -168,7 +171,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w800,
-                          color: AppColors.neutral,
+                          // FIXED: Light text on dark background / Dark text on light background
+                          color: Theme.of(context).colorScheme.onBackground,
                           letterSpacing: -0.5,
                         ),
                       ),
@@ -177,7 +181,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         "Let's get things done!",
                         style: TextStyle(
                           fontSize: 14,
-                          color: AppColors.textBody,
+                          // FIXED: Uses adaptive descriptive typography mappings
+                          color: isDark
+                              ? AppColors.darkTextBody
+                              : AppColors.textBody,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -195,7 +202,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 48,
                       width: 48,
                       decoration: BoxDecoration(
-                        color: AppColors.inputFill,
+                        // FIXED: Uses adaptive input fill styles
+                        color: isDark
+                            ? AppColors.darkInputFill
+                            : AppColors.inputFill,
                         shape: BoxShape.circle,
                         border: Border.all(
                           color: AppColors.primary.withOpacity(0.3),
@@ -204,13 +214,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       child: CircleAvatar(
                         radius: 25,
-                        backgroundColor: AppColors.inputFill,
+                        backgroundColor: isDark
+                            ? AppColors.darkInputFill
+                            : AppColors.inputFill,
                         backgroundImage:
                             user != null && user.loginMethod == 'google'
                             ? NetworkImage(user.photoUrl) as ImageProvider
                             : null,
                         child: user == null || user.loginMethod != 'google'
-                            ? const Icon(Icons.person_off)
+                            ? Icon(
+                                Icons.person_off,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              )
                             : null,
                       ),
                     ),
@@ -242,13 +257,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           Icon(
                             Icons.task_rounded,
                             size: 80,
-                            color: AppColors.inputFill,
+                            color: isDark
+                                ? AppColors.darkInputFill
+                                : AppColors.inputFill,
                           ),
                           const SizedBox(height: 16),
                           Text(
                             "No Tasks Found",
                             style: TextStyle(
-                              color: AppColors.textBody,
+                              color: isDark
+                                  ? AppColors.darkTextBody
+                                  : AppColors.textBody,
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
                             ),
@@ -280,7 +299,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         () {
                           final bool isCompleted = task['isCompleted'] ?? false;
 
-                          // Calculate deadlines cleanly
                           final DateTime taskDeadline = _getTaskDeadline(
                             task['dueDate'] as Timestamp,
                             task['dueTime'],
@@ -290,18 +308,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               !isCompleted &&
                               DateTime.now().isAfter(taskDeadline);
 
-                          // --- SAFE & STABLE BACKGROUND NOTIFICATION REGISTRATION ---
-                          // Only register standard background OS alerts if the task is open and its deadline resides in the future
                           if (!isCompleted &&
                               taskDeadline.isAfter(DateTime.now())) {
                             NotificationService().scheduleTaskExpiryNotification(
-                              id: task
-                                  .id
-                                  .hashCode, // FIX: Uses unique document hash integer to prevent overwrites
+                              id: task.id.hashCode,
                               title: 'Task Expired! ⏰',
                               body:
                                   'Your task "${task['title']}" has reached its deadline.',
-                              scheduledTime: taskDeadline, // Precision timing
+                              scheduledTime: taskDeadline,
                             );
                           }
 
@@ -322,11 +336,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Container(
                               margin: const EdgeInsets.only(bottom: 16),
                               decoration: BoxDecoration(
-                                color: AppColors.surface,
+                                // FIXED: Card container surface color switches adaptively
+                                color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.04),
+                                    color: isDark
+                                        ? Colors.black26
+                                        : Colors.black.withOpacity(0.04),
                                     blurRadius: 10,
                                     offset: const Offset(0, 4),
                                   ),
@@ -405,8 +422,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     BorderRadius.circular(6),
                                               ),
                                               side: BorderSide(
-                                                color: AppColors.textBody
-                                                    .withOpacity(0.5),
+                                                color:
+                                                    (isDark
+                                                            ? AppColors
+                                                                  .darkTextBody
+                                                            : AppColors
+                                                                  .textBody)
+                                                        .withOpacity(0.5),
                                                 width: 1.5,
                                               ),
                                               onChanged: (value) async {
@@ -416,7 +438,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       value!,
                                                     );
 
-                                                // Cancel notification instantly if marked completed early
                                                 if (value == true) {
                                                   await NotificationService()
                                                       .cancelNotification(
@@ -435,9 +456,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                         decoration: isCompleted
                                             ? TextDecoration.lineThrough
                                             : null,
+                                        // FIXED: Changes based on completion and layout settings
                                         color: isCompleted
-                                            ? AppColors.textBody
-                                            : AppColors.neutral,
+                                            ? (isDark
+                                                  ? AppColors.darkTextBody
+                                                  : AppColors.textBody)
+                                            : Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface,
                                       ),
                                     ),
 
@@ -481,7 +507,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                               vertical: 4,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: AppColors.inputFill,
+                                              // FIXED: Adaptive tag container background
+                                              color: isDark
+                                                  ? AppColors.darkInputFill
+                                                  : AppColors.inputFill,
                                               borderRadius:
                                                   BorderRadius.circular(10),
                                             ),
@@ -490,7 +519,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                               style: TextStyle(
                                                 fontSize: 10,
                                                 fontWeight: FontWeight.w600,
-                                                color: AppColors.textBody,
+                                                color: isDark
+                                                    ? AppColors.darkTextBody
+                                                    : AppColors.textBody,
                                               ),
                                             ),
                                           ),
@@ -498,10 +529,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              const Icon(
+                                              Icon(
                                                 Icons.calendar_today_rounded,
                                                 size: 12,
-                                                color: AppColors.textBody,
+                                                color: isDark
+                                                    ? AppColors.darkTextBody
+                                                    : AppColors.textBody,
                                               ),
                                               const SizedBox(width: 4),
                                               Text(
@@ -509,7 +542,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 style: TextStyle(
                                                   fontSize: 11,
                                                   fontWeight: FontWeight.w600,
-                                                  color: AppColors.textBody,
+                                                  color: isDark
+                                                      ? AppColors.darkTextBody
+                                                      : AppColors.textBody,
                                                 ),
                                               ),
                                             ],
@@ -520,7 +555,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                     trailing: IconButton(
                                       icon: const Icon(Icons.more_vert_rounded),
-                                      color: AppColors.neutral,
+                                      // FIXED: Dynamic icon coloring
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
                                       onPressed: () {
                                         showDialog(
                                           context: context,
@@ -536,8 +574,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     horizontal: 16,
                                                     vertical: 20,
                                                   ),
-                                              backgroundColor:
-                                                  AppColors.surface,
+                                              // FIXED: Modal window dark adjustments
+                                              backgroundColor: Theme.of(
+                                                context,
+                                              ).colorScheme.surface,
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(24),
@@ -557,9 +597,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       maxLines: 1,
                                                       overflow:
                                                           TextOverflow.ellipsis,
-                                                      style: const TextStyle(
-                                                        color:
-                                                            AppColors.neutral,
+                                                      style: TextStyle(
+                                                        color: Theme.of(
+                                                          context,
+                                                        ).colorScheme.onSurface,
                                                         fontSize: 16,
                                                         fontWeight:
                                                             FontWeight.w800,
@@ -571,22 +612,29 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   Text(
                                                     "Task Options",
                                                     style: TextStyle(
-                                                      color: AppColors.textBody
-                                                          .withOpacity(0.7),
+                                                      color:
+                                                          (isDark
+                                                                  ? AppColors
+                                                                        .darkTextBody
+                                                                  : AppColors
+                                                                        .textBody)
+                                                              .withOpacity(0.7),
                                                       fontSize: 12,
                                                       fontWeight:
                                                           FontWeight.w500,
                                                     ),
                                                   ),
 
-                                                  const Padding(
+                                                  Padding(
                                                     padding:
-                                                        EdgeInsets.symmetric(
+                                                        const EdgeInsets.symmetric(
                                                           vertical: 12,
                                                         ),
                                                     child: Divider(
-                                                      color:
-                                                          AppColors.inputFill,
+                                                      color: isDark
+                                                          ? AppColors
+                                                                .darkInputFill
+                                                          : AppColors.inputFill,
                                                       thickness: 1.2,
                                                     ),
                                                   ),
@@ -663,8 +711,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                     24,
                                                                     16,
                                                                   ),
+                                                              // FIXED: Sub-modal uses surface coloring dynamically
                                                               backgroundColor:
-                                                                  AppColors
+                                                                  Theme.of(
+                                                                        context,
+                                                                      )
+                                                                      .colorScheme
                                                                       .surface,
                                                               shape: RoundedRectangleBorder(
                                                                 borderRadius:
@@ -701,7 +753,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   const SizedBox(
                                                                     height: 20,
                                                                   ),
-                                                                  const Text(
+                                                                  Text(
                                                                     'Delete Task?',
                                                                     style: TextStyle(
                                                                       fontSize:
@@ -709,8 +761,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .w800,
-                                                                      color: AppColors
-                                                                          .neutral,
+                                                                      color: Theme.of(
+                                                                        context,
+                                                                      ).colorScheme.onSurface,
                                                                       letterSpacing:
                                                                           -0.5,
                                                                     ),
@@ -723,9 +776,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                         TextAlign
                                                                             .center,
                                                                     text: TextSpan(
-                                                                      style: const TextStyle(
-                                                                        color: AppColors
-                                                                            .textBody,
+                                                                      style: TextStyle(
+                                                                        color:
+                                                                            isDark
+                                                                            ? AppColors.darkTextBody
+                                                                            : AppColors.textBody,
                                                                         fontSize:
                                                                             14,
                                                                         height:
@@ -739,11 +794,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                         TextSpan(
                                                                           text:
                                                                               '"${task['title']}"',
-                                                                          style: const TextStyle(
+                                                                          style: TextStyle(
                                                                             fontWeight:
                                                                                 FontWeight.bold,
-                                                                            color:
-                                                                                AppColors.neutral,
+                                                                            color: Theme.of(
+                                                                              context,
+                                                                            ).colorScheme.onSurface,
                                                                           ),
                                                                         ),
                                                                         const TextSpan(
@@ -772,14 +828,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                   14,
                                                                                 ),
                                                                               ),
-                                                                              backgroundColor: AppColors.inputFill.withOpacity(
-                                                                                0.5,
-                                                                              ),
+                                                                              backgroundColor:
+                                                                                  (isDark
+                                                                                          ? AppColors.darkInputFill
+                                                                                          : AppColors.inputFill)
+                                                                                      .withOpacity(
+                                                                                        0.5,
+                                                                                      ),
                                                                             ),
-                                                                            child: const Text(
+                                                                            child: Text(
                                                                               'Cancel',
                                                                               style: TextStyle(
-                                                                                color: AppColors.neutral,
+                                                                                color: Theme.of(
+                                                                                  context,
+                                                                                ).colorScheme.onSurface,
                                                                                 fontWeight: FontWeight.w700,
                                                                                 fontSize: 15,
                                                                               ),
@@ -801,11 +863,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                 context,
                                                                               );
                                                                               try {
-                                                                                // Cancel pending notification from OS tray
                                                                                 await NotificationService().cancelNotification(
                                                                                   task.id.hashCode,
                                                                                 );
-
                                                                                 await TaskService().taskDelete(
                                                                                   task.id,
                                                                                 );
@@ -817,7 +877,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                       content: Text(
                                                                                         '"${task['title']}" deleted successfully',
                                                                                       ),
-                                                                                      backgroundColor: Colors.black87,
+                                                                                      backgroundColor: isDark
+                                                                                          ? AppColors.darkSurface
+                                                                                          : Colors.black87,
                                                                                       behavior: SnackBarBehavior.floating,
                                                                                     ),
                                                                                   );
