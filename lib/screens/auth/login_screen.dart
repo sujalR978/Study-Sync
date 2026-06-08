@@ -430,6 +430,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           /// GOOGLE BUTTON
                           CustomButton.gogalButton(
+                            context: context,
                             onPressed: () async {
                               setState(() {
                                 isLoading = true;
