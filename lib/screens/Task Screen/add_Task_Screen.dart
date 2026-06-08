@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:study_sync/constants/app_colors.dart';
@@ -49,7 +48,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(primary: AppColors.primary),
+            // FIXED: Automatically adopts native light/dark properties
+            colorScheme: Theme.of(
+              context,
+            ).colorScheme.copyWith(primary: AppColors.primary),
           ),
           child: child!,
         );
@@ -73,7 +75,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(primary: AppColors.primary),
+            // FIXED: Automatically adopts native light/dark properties
+            colorScheme: Theme.of(
+              context,
+            ).colorScheme.copyWith(primary: AppColors.primary),
           ),
           child: child!,
         );
@@ -88,8 +93,14 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   }
 
   // Helper Widget for Priority Buttons
-  Widget _buildPriorityButton(String level, Color activeColor) {
+  Widget _buildPriorityButton(
+    BuildContext context,
+    String level,
+    Color activeColor,
+  ) {
     bool isSelected = priority == level;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Expanded(
       child: GestureDetector(
         onTap: () {
@@ -102,7 +113,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           margin: const EdgeInsets.symmetric(horizontal: 4),
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
-            color: isSelected ? activeColor : AppColors.inputFill,
+            color: isSelected
+                ? activeColor
+                : (isDark ? AppColors.darkInputFill : AppColors.inputFill),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isSelected ? activeColor : Colors.transparent,
@@ -113,7 +126,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             child: Text(
               level.toUpperCase(),
               style: TextStyle(
-                color: isSelected ? Colors.white : AppColors.textBody,
+                color: isSelected
+                    ? Colors.white
+                    : (isDark ? AppColors.darkTextBody : AppColors.textBody),
                 fontWeight: FontWeight.bold,
                 fontSize: 13,
                 letterSpacing: 1.0,
@@ -127,20 +142,26 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      // FIXED: Adaptive core canvas color layout
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'New Task',
           style: TextStyle(
-            color: AppColors.neutral,
+            color: Theme.of(context).colorScheme.onBackground,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.neutral),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).colorScheme.onBackground,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
@@ -154,10 +175,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // --- TASK TITLE ---
-                const Text(
+                Text(
                   'Task Title',
                   style: TextStyle(
-                    color: AppColors.neutral,
+                    color: Theme.of(context).colorScheme.onBackground,
                     fontWeight: FontWeight.w700,
                     fontSize: 16,
                   ),
@@ -181,10 +202,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 const SizedBox(height: 24),
 
                 // --- TASK DESCRIPTION ---
-                const Text(
+                Text(
                   'Description',
                   style: TextStyle(
-                    color: AppColors.neutral,
+                    color: Theme.of(context).colorScheme.onBackground,
                     fontWeight: FontWeight.w700,
                     fontSize: 16,
                   ),
@@ -208,10 +229,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Category',
                       style: TextStyle(
-                        color: AppColors.neutral,
+                        color: Theme.of(context).colorScheme.onBackground,
                         fontWeight: FontWeight.w700,
                         fontSize: 16,
                       ),
@@ -222,12 +243,20 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           context: context,
                           builder: (context) {
                             return AlertDialog(
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.surface,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              title: const Text(
+                              title: Text(
                                 'Add Category',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
+                                ),
                               ),
                               content: Form(
                                 key: keyForm,
@@ -251,9 +280,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
-                                  child: const Text(
+                                  child: Text(
                                     'Cancel',
-                                    style: TextStyle(color: AppColors.textBody),
+                                    style: TextStyle(
+                                      color: isDark
+                                          ? AppColors.darkTextBody
+                                          : AppColors.textBody,
+                                    ),
                                   ),
                                 ),
                                 ElevatedButton(
@@ -325,10 +358,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 const SizedBox(height: 32),
 
                 // --- PRIORITY ---
-                const Text(
+                Text(
                   'Priority',
                   style: TextStyle(
-                    color: AppColors.neutral,
+                    color: Theme.of(context).colorScheme.onBackground,
                     fontWeight: FontWeight.w700,
                     fontSize: 16,
                   ),
@@ -336,19 +369,21 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    // REPLACED default colors with premium matte hex codes
                     _buildPriorityButton(
+                      context,
                       'high',
                       const Color(0xFFEF4444),
-                    ), // Premium Red
+                    ),
                     _buildPriorityButton(
+                      context,
                       'medium',
                       const Color(0xFFF59E0B),
-                    ), // Premium Orange
+                    ),
                     _buildPriorityButton(
+                      context,
                       'low',
                       const Color(0xFF10B981),
-                    ), // Premium Green
+                    ),
                   ],
                 ),
 
@@ -361,10 +396,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Due Date',
                             style: TextStyle(
-                              color: AppColors.neutral,
+                              color: Theme.of(context).colorScheme.onBackground,
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
                             ),
@@ -378,7 +413,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                 vertical: 16,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.inputFill,
+                                color: isDark
+                                    ? AppColors.darkInputFill
+                                    : AppColors.inputFill,
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               child: Row(
@@ -393,8 +430,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                     selectedDate != null
                                         ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
                                         : "Select Date",
-                                    style: const TextStyle(
-                                      color: AppColors.neutral,
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onBackground,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -410,10 +449,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Due Time',
                             style: TextStyle(
-                              color: AppColors.neutral,
+                              color: Theme.of(context).colorScheme.onBackground,
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
                             ),
@@ -427,7 +466,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                 vertical: 16,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.inputFill,
+                                color: isDark
+                                    ? AppColors.darkInputFill
+                                    : AppColors.inputFill,
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               child: Row(
@@ -442,8 +483,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                     SelectedTime != null
                                         ? SelectedTime!.format(context)
                                         : "Select Time",
-                                    style: const TextStyle(
-                                      color: AppColors.neutral,
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onBackground,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -532,7 +575,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(24),
                             ),
-                            backgroundColor: AppColors.surface,
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.surface,
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -550,20 +595,24 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 20),
-                                const Text(
+                                Text(
                                   'Task Saved!',
                                   style: TextStyle(
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.neutral,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                const Text(
+                                Text(
                                   'Your new task has been successfully added to your list.',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    color: AppColors.textBody,
+                                    color: isDark
+                                        ? AppColors.darkTextBody
+                                        : AppColors.textBody,
                                     fontSize: 14,
                                   ),
                                 ),
@@ -582,15 +631,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                     onPressed: () async {
                                       SharedPreferences sp =
                                           await SharedPreferences.getInstance();
-
                                       sp.setStringList('category', category);
 
-                                      Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const HomeScreen(),
-                                        ),
-                                      );
+                                      if (context.mounted) {
+                                        Navigator.of(context).pushReplacement(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const HomeScreen(),
+                                          ),
+                                        );
+                                      }
                                     },
                                     child: const Text(
                                       'Awesome',
