@@ -7,6 +7,7 @@ import 'package:study_sync/models/user_model.dart';
 import 'package:study_sync/providers/auth_provider.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/services/auth_service.dart';
+import 'package:study_sync/constants/app_colors.dart'; // Ensure path is correct
 
 class GoogleInfoScreen extends StatefulWidget {
   const GoogleInfoScreen({super.key});
@@ -64,22 +65,26 @@ class _GoogleInfoScreenState extends State<GoogleInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
+      // FIXED: System scaffolding canvas mapping
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Container(
         width: double.infinity,
-
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
+          // FIXED: Adaptive gradient backdrop sequence
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFF8FAFF), Colors.white],
+            colors: isDark
+                ? [AppColors.darkBackground, AppColors.darkSurface]
+                : [const Color(0xFFF8FAFF), Colors.white],
           ),
         ),
-
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-
             child: Column(
               children: [
                 const SizedBox(height: 30),
@@ -88,23 +93,21 @@ class _GoogleInfoScreenState extends State<GoogleInfoScreen> {
                 Container(
                   height: 95,
                   width: 95,
-
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-
                     gradient: const LinearGradient(
                       colors: [Color(0xFF0052FF), Color(0xFF00D1FF)],
                     ),
-
                     boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF00D1FF).withOpacity(0.30),
-                        blurRadius: 30,
-                        spreadRadius: 2,
-                      ),
+                      BoxShape.circle == BoxShape.circle
+                          ? BoxShadow(
+                              color: const Color(0xFF00D1FF).withOpacity(0.30),
+                              blurRadius: 30,
+                              spreadRadius: 2,
+                            )
+                          : const BoxShadow(),
                     ],
                   ),
-
                   child: const Icon(
                     Icons.school_rounded,
                     color: Colors.white,
@@ -114,22 +117,24 @@ class _GoogleInfoScreenState extends State<GoogleInfoScreen> {
 
                 const SizedBox(height: 25),
 
-                const Text(
+                Text(
                   "Complete Your Profile",
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF0F172A),
+                    // FIXED: Adaptive text coloring
+                    color: Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
 
                 const SizedBox(height: 10),
 
-                const Text(
+                Text(
                   "Just a few more details before entering StudySync.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Color(0xFF64748B),
+                    // FIXED: Dynamic description mapping context checks
+                    color: isDark ? AppColors.darkTextBody : AppColors.textBody,
                     fontSize: 15,
                     height: 1.5,
                   ),
@@ -140,56 +145,61 @@ class _GoogleInfoScreenState extends State<GoogleInfoScreen> {
                 /// CARD
                 Container(
                   padding: const EdgeInsets.all(24),
-
                   decoration: BoxDecoration(
-                    color: Colors.white,
-
+                    // FIXED: Target surface mapping swaps adaptively
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(28),
-
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: isDark
+                            ? Colors.black38
+                            : Colors.black.withOpacity(0.05),
                         blurRadius: 25,
                         offset: const Offset(0, 10),
                       ),
                     ],
                   ),
-
                   child: Form(
                     key: keyForm,
-
                     child: Column(
                       children: [
                         /// USERNAME
                         TextFormField(
                           controller: username,
-
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontWeight: FontWeight.w500,
+                          ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Enter username';
                             }
                             return null;
                           },
-
                           decoration: InputDecoration(
                             hintText: 'Username',
-
-                            prefixIcon: const Icon(
-                              Icons.person_outline,
-                              color: Color(0xFF64748B),
+                            hintStyle: TextStyle(
+                              color: isDark
+                                  ? AppColors.darkTextBody
+                                  : AppColors.textBody,
                             ),
-
+                            prefixIcon: Icon(
+                              Icons.person_outline,
+                              color: isDark
+                                  ? AppColors.darkTextBody
+                                  : AppColors.textBody,
+                            ),
                             filled: true,
-                            fillColor: const Color(0xFFF8FAFC),
-
+                            // FIXED: Dynamic form background matching
+                            fillColor: isDark
+                                ? AppColors.darkInputFill
+                                : AppColors.inputFill,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
                               borderSide: BorderSide.none,
                             ),
-
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
-
                               borderSide: const BorderSide(
                                 color: Color(0xFF00D1FF),
                                 width: 1.5,
@@ -203,44 +213,47 @@ class _GoogleInfoScreenState extends State<GoogleInfoScreen> {
                         /// PHONE
                         TextFormField(
                           controller: phone,
-
                           keyboardType: TextInputType.phone,
-
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontWeight: FontWeight.w500,
+                          ),
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                           ],
-
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Enter phone number';
                             }
-
                             if (value.length != 10) {
                               return 'Enter valid 10 digit number';
                             }
-
                             return null;
                           },
-
                           decoration: InputDecoration(
                             hintText: 'Phone Number',
-
-                            prefixIcon: const Icon(
-                              Icons.phone_outlined,
-                              color: Color(0xFF64748B),
+                            hintStyle: TextStyle(
+                              color: isDark
+                                  ? AppColors.darkTextBody
+                                  : AppColors.textBody,
                             ),
-
+                            prefixIcon: Icon(
+                              Icons.phone_outlined,
+                              color: isDark
+                                  ? AppColors.darkTextBody
+                                  : AppColors.textBody,
+                            ),
                             filled: true,
-                            fillColor: const Color(0xFFF8FAFC),
-
+                            // FIXED: Dynamic form background matching
+                            fillColor: isDark
+                                ? AppColors.darkInputFill
+                                : AppColors.inputFill,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
                               borderSide: BorderSide.none,
                             ),
-
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
-
                               borderSide: const BorderSide(
                                 color: Color(0xFF00D1FF),
                                 width: 1.5,
@@ -257,31 +270,39 @@ class _GoogleInfoScreenState extends State<GoogleInfoScreen> {
                             horizontal: 12,
                             vertical: 6,
                           ),
-
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF8FAFC),
+                            // FIXED: Adaptive list background fill modifications
+                            color: isDark
+                                ? AppColors.darkInputFill
+                                : AppColors.inputFill,
                             borderRadius: BorderRadius.circular(16),
                           ),
-
                           child: Row(
                             children: [
                               Checkbox(
                                 value: rememberMe,
-
                                 activeColor: const Color(0xFF0052FF),
-
+                                // FIXED: Adaptive checkmark color border bounds check
+                                side: BorderSide(
+                                  color: isDark
+                                      ? AppColors.darkTextBody
+                                      : AppColors.textBody,
+                                  width: 1.5,
+                                ),
                                 onChanged: (value) {
                                   setState(() {
                                     rememberMe = value!;
                                   });
                                 },
                               ),
-
-                              const Text(
+                              Text(
                                 "Remember Me",
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
-                                  color: Color(0xFF334155),
+                                  // FIXED: Title labeling color sync properties
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                 ),
                               ),
                             ],
@@ -294,23 +315,18 @@ class _GoogleInfoScreenState extends State<GoogleInfoScreen> {
                         SizedBox(
                           width: double.infinity,
                           height: 58,
-
                           child: ElevatedButton(
                             onPressed: saveData,
-
                             style: ElevatedButton.styleFrom(
                               padding: EdgeInsets.zero,
                               elevation: 0,
-
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(18),
                               ),
                             ),
-
                             child: Ink(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(18),
-
                                 gradient: const LinearGradient(
                                   colors: [
                                     Color(0xFF0052FF),
@@ -318,7 +334,6 @@ class _GoogleInfoScreenState extends State<GoogleInfoScreen> {
                                   ],
                                 ),
                               ),
-
                               child: const Center(
                                 child: Text(
                                   "Continue",
