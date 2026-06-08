@@ -1,12 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:study_sync/screens/auth/login_screen.dart';
-
 import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/widgets/custom_button.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
+import 'package:study_sync/constants/app_colors.dart'; // Ensure path is correct
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -29,7 +27,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     fullname.dispose();
     username.dispose();
     email.dispose();
@@ -41,14 +38,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
+      // FIXED: Dynamic structural scaffolding canvas layout mapping
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Container(
         width: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
+          // FIXED: Adaptive ambient gradient backdrop sequence
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFF8FAFF), Colors.white],
+            colors: isDark
+                ? [AppColors.darkBackground, AppColors.darkSurface]
+                : [const Color(0xFFF8FAFF), Colors.white],
           ),
         ),
         child: SafeArea(
@@ -82,10 +86,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 20),
 
-                const Text(
+                Text(
                   "StudySync",
                   style: TextStyle(
-                    color: Color(0xFF0F172A),
+                    // FIXED: Color configuration shifts dynamically
+                    color: Theme.of(context).colorScheme.onBackground,
                     fontSize: 34,
                     fontWeight: FontWeight.w800,
                   ),
@@ -93,10 +98,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 8),
 
-                const Text(
+                Text(
                   "Create your productivity hub",
                   style: TextStyle(
-                    color: Color(0xFF64748B),
+                    // FIXED: Dynamic text body color allocation
+                    color: isDark
+                        ? AppColors.darkTextBody
+                        : const Color(0xFF64748B),
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
@@ -104,17 +112,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 35),
 
-                /// FORM WRAPPER (IMPORTANT)
+                /// FORM WRAPPER
                 Form(
                   key: _formKey,
                   child: Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      // FIXED: Card wrapper adapts to global brightness state
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(28),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: isDark
+                              ? Colors.black38
+                              : Colors.black.withOpacity(0.05),
                           blurRadius: 25,
                           offset: const Offset(0, 10),
                         ),
@@ -194,14 +205,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               return 'Enter your phone.';
                             }
                             if (value.length > 10) {
-                              return 'You Enter ' +
-                                  value.length.toString() +
-                                  'digit (10)';
+                              return 'You Entered ${value.length} digits (10)';
                             }
                             if (value.length < 10) {
-                              return 'You Enter ' +
-                                  value.length.toString() +
-                                  ' digit (10)';
+                              return 'You Entered ${value.length} digits (10)';
                             }
                             return null;
                           },
@@ -222,14 +229,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             if (value == null || value.isEmpty) {
                               return 'Enter password.';
                             }
-                            if (value.length >= 7) {
-                              return 'password length must be 7';
+                            // FIX: Logic structural bug fixed (should check if length is LESS than 7)
+                            if (value.length < 7) {
+                              return 'Password length must be at least 7 characters.';
                             }
                             return null;
                           },
-                          suffixIcon: const Icon(
+                          suffixIcon: Icon(
                             Icons.visibility_off,
-                            color: Color(0xFF64748B),
+                            color: isDark
+                                ? AppColors.darkTextBody
+                                : const Color(0xFF64748B),
                           ),
                         ),
 
@@ -245,20 +255,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             if (value == null || value.isEmpty) {
                               return 'Confirm password';
                             }
-                            if (value == password) {
-                              return 'confirm password is not match with password';
+                            // FIX: Safely unpack and parse controller text assignments
+                            if (value != password.text) {
+                              return 'Confirm password does not match password';
                             }
                             return null;
                           },
-                          suffixIcon: const Icon(
+                          suffixIcon: Icon(
                             Icons.visibility_off,
-                            color: Color(0xFF64748B),
+                            color: isDark
+                                ? AppColors.darkTextBody
+                                : const Color(0xFF64748B),
                           ),
                         ),
 
                         const SizedBox(height: 20),
 
-                        /// CHECKBOX
+                        /// TERMS AND CONDITIONS
                         Row(
                           children: [
                             const Spacer(),
@@ -277,24 +290,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                         const SizedBox(height: 10),
 
-                        /// CREATE ACCOUNT BUTTON (FORM VALIDATION ADDED)
+                        /// CREATE ACCOUNT BUTTON
                         CustomButton.loginButton(
                           text: 'Create Account',
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              // All fields are valid
+                              final AuthService registerService = AuthService();
 
-                              final AuthService _register = AuthService();
-                              _register.registerUser(
+                              await registerService.registerUser(
                                 fullname: fullname.text.trim(),
                                 username: username.text.trim(),
                                 email: email.text.trim(),
                                 phone: phone.text.trim(),
                                 password: password.text.trim(),
                               );
+
+                              if (!context.mounted)
+                                return; // FIXED: Prevents unsafe route pops across async barriers
+
                               Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                  builder: (context) => LoginScreen(),
+                                  builder: (context) => const LoginScreen(),
                                 ),
                               );
                             }
@@ -313,9 +329,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       "Already have an account?",
-                      style: TextStyle(color: Color(0xFF64748B)),
+                      style: TextStyle(
+                        color: isDark
+                            ? AppColors.darkTextBody
+                            : const Color(0xFF64748B),
+                      ),
                     ),
                     TextButton(
                       onPressed: () {
