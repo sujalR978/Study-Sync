@@ -72,13 +72,26 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
     print(Imagepath);
   }
 
-  InputDecoration _lucidInputDecoration(String hint, IconData icon) {
+  // FIXED: Added BuildContext to the input decoration mapping to allow dark theme swapping dynamically
+  InputDecoration _lucidInputDecoration(
+    BuildContext context,
+    String hint,
+    IconData icon,
+  ) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: AppColors.textBody, fontSize: 15),
-      prefixIcon: Icon(icon, color: AppColors.textBody),
+      hintStyle: TextStyle(
+        color: isDark ? AppColors.darkTextBody : AppColors.textBody,
+        fontSize: 15,
+      ),
+      prefixIcon: Icon(
+        icon,
+        color: isDark ? AppColors.darkTextBody : AppColors.textBody,
+      ),
       filled: true,
-      fillColor: AppColors.inputFill,
+      fillColor: isDark ? AppColors.darkInputFill : AppColors.inputFill,
       contentPadding: const EdgeInsets.symmetric(vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -94,21 +107,27 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      // FIXED: Adaptive background framework binding
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.neutral),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).colorScheme.onBackground,
+          ),
           onPressed: () => Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const Profilescreen()),
           ),
         ),
-        title: const Text(
+        title: Text(
           'Edit Profile',
           style: TextStyle(
-            color: AppColors.neutral,
+            color: Theme.of(context).colorScheme.onBackground,
             fontWeight: FontWeight.w700,
             fontSize: 20,
           ),
@@ -128,8 +147,9 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                   children: [
                     CircleAvatar(
                       radius: 64,
-                      backgroundColor: AppColors.inputFill,
-                      // ONLY THIS IMAGE LOGIC WAS UPDATED
+                      backgroundColor: isDark
+                          ? AppColors.darkInputFill
+                          : AppColors.inputFill,
                       backgroundImage: Imagepath.isNotEmpty
                           ? FileImage(File(Imagepath))
                           : (photoUrl != null && photoUrl!.isNotEmpty)
@@ -143,10 +163,12 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                       child:
                           (Imagepath.isEmpty &&
                               (photoUrl == null || photoUrl!.isEmpty))
-                          ? const Icon(
+                          ? Icon(
                               Icons.person,
                               size: 60,
-                              color: AppColors.textBody,
+                              color: isDark
+                                  ? AppColors.darkTextBody
+                                  : AppColors.textBody,
                             )
                           : null,
                     ),
@@ -161,7 +183,9 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                             color: AppColors.primary,
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: AppColors.background,
+                              color: Theme.of(
+                                context,
+                              ).scaffoldBackgroundColor, // FIXED: Syncs background anchor ring
                               width: 4,
                             ),
                           ),
@@ -182,11 +206,15 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .surface, // FIXED: Surface shifts with light/dark properties
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
+                        color: isDark
+                            ? Colors.black26
+                            : Colors.black.withOpacity(0.03),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -195,10 +223,10 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         "Personal Information",
                         style: TextStyle(
-                          color: AppColors.neutral,
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -206,8 +234,8 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                       const SizedBox(height: 20),
                       TextFormField(
                         controller: fullname,
-                        style: const TextStyle(
-                          color: AppColors.neutral,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.w500,
                         ),
                         inputFormatters: [
@@ -215,10 +243,11 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                             RegExp(r'[a-zA-Z ]'),
                           ),
                         ],
-                        validator: (Value) => (Value == null || Value.isEmpty)
+                        validator: (value) => (value == null || value.isEmpty)
                             ? 'Enter Name.'
                             : null,
                         decoration: _lucidInputDecoration(
+                          context,
                           'Full Name',
                           Icons.person_outline,
                         ),
@@ -226,14 +255,15 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: username,
-                        style: const TextStyle(
-                          color: AppColors.neutral,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.w500,
                         ),
-                        validator: (Value) => (Value == null || Value.isEmpty)
+                        validator: (value) => (value == null || value.isEmpty)
                             ? 'Enter Username.'
                             : null,
                         decoration: _lucidInputDecoration(
+                          context,
                           'Username',
                           Icons.alternate_email,
                         ),
@@ -241,22 +271,25 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: phone,
-                        style: const TextStyle(
-                          color: AppColors.neutral,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.w500,
                         ),
                         keyboardType: TextInputType.phone,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
                         ],
-                        validator: (Value) {
-                          if (Value == null || Value.isEmpty)
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
                             return 'Enter Phone number.';
-                          if (Value.length != 10)
+                          }
+                          if (value.length != 10) {
                             return 'Enter exactly 10 digits.';
+                          }
                           return null;
                         },
                         decoration: _lucidInputDecoration(
+                          context,
                           'Phone Number',
                           Icons.phone_outlined,
                         ),
@@ -291,11 +324,13 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                             context.read<Authprovider>().setUser(userData);
                           }
                         }
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => const Profilescreen(),
-                          ),
-                        );
+                        if (context.mounted) {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => const Profilescreen(),
+                            ),
+                          );
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -331,15 +366,18 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                       );
                     },
                     style: TextButton.styleFrom(
-                      backgroundColor: AppColors.inputFill,
+                      // FIXED: Adaptive cancel button background
+                      backgroundColor: isDark
+                          ? AppColors.darkInputFill
+                          : AppColors.inputFill,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Cancel',
                       style: TextStyle(
-                        color: AppColors.neutral,
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
