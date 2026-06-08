@@ -15,36 +15,38 @@ class NotificationService {
   bool get isInitialized => _isInitialized;
 
   Future<void> initializeNotification() async {
-  if (_isInitialized) return;
+    if (_isInitialized) return;
 
-  const androidSettings = AndroidInitializationSettings(
-    '@mipmap/ic_launcher',
-  );
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
 
-  const iosSettings = DarwinInitializationSettings(
-    requestAlertPermission: true,
-    requestBadgePermission: true,
-    requestSoundPermission: true,
-  );
+    const iosSettings = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
 
-  const settings = InitializationSettings(
-    android: androidSettings,
-    iOS: iosSettings,
-  );
+    const settings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
+    );
 
-  await notificationPlugin.initialize(settings: settings);
+    await notificationPlugin.initialize(settings: settings);
 
-  // --- ADD THIS: Request Android 13+ Runtime Permissions ---
-  final androidImplementation = notificationPlugin
-      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
-  
-  if (androidImplementation != null) {
-    await androidImplementation.requestNotificationsPermission();
+    // --- ADD THIS: Request Android 13+ Runtime Permissions ---
+    final androidImplementation = notificationPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+
+    if (androidImplementation != null) {
+      await androidImplementation.requestNotificationsPermission();
+    }
+
+    _isInitialized = true;
+    print('Notification service initialized');
   }
-
-  _isInitialized = true;
-  print('Notification service initialized');
-}
 
   NotificationDetails _notificationDetails() {
     return const NotificationDetails(
