@@ -32,18 +32,13 @@ class NotificationService {
     );
     await notificationPlugin.initialize(settings: settings);
 
-    // Resolve the Android implementation to request runtime permissions
     final androidImplementation = notificationPlugin
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
         >();
 
     if (androidImplementation != null) {
-      // 1. Request standard notification permissions (Android 13+)
       await androidImplementation.requestNotificationsPermission();
-
-      // 2. --- ADD THIS TO PREVENT CRASHES ON ANDROID 12+ ---
-      // Request permission to fire exact alarms for task deadlines
       await androidImplementation.requestExactAlarmsPermission();
     }
 
@@ -75,7 +70,6 @@ class NotificationService {
     required String body,
     required DateTime scheduledTime,
   }) async {
-    // Prevent scheduling if the deadline has already passed
     if (scheduledTime.isBefore(DateTime.now())) return;
 
     try {
@@ -93,4 +87,16 @@ class NotificationService {
       print('Error scheduling notification: $e');
     }
   }
+
+  // --- CLEAN INTEGRATED CANCELLATION METHOD ---
+  // --- UPDATE THIS METHOD IN YOUR NOTIFICATION_SERVICE.DART ---
+  Future<void> cancelNotification(int id) async {
+    try {
+      // FIX: Change from cancel(id) to cancel(id: id)
+      await notificationPlugin.cancel(id: id);
+      print('Notification with ID $id cancelled successfully.');
+    } catch (e) {
+      print('Error cancelling notification: $e');
+    }
+  } // <-- ADDED MISSING CLASS CLOSING BRACE
 }

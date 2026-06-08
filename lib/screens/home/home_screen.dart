@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +11,7 @@ import 'package:study_sync/screens/Task%20Screen/add_Task_Screen.dart';
 import 'package:study_sync/screens/profile/profileScreen.dart';
 import 'package:study_sync/services/Task_service.dart';
 import 'package:study_sync/constants/app_colors.dart';
-import 'package:study_sync/services/notification_service.dart'; // Adjust path if needed
+import 'package:study_sync/services/notification_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -52,14 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Helper utility to safely calculate expiration states at runtime
-  bool _checkIsExpired(
-    Timestamp dueDateTimestamp,
-    dynamic dueTimeRaw,
-    String title,
-  ) {
+  // Refactored helper: Calculates exact deadline and schedules background alarm safely
+  DateTime _getTaskDeadline(Timestamp dueDateTimestamp, dynamic dueTimeRaw) {
     try {
-      final now = DateTime.now();
       final DateTime dueDate = dueDateTimestamp.toDate();
       String rawTime = dueTimeRaw
           .toString()
@@ -87,26 +81,10 @@ class _HomeScreenState extends State<HomeScreen> {
         if (isAM && hour == 12) hour = 0;
       }
 
-      final taskDeadline = DateTime(
-        dueDate.year,
-        dueDate.month,
-        dueDate.day,
-        hour,
-        minute,
-      );
-
-      return now.isAfter(taskDeadline);
+      return DateTime(dueDate.year, dueDate.month, dueDate.day, hour, minute);
     } catch (e) {
-      final now = DateTime.now();
       final DateTime dueDate = dueDateTimestamp.toDate();
-      final targetDateOnly = DateTime(
-        dueDate.year,
-        dueDate.month,
-        dueDate.day,
-        23,
-        59,
-      );
-      return now.isAfter(targetDateOnly);
+      return DateTime(dueDate.year, dueDate.month, dueDate.day, 23, 59);
     }
   }
 
@@ -301,23 +279,30 @@ class _HomeScreenState extends State<HomeScreen> {
                       for (final task in tasks) ...[
                         () {
                           final bool isCompleted = task['isCompleted'] ?? false;
+
+                          // Calculate deadlines cleanly
+                          final DateTime taskDeadline = _getTaskDeadline(
+                            task['dueDate'] as Timestamp,
+                            task['dueTime'],
+                          );
+
                           final bool isExpired =
                               !isCompleted &&
-                              _checkIsExpired(
-                                task['dueDate'] as Timestamp,
-                                task['dueTime'],
-                                task['title'],
-                              );
-                          int count = 0;
-                          if (isExpired) {
-                            NotificationService()
-                                .scheduleTaskExpiryNotification(
-                                  id: count,
-                                  title: task['title'],
-                                  body: task['description'],
-                                  scheduledTime: DateTime.now(),
-                                );
-                            count++;
+                              DateTime.now().isAfter(taskDeadline);
+
+                          // --- SAFE & STABLE BACKGROUND NOTIFICATION REGISTRATION ---
+                          // Only register standard background OS alerts if the task is open and its deadline resides in the future
+                          if (!isCompleted &&
+                              taskDeadline.isAfter(DateTime.now())) {
+                            NotificationService().scheduleTaskExpiryNotification(
+                              id: task
+                                  .id
+                                  .hashCode, // FIX: Uses unique document hash integer to prevent overwrites
+                              title: 'Task Expired! ⏰',
+                              body:
+                                  'Your task "${task['title']}" has reached its deadline.',
+                              scheduledTime: taskDeadline, // Precision timing
+                            );
                           }
 
                           String statusLabel = "PENDING";
@@ -430,6 +415,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       task.id,
                                                       value!,
                                                     );
+
+                                                // Cancel notification instantly if marked completed early
+                                                if (value == true) {
+                                                  await NotificationService()
+                                                      .cancelNotification(
+                                                        task.id.hashCode,
+                                                      );
+                                                }
                                               },
                                             ),
                                           ),
@@ -598,7 +591,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     ),
                                                   ),
 
-                                                  // --- Only show Edit if task is NOT completed AND NOT expired ---
                                                   if (isCompleted != true &&
                                                       isExpired != true) ...[
                                                     SizedBox(
@@ -647,7 +639,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     ),
                                                   ],
 
-                                                  // --- DELETE BUTTON (Always visible for all tasks) ---
                                                   SizedBox(
                                                     width: double.infinity,
                                                     height: 48,
@@ -805,12 +796,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                           height:
                                                                               48,
                                                                           child: ElevatedButton(
-                                                                            // --- INTEGRATED DATABASE CALL HERE ---
                                                                             onPressed: () async {
                                                                               Navigator.pop(
                                                                                 context,
-                                                                              ); // Close dialog
+                                                                              );
                                                                               try {
+                                                                                // Cancel pending notification from OS tray
+                                                                                await NotificationService().cancelNotification(
+                                                                                  task.id.hashCode,
+                                                                                );
+
                                                                                 await TaskService().taskDelete(
                                                                                   task.id,
                                                                                 );
@@ -847,7 +842,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                 }
                                                                               }
                                                                             },
-
                                                                             style: ElevatedButton.styleFrom(
                                                                               backgroundColor: const Color(
                                                                                 0xFFEF4444,
@@ -884,7 +878,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         color: Color(
                                                           0xFFEF4444,
                                                         ),
-                                                        size: 20,
                                                       ),
                                                       label: const Text(
                                                         'Delete Task',
