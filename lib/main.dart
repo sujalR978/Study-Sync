@@ -7,10 +7,15 @@ import 'package:study_sync/providers/auth_provider.dart';
 import 'package:study_sync/screens/splash/splash_screen.dart';
 import 'package:study_sync/services/notification_service.dart';
 
+import 'package:timezone/data/latest.dart' as tz;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final notificationService = NotificationService();
+
+  tz.initializeTimeZones();
+
   await notificationService.initializeNotification();
   runApp(
     MultiProvider(

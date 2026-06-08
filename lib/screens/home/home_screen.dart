@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Helper utility to safely calculate expiration states at runtime
-  bool _checkIsExpired(Timestamp dueDateTimestamp, dynamic dueTimeRaw) {
+  bool _checkIsExpired(Timestamp dueDateTimestamp, dynamic dueTimeRaw,String title) {
     try {
       final now = DateTime.now();
       final DateTime dueDate = dueDateTimestamp.toDate();
@@ -89,6 +89,8 @@ class _HomeScreenState extends State<HomeScreen> {
         hour,
         minute,
       );
+
+      
       return now.isAfter(taskDeadline);
     } catch (e) {
       final now = DateTime.now();
@@ -300,6 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               _checkIsExpired(
                                 task['dueDate'] as Timestamp,
                                 task['dueTime'],
+                                task['title']
                               );
 
                           String statusLabel = "PENDING";

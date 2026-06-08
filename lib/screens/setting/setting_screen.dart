@@ -23,6 +23,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 await notificationService.showNotification(
                   title: 'Study Sync',
                   body: 'Notification is working!',
+                  scheduledTime: DateTime(2026, 6, 8, 3, 23),
                 );
               },
               child: const Text('turn on notification'),
