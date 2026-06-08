@@ -10,7 +10,8 @@ import 'package:study_sync/services/notification_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await NotificationService().initializeNotification();
+  final notificationService = NotificationService();
+  await notificationService.initializeNotification();
   runApp(
     MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => Authprovider())],
