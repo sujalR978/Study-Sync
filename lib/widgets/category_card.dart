@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:study_sync/constants/app_colors.dart'; // Ensure path is correct
 
 class CategoryCard extends StatelessWidget {
   final String category;
@@ -33,19 +34,34 @@ class CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Determine background color based on theme selection context
+    final Color unselectedBg = isDark
+        ? AppColors.darkInputFill
+        : const Color(0xFFE9EDF7);
+    final Color unselectedContent = isDark
+        ? AppColors.darkTextBody
+        : const Color(0xFF4B5563);
+
     return GestureDetector(
       onTap: onTap,
       onLongPress: onLongPress,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
-        height: 60,
+        height:
+            50, // Slightly slimmed down to 50 for a premium, compact pill feel
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+        ), // Prevents wall-clipping
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF4F46E5) : const Color(0xFFE9EDF7),
+          // FIXED: Uses global primary color when active, falls back to adaptive surface colors when open
+          color: isSelected ? AppColors.primary : unselectedBg,
           borderRadius: BorderRadius.circular(30),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: const Color(0xFF4F46E5).withOpacity(0.25),
+                    color: AppColors.primary.withOpacity(0.25),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -53,18 +69,22 @@ class CategoryCard extends StatelessWidget {
               : [],
         ),
         child: Row(
+          mainAxisSize: MainAxisSize
+              .min, // Allows the Wrap widget to bundle chips closely
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               getIcon(),
-              color: isSelected ? Colors.white : const Color(0xFF4B5563),
+              // FIXED: Content shifts cleanly from brand white to muted slate
+              color: isSelected ? Colors.white : unselectedContent,
               size: 18,
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 8),
             Text(
               category,
               style: TextStyle(
-                color: isSelected ? Colors.white : const Color(0xFF4B5563),
+                // FIXED: Font color matches tracking states
+                color: isSelected ? Colors.white : unselectedContent,
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
               ),
