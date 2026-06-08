@@ -1,17 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:study_sync/models/user_model.dart';
 import 'package:study_sync/providers/auth_provider.dart';
+import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/screens/auth/googleInfo_screen.dart';
 import 'package:study_sync/screens/auth/rememberMe_screen.dart';
-import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/widgets/custom_button.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 import 'package:study_sync/screens/auth/registration_screen.dart';
-import 'package:study_sync/models/user_model.dart';
-import 'package:provider/provider.dart';
+import 'package:study_sync/constants/app_colors.dart'; // Ensure path is correct
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -23,8 +25,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool isPasswordVisible = false;
   bool rememberMe = false;
-
-  // --- NEW: Loading state variable ---
   bool isLoading = false;
 
   final TextEditingController email = TextEditingController();
@@ -34,8 +34,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      // FIXED: Dynamic structural scaffolding background layout
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           /// TOP BLUE GLOW
@@ -106,10 +109,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     const SizedBox(height: 12),
 
-                    const Text(
+                    Text(
                       "Welcome back",
                       style: TextStyle(
-                        color: Color(0xFF0F172A),
+                        // FIXED: Theme-aware headers configuration
+                        color: Theme.of(context).colorScheme.onBackground,
                         fontSize: 22,
                         fontWeight: FontWeight.w700,
                       ),
@@ -125,11 +129,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        // FIXED: Surface card layer colors updates automatically
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(28),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.06),
+                            color: isDark
+                                ? Colors.black38
+                                : Colors.black.withOpacity(0.06),
                             blurRadius: 20,
                             offset: const Offset(0, 8),
                           ),
@@ -143,10 +150,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   "EMAIL ADDRESS",
                                   style: TextStyle(
-                                    color: Color(0xFF64748B),
+                                    color: isDark
+                                        ? AppColors.darkTextBody
+                                        : AppColors.textBody,
                                     fontSize: 12,
                                     fontWeight: FontWeight.w700,
                                     letterSpacing: 1.2,
@@ -155,23 +164,38 @@ class _LoginScreenState extends State<LoginScreen> {
                                 const SizedBox(height: 10),
                                 TextFormField(
                                   controller: email,
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return 'Email is empty.';
                                     }
-                                    return null; // Added return null for safety
+                                    return null;
                                   },
                                   decoration: InputDecoration(
                                     hintText: "name@example.com",
-                                    hintStyle: const TextStyle(
-                                      color: Color(0xFF94A3B8),
+                                    hintStyle: TextStyle(
+                                      color: isDark
+                                          ? AppColors.darkTextBody.withOpacity(
+                                              0.6,
+                                            )
+                                          : const Color(0xFF94A3B8),
                                     ),
-                                    prefixIcon: const Icon(
+                                    prefixIcon: Icon(
                                       Icons.mail_outline,
-                                      color: Color(0xFF64748B),
+                                      color: isDark
+                                          ? AppColors.darkTextBody
+                                          : AppColors.textBody,
                                     ),
                                     filled: true,
-                                    fillColor: const Color(0xFFF8FAFC),
+                                    // FIXED: Container field backgrounds tracking configuration
+                                    fillColor: isDark
+                                        ? AppColors.darkInputFill
+                                        : AppColors.inputFill,
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(18),
                                       borderSide: BorderSide.none,
@@ -192,10 +216,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text(
+                                    Text(
                                       "PASSWORD",
                                       style: TextStyle(
-                                        color: Color(0xFF64748B),
+                                        color: isDark
+                                            ? AppColors.darkTextBody
+                                            : AppColors.textBody,
                                         fontSize: 12,
                                         fontWeight: FontWeight.w700,
                                         letterSpacing: 1.2,
@@ -217,21 +243,33 @@ class _LoginScreenState extends State<LoginScreen> {
                                 /// PASSWORD FIELD
                                 TextFormField(
                                   controller: password,
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return 'Password is empty.';
                                     }
-                                    return null; // Added return null for safety
+                                    return null;
                                   },
                                   obscureText: !isPasswordVisible,
                                   decoration: InputDecoration(
                                     hintText: "••••••••",
-                                    hintStyle: const TextStyle(
-                                      color: Color(0xFF94A3B8),
+                                    hintStyle: TextStyle(
+                                      color: isDark
+                                          ? AppColors.darkTextBody.withOpacity(
+                                              0.6,
+                                            )
+                                          : const Color(0xFF94A3B8),
                                     ),
-                                    prefixIcon: const Icon(
+                                    prefixIcon: Icon(
                                       Icons.lock_outline,
-                                      color: Color(0xFF64748B),
+                                      color: isDark
+                                          ? AppColors.darkTextBody
+                                          : AppColors.textBody,
                                     ),
                                     suffixIcon: IconButton(
                                       onPressed: () {
@@ -244,11 +282,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                         isPasswordVisible
                                             ? Icons.visibility_off
                                             : Icons.visibility,
-                                        color: const Color(0xFF64748B),
+                                        color: isDark
+                                            ? AppColors.darkTextBody
+                                            : AppColors.textBody,
                                       ),
                                     ),
                                     filled: true,
-                                    fillColor: const Color(0xFFF8FAFC),
+                                    fillColor: isDark
+                                        ? AppColors.darkInputFill
+                                        : AppColors.inputFill,
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(18),
                                       borderSide: BorderSide.none,
@@ -274,16 +316,24 @@ class _LoginScreenState extends State<LoginScreen> {
                               Checkbox(
                                 value: rememberMe,
                                 activeColor: const Color(0xFF0052FF),
+                                side: BorderSide(
+                                  color: isDark
+                                      ? AppColors.darkTextBody
+                                      : AppColors.textBody,
+                                  width: 1.5,
+                                ),
                                 onChanged: (value) {
                                   setState(() {
                                     rememberMe = value!;
                                   });
                                 },
                               ),
-                              const Text(
+                              Text(
                                 "Remember me for 30 days",
                                 style: TextStyle(
-                                  color: Color(0xFF64748B),
+                                  color: isDark
+                                      ? AppColors.darkTextBody
+                                      : AppColors.textBody,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -297,7 +347,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             text: 'Log In',
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                // --- NEW: Start Loading ---
                                 setState(() {
                                   isLoading = true;
                                 });
@@ -314,7 +363,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                                 if (!mounted) return;
 
-                                // --- NEW: Stop Loading ---
                                 setState(() {
                                   isLoading = false;
                                 });
@@ -330,7 +378,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   }
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                      builder: (context) => HomeScreen(),
+                                      builder: (context) => const HomeScreen(),
                                     ),
                                   );
                                 } else {
@@ -348,7 +396,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           Row(
                             children: [
                               Expanded(
-                                child: Divider(color: Colors.grey.shade300),
+                                child: Divider(
+                                  color: isDark
+                                      ? AppColors.darkInputFill
+                                      : Colors.grey.shade300,
+                                ),
                               ),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
@@ -357,13 +409,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Text(
                                   "OR",
                                   style: TextStyle(
-                                    color: Colors.grey.shade500,
+                                    color: isDark
+                                        ? AppColors.darkTextBody
+                                        : Colors.grey.shade500,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
                               ),
                               Expanded(
-                                child: Divider(color: Colors.grey.shade300),
+                                child: Divider(
+                                  color: isDark
+                                      ? AppColors.darkInputFill
+                                      : Colors.grey.shade300,
+                                ),
                               ),
                             ],
                           ),
@@ -373,7 +431,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           /// GOOGLE BUTTON
                           CustomButton.gogalButton(
                             onPressed: () async {
-                              // --- NEW: Start Loading ---
                               setState(() {
                                 isLoading = true;
                               });
@@ -383,7 +440,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                               if (!mounted) return;
 
-                              // --- NEW: Stop Loading ---
                               setState(() {
                                 isLoading = false;
                               });
@@ -410,14 +466,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (_) => GoogleInfoScreen(),
+                                      builder: (_) => const GoogleInfoScreen(),
                                     ),
                                   );
                                 } else {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (_) => RememberMeScreen(),
+                                      builder: (_) => const RememberMeScreen(),
                                     ),
                                   );
                                 }
@@ -438,15 +494,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
+                        Text(
                           "Don't have an account?",
-                          style: TextStyle(color: Color(0xFF64748B)),
+                          style: TextStyle(
+                            color: isDark
+                                ? AppColors.darkTextBody
+                                : AppColors.textBody,
+                          ),
                         ),
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => RegisterScreen(),
+                                builder: (context) => const RegisterScreen(),
                               ),
                             );
                           },
@@ -466,16 +526,13 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
 
-          /// --- NEW: THE LOADING OVERLAY ---
+          /// --- NEW: ADAPTIVE LOADING OVERLAY ---
           if (isLoading)
             Container(
-              color: Colors.white.withOpacity(
-                0.6,
-              ), // Matches your clean white theme
+              // FIXED: Adapts contrast screen dim transparency properties
+              color: isDark ? Colors.black54 : Colors.white.withOpacity(0.6),
               child: const Center(
-                child: CircularProgressIndicator(
-                  color: Color(0xFF0052FF), // Matches your primary blue
-                ),
+                child: CircularProgressIndicator(color: Color(0xFF0052FF)),
               ),
             ),
         ],
