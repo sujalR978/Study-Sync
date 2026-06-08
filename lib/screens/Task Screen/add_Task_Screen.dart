@@ -185,6 +185,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 ),
                 const SizedBox(height: 8),
                 CustomTextfield.customTextField(
+                  context: context,
                   hintText: 'What needs to be done?',
                   icon: Icons.title_rounded,
                   controller: title,
@@ -212,6 +213,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 ),
                 const SizedBox(height: 8),
                 CustomTextfield.customTextField(
+                  context: context,
                   hintText: 'Add extra details...',
                   icon: Icons.description_outlined,
                   controller: description,
@@ -264,6 +266,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     CustomTextfield.customTextField(
+                                      context: context,
                                       hintText: 'Enter new category',
                                       icon: Icons.category,
                                       controller: newcategory,
