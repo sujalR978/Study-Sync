@@ -11,7 +11,8 @@ import 'package:study_sync/screens/Task%20Screen/add_Task_Screen.dart';
 
 import 'package:study_sync/screens/profile/profileScreen.dart';
 import 'package:study_sync/services/Task_service.dart';
-import 'package:study_sync/constants/app_colors.dart'; // Adjust path if needed
+import 'package:study_sync/constants/app_colors.dart';
+import 'package:study_sync/services/notification_service.dart'; // Adjust path if needed
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -52,7 +53,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Helper utility to safely calculate expiration states at runtime
-  bool _checkIsExpired(Timestamp dueDateTimestamp, dynamic dueTimeRaw,String title) {
+  bool _checkIsExpired(
+    Timestamp dueDateTimestamp,
+    dynamic dueTimeRaw,
+    String title,
+  ) {
     try {
       final now = DateTime.now();
       final DateTime dueDate = dueDateTimestamp.toDate();
@@ -90,7 +95,14 @@ class _HomeScreenState extends State<HomeScreen> {
         minute,
       );
 
-      
+      if (taskDeadline == DateTime.now()) {
+        NotificationService().showNotification(
+          scheduledTime: DateTime.now(),
+          title: 'test',
+          body: 'how',
+        );
+      }
+
       return now.isAfter(taskDeadline);
     } catch (e) {
       final now = DateTime.now();
@@ -302,7 +314,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               _checkIsExpired(
                                 task['dueDate'] as Timestamp,
                                 task['dueTime'],
-                                task['title']
+                                task['title'],
                               );
 
                           String statusLabel = "PENDING";
