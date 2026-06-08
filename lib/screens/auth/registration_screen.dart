@@ -135,6 +135,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       children: [
                         /// FULL NAME
                         CustomTextfield.customTextField(
+                          context: context,
                           controller: fullname,
                           hintText: 'Full Name',
                           icon: Icons.person_outline,
@@ -155,6 +156,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                         /// USERNAME
                         CustomTextfield.customTextField(
+                          context: context,
                           controller: username,
                           hintText: "Username",
                           icon: Icons.alternate_email,
@@ -170,6 +172,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                         /// EMAIL
                         CustomTextfield.customTextField(
+                          context: context,
                           controller: email,
                           hintText: "Email Address",
                           icon: Icons.mail_outline,
@@ -198,6 +201,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         /// PHONE
                         CustomTextfield.customTextField(
                           controller: phone,
+                          context: context,
                           hintText: "Phone Number",
                           icon: Icons.phone_outlined,
                           valideter: (value) {
@@ -221,6 +225,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                         /// PASSWORD
                         CustomTextfield.customTextField(
+                          context: context,
                           controller: password,
                           hintText: "Password",
                           icon: Icons.lock_outline,
@@ -247,6 +252,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                         /// CONFIRM PASSWORD
                         CustomTextfield.customTextField(
+                          context: context,
                           controller: Cpassword,
                           hintText: "Confirm Password",
                           icon: Icons.lock_outline,
