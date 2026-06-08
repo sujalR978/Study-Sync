@@ -1,5 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest_all.dart' as tz;
+
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
 
@@ -16,7 +19,7 @@ class NotificationService {
 
   Future<void> initializeNotification() async {
     if (_isInitialized) return;
-
+    tz.initializeTimeZones();
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
@@ -70,16 +73,19 @@ class NotificationService {
     int id = 0,
     String? title,
     String? body,
+    required DateTime scheduledTime,
   }) async {
     try {
       print('Showing notification: title=$title, body=$body');
-      await notificationPlugin.show(
+      await notificationPlugin.zonedSchedule(
         id: id,
         title: title,
         body: body,
+        scheduledDate: tz.TZDateTime.from(scheduledTime, tz.local),
         notificationDetails: _notificationDetails(),
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        matchDateTimeComponents: DateTimeComponents.dateAndTime,
       );
-      print('Notification shown successfully');
     } catch (e) {
       print('Error showing notification: $e');
     }
