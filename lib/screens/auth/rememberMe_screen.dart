@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
+import 'package:study_sync/constants/app_colors.dart'; // Ensure path is correct
 
 class RememberMeScreen extends StatefulWidget {
   const RememberMeScreen({super.key});
@@ -14,45 +15,43 @@ class _RememberMeScreenState extends State<RememberMeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFF),
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
+    return Scaffold(
+      // FIXED: Dynamic structural scaffolding background canvas mapping
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
-
           child: Center(
             child: Container(
               padding: const EdgeInsets.all(28),
-
               decoration: BoxDecoration(
-                color: Colors.white,
+                // FIXED: Card wrapper adapts to global brightness state
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(30),
-
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.blue.withOpacity(0.08),
+                    color: isDark
+                        ? Colors.black38
+                        : Colors.blue.withOpacity(0.08),
                     blurRadius: 30,
                     offset: const Offset(0, 15),
                   ),
                 ],
               ),
-
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-
                 children: [
+                  /// SECURE SHIELD LOGO ICON BLOCK
                   Container(
                     height: 90,
                     width: 90,
-
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-
                       gradient: const LinearGradient(
                         colors: [Color(0xFF0052FF), Color(0xFF00D1FF)],
                       ),
-
                       boxShadow: [
                         BoxShadow(
                           color: const Color(0xFF00D1FF).withOpacity(0.3),
@@ -61,7 +60,6 @@ class _RememberMeScreenState extends State<RememberMeScreen> {
                         ),
                       ],
                     ),
-
                     child: const Icon(
                       Icons.security_rounded,
                       color: Colors.white,
@@ -71,22 +69,26 @@ class _RememberMeScreenState extends State<RememberMeScreen> {
 
                   const SizedBox(height: 25),
 
-                  const Text(
+                  Text(
                     "Stay Logged In?",
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
-                      color: Color(0xFF0F172A),
+                      // FIXED: Color configuration shifts dynamically
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
 
                   const SizedBox(height: 10),
 
-                  const Text(
+                  Text(
                     "Keep your account signed in for faster access to your study sessions and tasks.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Color(0xFF64748B),
+                      // FIXED: Dynamic text body color allocation
+                      color: isDark
+                          ? AppColors.darkTextBody
+                          : const Color(0xFF64748B),
                       height: 1.5,
                       fontSize: 15,
                     ),
@@ -94,36 +96,43 @@ class _RememberMeScreenState extends State<RememberMeScreen> {
 
                   const SizedBox(height: 30),
 
+                  /// CHECKBOX STRIP LAYER
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
                       vertical: 8,
                     ),
-
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF8FAFC),
+                      // FIXED: Container row adapts fields layout settings cleanly
+                      color: isDark
+                          ? AppColors.darkInputFill
+                          : const Color(0xFFF8FAFC),
                       borderRadius: BorderRadius.circular(16),
                     ),
-
                     child: Row(
                       children: [
                         Checkbox(
                           value: rememberMe,
                           activeColor: const Color(0xFF0052FF),
-
+                          side: BorderSide(
+                            color: isDark
+                                ? AppColors.darkTextBody
+                                : const Color(0xFF64748B),
+                            width: 1.5,
+                          ),
                           onChanged: (value) {
                             setState(() {
                               rememberMe = value!;
                             });
                           },
                         ),
-
-                        const Expanded(
+                        Expanded(
                           child: Text(
                             "Remember me on this device",
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF334155),
+                              // FIXED: Title font adapts text layers correctly
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ),
@@ -133,41 +142,37 @@ class _RememberMeScreenState extends State<RememberMeScreen> {
 
                   const SizedBox(height: 30),
 
+                  /// CONTINUE BUTTON
                   SizedBox(
                     width: double.infinity,
                     height: 58,
-
                     child: ElevatedButton(
                       onPressed: () async {
-                        // Save preference here
                         SharedPreferences spset =
                             await SharedPreferences.getInstance();
+                        await spset.setBool('logIn', rememberMe);
 
-                        spset.setBool('logIn', rememberMe);
-
+                        if (!context.mounted) return;
                         Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context) => HomeScreen()),
+                          MaterialPageRoute(
+                            builder: (context) => const HomeScreen(),
+                          ),
                         );
                       },
-
                       style: ElevatedButton.styleFrom(
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(18),
                         ),
-
                         padding: EdgeInsets.zero,
                       ),
-
                       child: Ink(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(18),
-
                           gradient: const LinearGradient(
                             colors: [Color(0xFF0052FF), Color(0xFF00D1FF)],
                           ),
                         ),
-
                         child: const Center(
                           child: Text(
                             "Continue",
@@ -181,7 +186,6 @@ class _RememberMeScreenState extends State<RememberMeScreen> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 12),
                 ],
               ),
