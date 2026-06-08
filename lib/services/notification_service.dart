@@ -1,50 +1,43 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
-
   final notificationPlugin = FlutterLocalNotificationsPlugin();
   bool _isInitialized = false;
 
-  factory NotificationService() {
-    return _instance;
-  }
-
+  factory NotificationService() => _instance;
   NotificationService._internal();
 
   bool get isInitialized => _isInitialized;
 
   Future<void> initializeNotification() async {
     if (_isInitialized) return;
+    
     tz.initializeTimeZones();
-    const androidSettings = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
-    );
-
+    
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
     );
 
-    const settings = InitializationSettings(
-      android: androidSettings,
-      iOS: iosSettings,
-    );
-
+    const settings = InitializationSettings(android: androidSettings, iOS: iosSettings);
     await notificationPlugin.initialize(settings: settings);
 
-    // --- ADD THIS: Request Android 13+ Runtime Permissions ---
+    // Resolve the Android implementation to request runtime permissions
     final androidImplementation = notificationPlugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >();
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
 
     if (androidImplementation != null) {
+      // 1. Request standard notification permissions (Android 13+)
       await androidImplementation.requestNotificationsPermission();
+      
+      // 2. --- ADD THIS TO PREVENT CRASHES ON ANDROID 12+ ---
+      // Request permission to fire exact alarms for task deadlines
+      await androidImplementation.requestExactAlarmsPermission();
     }
 
     _isInitialized = true;
@@ -76,7 +69,7 @@ class NotificationService {
     required DateTime scheduledTime,
   }) async {
     try {
-      print('Showing notification: title=$title, body=$body');
+      print('Scheduling notification for: $scheduledTime');
       await notificationPlugin.zonedSchedule(
         id: id,
         title: title,
