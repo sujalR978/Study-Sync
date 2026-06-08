@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,35 +20,41 @@ class _ProfilescreenState extends State<Profilescreen> {
   @override
   Widget build(BuildContext context) {
     final user = context.watch<Authprovider>().user;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (user == null) {
-      return const Scaffold(
-        backgroundColor: AppColors.background,
-        body: Center(
+      return Scaffold(
+        // FIXED: Adaptive background framework binding
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: const Center(
           child: CircularProgressIndicator(color: AppColors.primary),
         ),
       );
     }
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      // FIXED: Adaptive background framework binding
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'My Profile',
           style: TextStyle(
-            color: AppColors.neutral,
+            color: Theme.of(context).colorScheme.onBackground,
             fontWeight: FontWeight.w700,
             fontSize: 20,
           ),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.neutral),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).colorScheme.onBackground,
+          ),
           onPressed: () => Navigator.of(
             context,
-          ).push(MaterialPageRoute(builder: (context) => HomeScreen())),
+          ).push(MaterialPageRoute(builder: (context) => const HomeScreen())),
         ),
       ),
       body: SafeArea(
@@ -67,16 +74,20 @@ class _ProfilescreenState extends State<Profilescreen> {
                 ),
                 child: CircleAvatar(
                   radius: 60,
-                  backgroundColor: AppColors.inputFill,
+                  backgroundColor: isDark
+                      ? AppColors.darkInputFill
+                      : AppColors.inputFill,
                   backgroundImage: _getProfileImage(
                     user.photoUrl,
                     user.loginMethod,
                   ),
                   child: (user.photoUrl.isEmpty)
-                      ? const Icon(
+                      ? Icon(
                           Icons.person,
                           size: 60,
-                          color: AppColors.textBody,
+                          color: isDark
+                              ? AppColors.darkTextBody
+                              : AppColors.textBody,
                         )
                       : null,
                 ),
@@ -87,10 +98,10 @@ class _ProfilescreenState extends State<Profilescreen> {
               // --- NAME & USERNAME ---
               Text(
                 user.fullname,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.neutral,
+                  color: Theme.of(context).colorScheme.onBackground,
                 ),
               ),
               const SizedBox(height: 4),
@@ -109,11 +120,15 @@ class _ProfilescreenState extends State<Profilescreen> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .surface, // FIXED: Surface shifts with light/dark properties
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
+                      color: isDark
+                          ? Colors.black26
+                          : Colors.black.withOpacity(0.03),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -122,15 +137,22 @@ class _ProfilescreenState extends State<Profilescreen> {
                 child: Column(
                   children: [
                     _buildInfoTile(
+                      context,
                       Icons.email_outlined,
                       "Email Address",
                       user.email,
                     ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Divider(color: AppColors.inputFill, thickness: 1),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Divider(
+                        color: isDark
+                            ? AppColors.darkInputFill
+                            : AppColors.inputFill,
+                        thickness: 1,
+                      ),
                     ),
                     _buildInfoTile(
+                      context,
                       Icons.phone_outlined,
                       "Phone Number",
                       user.phone,
@@ -175,7 +197,9 @@ class _ProfilescreenState extends State<Profilescreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
+
+              // --- LOGOUT BUTTON ---
               SizedBox(
                 width: double.infinity,
                 height: 54,
@@ -229,13 +253,21 @@ class _ProfilescreenState extends State<Profilescreen> {
     }
   }
 
-  Widget _buildInfoTile(IconData icon, String title, String value) {
+  // FIXED: Added BuildContext to the info tile mapper to correctly determine active theme typography values
+  Widget _buildInfoTile(
+    BuildContext context,
+    IconData icon,
+    String title,
+    String value,
+  ) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       children: [
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AppColors.inputFill,
+            color: isDark ? AppColors.darkInputFill : AppColors.inputFill,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: AppColors.primary, size: 24),
@@ -247,8 +279,8 @@ class _ProfilescreenState extends State<Profilescreen> {
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  color: AppColors.textBody,
+                style: TextStyle(
+                  color: isDark ? AppColors.darkTextBody : AppColors.textBody,
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
@@ -256,8 +288,8 @@ class _ProfilescreenState extends State<Profilescreen> {
               const SizedBox(height: 4),
               Text(
                 value.isNotEmpty ? value : "Not provided",
-                style: const TextStyle(
-                  color: AppColors.neutral,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
