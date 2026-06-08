@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:study_sync/constants/app_colors.dart'; // Make sure this path is correct
 
-// Make sure this path is correct
-
 class Showtaskscreen extends StatefulWidget {
   final String taskid;
 
@@ -42,25 +40,28 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      // FIXED: Adaptive core background
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        title: const Text(
+        title: Text(
           "Task Inspection",
           style: TextStyle(
-            color: AppColors.neutral,
+            color: Theme.of(context).colorScheme.onBackground,
             fontWeight: FontWeight.w900,
             fontSize: 18,
             letterSpacing: 0.5,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.close_rounded,
-            color: AppColors.neutral,
+            color: Theme.of(context).colorScheme.onBackground,
             size: 24,
           ),
           onPressed: () => Navigator.pop(context),
@@ -78,11 +79,11 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
           if (snapshot.hasError ||
               !snapshot.hasData ||
               !snapshot.data!.exists) {
-            return const Center(
+            return Center(
               child: Text(
                 'Task could not be found',
                 style: TextStyle(
-                  color: AppColors.textBody,
+                  color: isDark ? AppColors.darkTextBody : AppColors.textBody,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -91,12 +92,10 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
 
           final doc = snapshot.data!.data()!;
 
-          // Primary Variable extractions (Kept intact)
           String formetedTime = '';
           String createdAt = '';
           String updatedAt = '';
 
-          // Explicit Detailed Subcomponents for display
           String dayStr = '--';
           String monthStr = '---';
           String yearStr = '----';
@@ -124,7 +123,6 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                 .replaceAll('TimeOfDay(', '')
                 .replaceAll(')', '');
 
-            // Safe extraction pattern for displaying specific Hour, Minutes
             List<String> rawParts = formetedTime.split(':');
             if (rawParts.length == 2) {
               int extractedHour = int.tryParse(rawParts[0]) ?? 0;
@@ -154,11 +152,14 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
+                        // FIXED: Card container surface color switches adaptively
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.02),
+                            color: isDark
+                                ? Colors.black26
+                                : Colors.black.withOpacity(0.02),
                             blurRadius: 6,
                           ),
                         ],
@@ -173,9 +174,9 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                           const SizedBox(width: 6),
                           Text(
                             doc['category'] ?? 'General',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.w800,
-                              color: AppColors.neutral,
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontSize: 12,
                             ),
                           ),
@@ -222,10 +223,10 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                 // --- FOCUS HEADLINE INTERFACE ---
                 Text(
                   doc['title'] ?? '',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.neutral,
+                    color: Theme.of(context).colorScheme.onBackground,
                     letterSpacing: -1.0,
                     height: 1.15,
                   ),
@@ -234,9 +235,9 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                 Text(
                   doc['description'] ??
                       'No extra context or operational instructions have been provided for this task element.',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
-                    color: AppColors.textBody,
+                    color: isDark ? AppColors.darkTextBody : AppColors.textBody,
                     height: 1.6,
                   ),
                 ),
@@ -244,12 +245,12 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                 const SizedBox(height: 32),
 
                 // --- MODERN CHRONO CARD (DATE / MONTH / TIME BLOCKS) ---
-                const Text(
+                Text(
                   "Timeline Allocation",
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.neutral,
+                    color: Theme.of(context).colorScheme.onBackground,
                     letterSpacing: 0.2,
                   ),
                 ),
@@ -258,11 +259,13 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
+                        color: isDark
+                            ? Colors.black38
+                            : Colors.black.withOpacity(0.03),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -276,10 +279,10 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                           children: [
                             Text(
                               dayStr,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 40,
                                 fontWeight: FontWeight.w900,
-                                color: AppColors.neutral,
+                                color: Theme.of(context).colorScheme.onSurface,
                                 height: 1.0,
                               ),
                             ),
@@ -289,7 +292,7 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                               children: [
                                 Text(
                                   monthStr,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w900,
                                     color: AppColors.primary,
@@ -298,10 +301,12 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                                 ),
                                 Text(
                                   yearStr,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.textBody,
+                                    color: isDark
+                                        ? AppColors.darkTextBody
+                                        : AppColors.textBody,
                                   ),
                                 ),
                               ],
@@ -314,31 +319,35 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                       Container(
                         height: 36,
                         width: 1.5,
-                        color: AppColors.inputFill,
+                        color: isDark
+                            ? AppColors.darkInputFill
+                            : AppColors.inputFill,
                       ),
                       const SizedBox(width: 24),
 
-                      // Formatted Custom Time Column (H M Period Structure)
+                      // Formatted Custom Time Column
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.baseline,
                         textBaseline: TextBaseline.alphabetic,
                         children: [
                           Text(
                             "$hourStr:$minuteStr",
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 26,
                               fontWeight: FontWeight.w800,
-                              color: AppColors.neutral,
+                              color: Theme.of(context).colorScheme.onSurface,
                               letterSpacing: -0.5,
                             ),
                           ),
                           const SizedBox(width: 4),
                           Text(
                             periodStr,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w900,
-                              color: AppColors.textBody,
+                              color: isDark
+                                  ? AppColors.darkTextBody
+                                  : AppColors.textBody,
                             ),
                           ),
                         ],
@@ -359,7 +368,10 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                   decoration: BoxDecoration(
                     color: isCompleted
                         ? const Color(0xFF10B981).withOpacity(0.06)
-                        : AppColors.inputFill.withOpacity(0.4),
+                        : (isDark
+                                  ? AppColors.darkInputFill
+                                  : AppColors.inputFill)
+                              .withOpacity(0.4),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: isCompleted
@@ -375,7 +387,9 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                             : Icons.hourglass_top_rounded,
                         color: isCompleted
                             ? const Color(0xFF10B981)
-                            : AppColors.textBody,
+                            : (isDark
+                                  ? AppColors.darkTextBody
+                                  : AppColors.textBody),
                         size: 20,
                       ),
                       const SizedBox(width: 12),
@@ -390,7 +404,9 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                                 fontWeight: FontWeight.w900,
                                 color: isCompleted
                                     ? const Color(0xFF10B981)
-                                    : AppColors.textBody,
+                                    : (isDark
+                                          ? AppColors.darkTextBody
+                                          : AppColors.textBody),
                                 letterSpacing: 1.0,
                               ),
                             ),
@@ -399,10 +415,10 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                               isCompleted
                                   ? "Task Executed completely"
                                   : "Awaiting user completion",
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.neutral,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           ],
@@ -413,16 +429,19 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                 ),
 
                 const SizedBox(height: 40),
-                const Divider(color: AppColors.inputFill, thickness: 1),
+                Divider(
+                  color: isDark ? AppColors.darkInputFill : AppColors.inputFill,
+                  thickness: 1,
+                ),
                 const SizedBox(height: 24),
 
                 // --- METADATA FOOTER AUDIT RAIL ---
-                const Text(
+                Text(
                   "Activity History Log",
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textBody,
+                    color: isDark ? AppColors.darkTextBody : AppColors.textBody,
                     letterSpacing: 0.2,
                   ),
                 ),
@@ -430,7 +449,9 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.surface.withOpacity(0.5),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surface.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Column(
@@ -438,46 +459,52 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             "Initial Registry",
                             style: TextStyle(
-                              color: AppColors.textBody,
+                              color: isDark
+                                  ? AppColors.darkTextBody
+                                  : AppColors.textBody,
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                           Text(
                             createdAt,
-                            style: const TextStyle(
-                              color: AppColors.neutral,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontWeight: FontWeight.w700,
                               fontSize: 13,
                             ),
                           ),
                         ],
                       ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
                         child: Divider(
-                          color: AppColors.inputFill,
+                          color: isDark
+                              ? AppColors.darkInputFill
+                              : AppColors.inputFill,
                           thickness: 0.8,
                         ),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             "Latest Engine Modification",
                             style: TextStyle(
-                              color: AppColors.textBody,
+                              color: isDark
+                                  ? AppColors.darkTextBody
+                                  : AppColors.textBody,
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                           Text(
                             updatedAt,
-                            style: const TextStyle(
-                              color: AppColors.neutral,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontWeight: FontWeight.w700,
                               fontSize: 13,
                             ),
