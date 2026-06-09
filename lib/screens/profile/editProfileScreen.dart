@@ -328,7 +328,7 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                         if (context.mounted) {
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
-                              builder: (context) => const Profilescreen(),
+                              builder: (context) => const Bottomnavigation(),
                             ),
                           );
                         }
