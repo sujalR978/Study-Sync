@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:study_sync/screens/BottomNavigation.dart';
-import 'package:study_sync/screens/home/home_screen.dart';
+
 import 'package:study_sync/constants/app_colors.dart'; // Ensure path is correct
 
 class RememberMeScreen extends StatefulWidget {
