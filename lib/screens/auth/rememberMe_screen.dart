@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:study_sync/screens/BottomNavigation.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/constants/app_colors.dart'; // Ensure path is correct
 
@@ -154,9 +155,7 @@ class _RememberMeScreenState extends State<RememberMeScreen> {
 
                         if (!context.mounted) return;
                         Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => const HomeScreen(),
-                          ),
+                          MaterialPageRoute(builder: (_) => Bottomnavigation()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
