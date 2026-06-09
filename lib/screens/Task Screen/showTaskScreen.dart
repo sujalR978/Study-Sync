@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:study_sync/constants/app_colors.dart'; // Make sure this path is correct
+import 'package:study_sync/constants/app_colors.dart';
+import 'package:study_sync/screens/BottomNavigation.dart'; // Make sure this path is correct
 
 class Showtaskscreen extends StatefulWidget {
   final String taskid;
@@ -60,11 +61,12 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
         ),
         leading: IconButton(
           icon: Icon(
+            
             Icons.close_rounded,
             color: Theme.of(context).colorScheme.onBackground,
             size: 24,
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_)=> Bottomnavigation())),
         ),
       ),
       body: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
