@@ -56,15 +56,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(
-              onPressed: () {
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => Bottomnavigation()));
-              },
-              icon: Icon(Icons.arrow_back_ios_new_rounded),
-              color: AppColors.primary,
-            ),
             const SizedBox(width: 8),
             Text(
               "Sync AI Studio",
@@ -85,7 +76,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
             color: Theme.of(context).colorScheme.onBackground,
             size: 18,
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => Bottomnavigation()));
+          },
         ),
       ),
       body: SafeArea(
