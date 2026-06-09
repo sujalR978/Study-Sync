@@ -159,16 +159,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           ),
         ),
         leading: IconButton(
-          icon: IconButton(
-            onPressed: () {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => Bottomnavigation()),
-              );
-            },
-            icon: Icon(Icons.arrow_back),
+          icon: Icon(
+            Icons.arrow_back,
             color: Theme.of(context).colorScheme.onBackground,
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => Bottomnavigation())),
         ),
         centerTitle: true,
       ),
