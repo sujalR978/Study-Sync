@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:study_sync/providers/them_provider.dart';
 
 import 'package:study_sync/constants/app_colors.dart';
+import 'package:study_sync/screens/BottomNavigation.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
@@ -14,6 +15,15 @@ class SettingScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).colorScheme.onBackground,
+          ),
+          onPressed: () => Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => Bottomnavigation())),
+        ),
         title: const Text(
           'Settings',
           style: TextStyle(fontWeight: FontWeight.bold),
