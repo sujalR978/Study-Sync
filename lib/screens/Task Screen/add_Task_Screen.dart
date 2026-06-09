@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:study_sync/constants/app_colors.dart';
+import 'package:study_sync/screens/BottomNavigation.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/services/Task_service.dart';
 import 'package:study_sync/widgets/category_card.dart';
@@ -158,8 +159,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           ),
         ),
         leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
+          icon: IconButton(
+            onPressed: () {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => Bottomnavigation()),
+              );
+            },
+            icon: Icon(Icons.arrow_back),
             color: Theme.of(context).colorScheme.onBackground,
           ),
           onPressed: () => Navigator.pop(context),
@@ -640,7 +646,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                         Navigator.of(context).pushReplacement(
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                const HomeScreen(),
+                                                const Bottomnavigation(),
                                           ),
                                         );
                                       }

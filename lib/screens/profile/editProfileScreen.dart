@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:study_sync/models/user_model.dart';
 
 import 'package:study_sync/providers/auth_provider.dart';
+import 'package:study_sync/screens/BottomNavigation.dart';
 import 'package:study_sync/screens/profile/profileScreen.dart';
 import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/services/update_auth_data.dart';
@@ -361,7 +362,7 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                     onPressed: () {
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                          builder: (context) => const Profilescreen(),
+                          builder: (context) => const Bottomnavigation(),
                         ),
                       );
                     },

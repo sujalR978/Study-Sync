@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:study_sync/screens/BottomNavigation.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/services/Task_service.dart';
 import 'package:study_sync/widgets/category_card.dart';
@@ -218,10 +219,14 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
           ),
         ),
         leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
+          icon: IconButton(
+            onPressed: () {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => Bottomnavigation()),
+              );
+            },
+            icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20),
             color: Theme.of(context).colorScheme.onBackground,
-            size: 20,
           ),
           onPressed: () => Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const HomeScreen()),
@@ -652,7 +657,7 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                                               ).pushReplacement(
                                                 MaterialPageRoute(
                                                   builder: (context) =>
-                                                      const HomeScreen(),
+                                                      Bottomnavigation(),
                                                 ),
                                               );
                                             },
