@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:study_sync/models/user_model.dart';
 import 'package:study_sync/providers/auth_provider.dart';
+import 'package:study_sync/screens/BottomNavigation.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/screens/auth/googleInfo_screen.dart';
 import 'package:study_sync/screens/auth/rememberMe_screen.dart';
@@ -378,7 +379,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   }
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                      builder: (context) => const HomeScreen(),
+                                      builder: (context) => const Bottomnavigation(),
                                     ),
                                   );
                                 } else {
