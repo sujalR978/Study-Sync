@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:study_sync/providers/them_provider.dart';
-import 'package:_flutterfire_internals/_flutterfire_internals.dart';
+
 import 'package:study_sync/constants/app_colors.dart';
 import 'package:study_sync/screens/BottomNavigation.dart';
 
