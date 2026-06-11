@@ -13,9 +13,12 @@ class AiChatScreen extends StatefulWidget {
 
 class _AiChatScreenState extends State<AiChatScreen> {
   final TextEditingController controller = TextEditingController();
+
   List<String> answer = [];
   bool _isLoading = false;
   List<String> lastUserPrompt = [];
+
+
 
   void _talkToGpt() async {
     if (controller.text.trim().isEmpty) return;
@@ -144,17 +147,19 @@ class _AiChatScreenState extends State<AiChatScreen> {
                 ),
               ),
 
-            SizedBox(
-              height: 450,
-              child: ListView.builder(
-                itemCount: answer.length,
-                itemBuilder: (context, index) {
-                  return AiAnswer(
-                    answer: answer[index],
-                    isLoading: _isLoading,
-                    lastUserPrompt: lastUserPrompt[index],
-                  );
-                },
+            Flexible(
+              child: SizedBox(
+                height: 700,
+                child: ListView.builder(
+                  itemCount: answer.length,
+                  itemBuilder: (context, index) {
+                    return AiAnswer(
+                      answer: answer[index],
+                      isLoading: _isLoading,
+                      lastUserPrompt: lastUserPrompt[index],
+                    );
+                  },
+                ),
               ),
             ),
 
