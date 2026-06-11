@@ -12,7 +12,7 @@ class AiChatScreen extends StatefulWidget {
 
 class _AiChatScreenState extends State<AiChatScreen> {
   final TextEditingController controller = TextEditingController();
-  String answer = '';
+  List<String> answer = [];
   bool _isLoading = false;
   String lastUserPrompt = '';
 
@@ -22,13 +22,13 @@ class _AiChatScreenState extends State<AiChatScreen> {
     setState(() {
       _isLoading = true;
       lastUserPrompt = controller.text;
-      answer = '';
+      answer = [];
     });
 
     String theAnswer = await getOpenRouterResponse(controller.text);
 
     setState(() {
-      answer = theAnswer;
+      answer.add(theAnswer);
       _isLoading = false;
     });
 
