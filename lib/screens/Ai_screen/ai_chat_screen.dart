@@ -13,7 +13,7 @@ class AiChatScreen extends StatefulWidget {
 
 class _AiChatScreenState extends State<AiChatScreen> {
   final TextEditingController controller = TextEditingController();
-  List<String> answer = [];
+  List<String> answer = [''];
   bool _isLoading = false;
   List<String> lastUserPrompt = [];
 
@@ -87,6 +87,19 @@ class _AiChatScreenState extends State<AiChatScreen> {
         child: Column(
           children: [
             // --- SCROLLABLE CENTRALIZED CHAT BUBBLE VIEWPORT ---
+            SizedBox(
+              height: 650,
+              child: ListView.builder(
+                itemCount: lastUserPrompt.length,
+                itemBuilder: (context, index) {
+                  return AiAnswer(
+                    answer: answer[index],
+                    isLoading: _isLoading,
+                    lastUserPrompt: lastUserPrompt[index],
+                  );
+                },
+              ),
+            ),
 
             // --- BOTTOM PREMIUM CONTROL TERMINAL DOCK ---
             Container(
