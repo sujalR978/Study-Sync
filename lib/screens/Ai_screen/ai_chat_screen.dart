@@ -87,6 +87,64 @@ class _AiChatScreenState extends State<AiChatScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            if (lastUserPrompt.isEmpty && answer.isEmpty && !_isLoading)
+              Container(
+                margin: const EdgeInsets.only(top: 40),
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  // FIXED: Reads system card surface settings cleanly
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: isDark
+                          ? Colors.black26
+                          : Colors.black.withOpacity(0.02),
+                      blurRadius: 10,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.psychology_rounded,
+                        color: AppColors.primary,
+                        size: 40,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      "How can I assist your studies today?",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Ask me to draft scheduling summaries, explain complex data modules, or rewrite your active items.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 13,
+                        // FIXED: Pulls correct adaptive text body colors
+                        color: isDark
+                            ? AppColors.darkTextBody
+                            : AppColors.textBody,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
             if (_isLoading)
               Align(
                 alignment: Alignment.centerLeft,
