@@ -23,7 +23,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
     setState(() {
       _isLoading = true;
       lastUserPrompt.add(controller.text);
-      answer = [];
     });
 
     String theAnswer = await getOpenRouterResponse(controller.text);
@@ -145,6 +144,20 @@ class _AiChatScreenState extends State<AiChatScreen> {
                 ),
               ),
 
+            SizedBox(
+              height: 450,
+              child: ListView.builder(
+                itemCount: answer.length,
+                itemBuilder: (context, index) {
+                  return AiAnswer(
+                    answer: answer[index],
+                    isLoading: _isLoading,
+                    lastUserPrompt: lastUserPrompt[index],
+                  );
+                },
+              ),
+            ),
+
             if (_isLoading)
               Align(
                 alignment: Alignment.centerLeft,
@@ -182,20 +195,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   ),
                 ),
               ),
-
-            SizedBox(
-              height: 675,
-              child: ListView.builder(
-                itemCount: answer.length,
-                itemBuilder: (context, index) {
-                  return AiAnswer(
-                    answer: answer[index],
-                    isLoading: _isLoading,
-                    lastUserPrompt: lastUserPrompt[index],
-                  );
-                },
-              ),
-            ),
 
             // --- BOTTOM PREMIUM CONTROL TERMINAL DOCK ---
             Container(
