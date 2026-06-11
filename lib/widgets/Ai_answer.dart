@@ -8,11 +8,12 @@ class AiAnswer extends StatefulWidget {
   final String lastUserPrompt;
   final String answer;
   final bool isLoading;
-  const AiAnswer({super.key
-  ,
-  required this.answer,
-  required this.isLoading,
-  required this.lastUserPrompt});
+  const AiAnswer({
+    super.key,
+    required this.answer,
+    required this.isLoading,
+    required this.lastUserPrompt,
+  });
 
   @override
   State<AiAnswer> createState() => _AiAnswerState();
@@ -31,40 +32,38 @@ class _AiAnswerState extends State<AiAnswer> {
         child: Column(
           children: [
             // Initial Welcome Screen Matrix Card if no prompt has run yet
-            
+
             // 1. --- USER PROMPT BUBBLE ---
-            if (widget.lastUserPrompt.isNotEmpty)
-              Align(
-                alignment: Alignment.centerRight,
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 20, left: 50),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
+            Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 20, left: 50),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                decoration: const BoxDecoration(
+                  color: AppColors.primary, // Brand color remains static
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
                   ),
-                  decoration: const BoxDecoration(
-                    color: AppColors.primary, // Brand color remains static
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                      bottomLeft: Radius.circular(20),
-                    ),
-                  ),
-                  child: Text(
-                    widget.lastUserPrompt,
-                    style: const TextStyle(
-                      color: Colors
-                          .white, // Text remains white on primary background
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                      height: 1.3,
-                    ),
+                ),
+                child: Text(
+                  widget.lastUserPrompt,
+                  style: const TextStyle(
+                    color: Colors
+                        .white, // Text remains white on primary background
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    height: 1.3,
                   ),
                 ),
               ),
+            ),
 
             // 2. --- NETWORK TYPING LOADER STATUS BLOCK ---
-            
 
             // 3. --- SYSTEM AI ANSWER RESPONDER BUBBLE ---
             Align(
