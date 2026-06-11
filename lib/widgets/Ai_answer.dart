@@ -1,8 +1,6 @@
-
 import 'package:flutter/material.dart';
 
 import 'package:study_sync/constants/app_colors.dart';
-
 
 class AiAnswer extends StatefulWidget {
   final String lastUserPrompt;
