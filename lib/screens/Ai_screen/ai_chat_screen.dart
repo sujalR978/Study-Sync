@@ -15,15 +15,14 @@ class _AiChatScreenState extends State<AiChatScreen> {
   final TextEditingController controller = TextEditingController();
   List<String> answer = [];
   bool _isLoading = false;
-  String lastUserPrompt = '';
+  List<String> lastUserPrompt = [];
 
   void _talkToGpt() async {
     if (controller.text.trim().isEmpty) return;
 
     setState(() {
       _isLoading = true;
-      lastUserPrompt = controller.text;
-      answer = [];
+      lastUserPrompt.add(controller.text);
     });
 
     String theAnswer = await getOpenRouterResponse(controller.text);
@@ -88,7 +87,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
         child: Column(
           children: [
             // --- SCROLLABLE CENTRALIZED CHAT BUBBLE VIEWPORT ---
-            
 
             // --- BOTTOM PREMIUM CONTROL TERMINAL DOCK ---
             Container(
