@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:study_sync/API/get_open_router_response.dart';
 import 'package:study_sync/constants/app_colors.dart';
 import 'package:study_sync/screens/BottomNavigation.dart';
-import 'package:study_sync/widgets/Ai_answer.dart'; // Make sure this path is correct
+import 'package:study_sync/widgets/Ai_answer.dart';
+import 'package:study_sync/widgets/user_ask.dart'; // Make sure this path is correct
 
 class AiChatScreen extends StatefulWidget {
   const AiChatScreen({super.key});
@@ -87,17 +88,139 @@ class _AiChatScreenState extends State<AiChatScreen> {
         child: Column(
           children: [
             // --- SCROLLABLE CENTRALIZED CHAT BUBBLE VIEWPORT ---
-            SizedBox(
-              height: 650,
-              child: ListView.builder(
-                itemCount: answer.length,
-                itemBuilder: (context, index) {
-                  return AiAnswer(
-                    answer: answer[index],
-                    isLoading: _isLoading,
-                    lastUserPrompt: lastUserPrompt[index],
-                  );
-                },
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                child: Column(
+                  children: [
+                    // Initial Welcome Screen Matrix Card if no prompt has run yet
+                    if (lastUserPrompt.isEmpty && answer.isEmpty && !_isLoading)
+                      Container(
+                        margin: const EdgeInsets.only(top: 40),
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          // FIXED: Reads system card surface settings cleanly
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: isDark
+                                  ? Colors.black26
+                                  : Colors.black.withOpacity(0.02),
+                              blurRadius: 10,
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.psychology_rounded,
+                                color: AppColors.primary,
+                                size: 40,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              "How can I assist your studies today?",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              "Ask me to draft scheduling summaries, explain complex data modules, or rewrite your active items.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 13,
+                                // FIXED: Pulls correct adaptive text body colors
+                                color: isDark
+                                    ? AppColors.darkTextBody
+                                    : AppColors.textBody,
+                                height: 1.4,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    // 1. --- USER PROMPT BUBBLE ---
+                    if (lastUserPrompt.isNotEmpty)
+                      SizedBox(
+                        height: 50,
+                        child: ListView.builder(
+                          itemCount: lastUserPrompt.length,
+                          itemBuilder: (context, index) {
+                            return UserAsk(
+                              lastUserPrompt: lastUserPrompt[index],
+                            );
+                          },
+                        ),
+                      ),
+
+                    // 2. --- NETWORK TYPING LOADER STATUS BLOCK ---
+                    if (_isLoading)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 20, right: 80),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            // FIXED: Uses surface container color safely
+                            color: Theme.of(context).colorScheme.surface,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(
+                                width: 14,
+                                height: 14,
+                                child: CircularProgressIndicator(
+                                  color: AppColors.primary,
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                "Thinking...",
+                                style: TextStyle(
+                                  color: isDark
+                                      ? AppColors.darkTextBody
+                                      : AppColors.textBody,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                    // 3. --- SYSTEM AI ANSWER RESPONDER BUBBLE ---
+                    SizedBox(
+                      height: 200,
+                      child: ListView.builder(
+                        itemCount: answer.length,
+                        itemBuilder: (context, index) {
+                          return AiAnswer(answer: answer[index]);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
 
