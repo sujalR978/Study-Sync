@@ -13,7 +13,7 @@ class AiChatScreen extends StatefulWidget {
 
 class _AiChatScreenState extends State<AiChatScreen> {
   final TextEditingController controller = TextEditingController();
-  List<String> answer = [''];
+  List<String> answer = [];
   bool _isLoading = false;
   List<String> lastUserPrompt = [];
 
@@ -90,7 +90,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
             SizedBox(
               height: 650,
               child: ListView.builder(
-                itemCount: lastUserPrompt.length,
+                itemCount: answer.length,
                 itemBuilder: (context, index) {
                   return AiAnswer(
                     answer: answer[index],
