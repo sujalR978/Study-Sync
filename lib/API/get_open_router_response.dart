@@ -2,9 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:study_sync/API/api_key.dart';
 
-Future<String> getOpenRouterResponse(String userInput) async {
+Future<String> getOpenRouterResponse(List<Map<String, String>> massage) async {
   const String endpoint = "https://openrouter.ai/api/v1/chat/completions";
-
 
   final headers = {
     'Authorization': 'Bearer $API',
@@ -13,9 +12,7 @@ Future<String> getOpenRouterResponse(String userInput) async {
 
   final body = jsonEncode({
     "model": "anthropic/claude-sonnet-4",
-    "messages": [
-      {"role": "user", "content": userInput},
-    ],
+    "messages": massage,
     "temperature": 0.7,
     "max_tokens": 200,
   });
