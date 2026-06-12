@@ -18,8 +18,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
   bool _isLoading = false;
   List<String> lastUserPrompt = [];
 
-
-
+  List<Map<String, String>> messages = [];
 
   void _talkToGpt() async {
     if (controller.text.trim().isEmpty) return;
@@ -27,6 +26,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
     setState(() {
       _isLoading = true;
       lastUserPrompt.add(controller.text);
+      messages.add({"role": "user", "content": controller.text});
     });
 
     String theAnswer = await getOpenRouterResponse(controller.text);
