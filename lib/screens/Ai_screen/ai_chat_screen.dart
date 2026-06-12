@@ -29,11 +29,12 @@ class _AiChatScreenState extends State<AiChatScreen> {
       messages.add({"role": "user", "content": controller.text});
     });
 
-    String theAnswer = await getOpenRouterResponse(controller.text);
+    String theAnswer = await getOpenRouterResponse(messages);
 
     setState(() {
       answer.add(theAnswer);
       _isLoading = false;
+      messages.add({"role": "assistant", "content": theAnswer});
     });
 
     controller.clear();
