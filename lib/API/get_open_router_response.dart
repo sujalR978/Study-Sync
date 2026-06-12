@@ -11,7 +11,7 @@ Future<String> getOpenRouterResponse(String userInput) async {
   };
 
   final body = jsonEncode({
-    "model": "anthropic/claude-sonnet-4",
+    "model": "openai/gpt-3.5-turbo",
     "messages": [
       {"role": "user", "content": userInput},
     ],
