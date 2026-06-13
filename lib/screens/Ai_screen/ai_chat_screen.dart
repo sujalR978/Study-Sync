@@ -1,6 +1,5 @@
 import 'dart:io';
 
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:study_sync/API/get_open_router_response.dart';
@@ -24,7 +23,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
   List<Map<String, String>> messages = [];
 
-  List<XFile>selectedImage = [];
+  List<XFile> selectedImage = [];
 
   void _talkToGpt() async {
     if (controller.text.trim().isEmpty) return;
@@ -238,10 +237,20 @@ class _AiChatScreenState extends State<AiChatScreen> {
               child: Row(
                 children: [
                   if (selectedImage.isNotEmpty)
-                    SizedBox(
-                      width: 10,
-                      height: 10,
-                      child: Image.file(File(selectedImage[0].path)),
+                    GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                      ),
+
+                      itemCount: selectedImage.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            child: Image.file(File(selectedImage[index].path)),
+                          ),
+                        );
+                      },
                     ),
 
                   Expanded(
