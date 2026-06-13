@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:study_sync/constants/app_colors.dart';
 
@@ -6,11 +9,13 @@ class AiAnswer extends StatefulWidget {
   final String lastUserPrompt;
   final String answer;
   final bool isLoading;
+  final List<XFile> selectedimages;
   const AiAnswer({
     super.key,
     required this.answer,
     required this.isLoading,
     required this.lastUserPrompt,
+    required this.selectedimages,
   });
 
   @override
@@ -33,27 +38,53 @@ class _AiAnswerState extends State<AiAnswer> {
           // 1. --- USER PROMPT BUBBLE ---
           Align(
             alignment: Alignment.centerRight,
-            child: Container(
-              margin: const EdgeInsets.only(bottom: 20, left: 50),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: const BoxDecoration(
-                color: AppColors.primary, // Brand color remains static
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                  bottomLeft: Radius.circular(20),
+            child: Column(
+              children: [
+                if (widget.selectedimages.isNotEmpty)
+                  SizedBox(
+                    height: 50,
+                    width: 50,
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                      ),
+                      itemCount: widget.selectedimages.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          child: Image.file(
+                            File(widget.selectedimages[index].toString()),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
+                Container(
+                  margin: const EdgeInsets.only(bottom: 20, left: 50),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: const BoxDecoration(
+                    color: AppColors.primary, // Brand color remains static
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                      bottomLeft: Radius.circular(20),
+                    ),
+                  ),
+                  child: Text(
+                    widget.lastUserPrompt,
+                    style: const TextStyle(
+                      color: Colors
+                          .white, // Text remains white on primary background
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      height: 1.3,
+                    ),
+                  ),
                 ),
-              ),
-              child: Text(
-                widget.lastUserPrompt,
-                style: const TextStyle(
-                  color:
-                      Colors.white, // Text remains white on primary background
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  height: 1.3,
-                ),
-              ),
+              ],
             ),
           ),
 
