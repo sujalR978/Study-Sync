@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:study_sync/API/get_open_router_response.dart';
@@ -234,6 +236,13 @@ class _AiChatScreenState extends State<AiChatScreen> {
               ),
               child: Row(
                 children: [
+                  if (selectedImage != null)
+                    SizedBox(
+                      width: 10,
+                      height: 10,
+                      child: Image.file(File(selectedImage!.path)),
+                    ),
+
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
