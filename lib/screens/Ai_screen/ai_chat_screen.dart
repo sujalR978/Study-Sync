@@ -28,7 +28,17 @@ class _AiChatScreenState extends State<AiChatScreen> {
   List<XFile> selectedImage = [];
   bool images = false;
 
+
+
+
+  Future<void> loadChat()async{
+
+    
+  }
+
   void _talkToGpt() async {
+
+
     if (controller.text.trim().isEmpty) return;
 
     final String prompt = controller.text.trim();
