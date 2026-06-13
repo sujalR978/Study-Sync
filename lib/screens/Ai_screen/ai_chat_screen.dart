@@ -266,7 +266,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                     answer: answer[index],
                     isLoading: false,
                     lastUserPrompt: lastUserPrompt[index],
-                    selectedimages: messageImagesHistory[index],
+                    // selectedimages: messageImagesHistory[index],
                   );
                 },
               ),

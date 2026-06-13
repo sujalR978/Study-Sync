@@ -9,13 +9,13 @@ class AiAnswer extends StatefulWidget {
   final String lastUserPrompt;
   final String answer;
   final bool isLoading;
-  final List<XFile> selectedimages;
+  // final List<XFile> selectedimages;
   const AiAnswer({
     super.key,
     required this.answer,
     required this.isLoading,
     required this.lastUserPrompt,
-    required this.selectedimages,
+    // required this.selectedimages,
   });
 
   @override
@@ -40,39 +40,39 @@ class _AiAnswerState extends State<AiAnswer> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                if (widget.selectedimages.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      alignment: WrapAlignment.end,
-                      children: List.generate(widget.selectedimages.length, (
-                        index,
-                      ) {
-                        return Container(
-                          width: 65,
-                          height: 65,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: isDark
-                                  ? AppColors.darkInputFill
-                                  : AppColors.inputFill,
-                              width: 1.5,
-                            ),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.file(
-                              File(widget.selectedimages[index].path),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
+                // if (widget.selectedimages.isNotEmpty)
+                //   Padding(
+                //     padding: const EdgeInsets.only(bottom: 8.0),
+                //     child: Wrap(
+                //       spacing: 6,
+                //       runSpacing: 6,
+                //       alignment: WrapAlignment.end,
+                //       children: List.generate(widget.selectedimages.length, (
+                //         index,
+                //       ) {
+                //         return Container(
+                //           width: 65,
+                //           height: 65,
+                //           decoration: BoxDecoration(
+                //             borderRadius: BorderRadius.circular(12),
+                //             border: Border.all(
+                //               color: isDark
+                //                   ? AppColors.darkInputFill
+                //                   : AppColors.inputFill,
+                //               width: 1.5,
+                //             ),
+                //           ),
+                //           child: ClipRRect(
+                //             borderRadius: BorderRadius.circular(10),
+                //             child: Image.file(
+                //               File(widget.selectedimages[index].path),
+                //               fit: BoxFit.cover,
+                //             ),
+                //           ),
+                //         );
+                //       }),
+                //     ),
+                //   ),
 
                 Container(
                   margin: const EdgeInsets.only(bottom: 20, left: 50),
