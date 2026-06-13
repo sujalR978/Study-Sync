@@ -20,7 +20,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
   List<String> answer = [];
   bool _isLoading = false;
   List<String> lastUserPrompt = [];
-  List<List<XFile>> messageImagesHistory = [] ?? [];
+  List<List<XFile>> messageImagesHistory = [];
   List<Map<String, String>> messages = [];
 
   List<XFile> selectedImage = [];
