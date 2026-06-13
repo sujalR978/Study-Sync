@@ -24,6 +24,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
   List<Map<String, String>> messages = [];
 
   List<XFile> selectedImage = [];
+  bool images = false;
 
   void _talkToGpt() async {
     if (controller.text.trim().isEmpty) return;
@@ -51,6 +52,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
     if (image.isNotEmpty) {
       setState(() {
         selectedImage.addAll(image);
+        images = true;
       });
     }
   }
@@ -221,6 +223,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
               SizedBox(
                 height: 200,
                 width: 300,
+
                 child: GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
