@@ -217,6 +217,58 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   ),
                 ),
               ),
+            if (selectedImage.isNotEmpty)
+              SizedBox(
+                height: 200,
+                width: 300,
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                  ),
+
+                  itemCount: selectedImage.length,
+                  itemBuilder: (context, index) {
+                    return Stack(
+                      children: [
+                        // Render image asset container frame
+                        Padding(
+                          padding: const EdgeInsets.all(3.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.file(
+                              File(selectedImage[index].path),
+                              width: double.infinity,
+                              height: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        // Action overlay button UI component to delete images individualistically
+                        Positioned(
+                          top: 4,
+                          right: 4,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedImage.removeAt(index);
+                              });
+                            },
+                            child: const CircleAvatar(
+                              radius: 12,
+                              backgroundColor: Colors.black54,
+                              child: Icon(
+                                Icons.close,
+                                size: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
 
             // --- BOTTOM PREMIUM CONTROL TERMINAL DOCK ---
             Container(
@@ -236,27 +288,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
               ),
               child: Row(
                 children: [
-                  if (selectedImage.isNotEmpty)
-                    SizedBox(
-                      height: 20,
-                      width: 30,
-                      child: GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                      ),
-
-                      itemCount: selectedImage.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SizedBox(
-                            child: Image.file(File(selectedImage[index].path)),
-                          ),
-                        );
-                      },
-                    ),
-                    ),
-
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
