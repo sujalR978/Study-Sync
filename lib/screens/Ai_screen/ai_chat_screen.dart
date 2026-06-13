@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:study_sync/API/get_open_router_response.dart';
@@ -28,17 +29,30 @@ class _AiChatScreenState extends State<AiChatScreen> {
   List<XFile> selectedImage = [];
   bool images = false;
 
+  Future<void> loadChat() async {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('chats')
+        .orderBy('timestamp')
+        .get();
 
+    for (var doc in snapshot.docs) {
+      final data = doc.data() as Map<String, dynamic>?;
 
+      if (data == null) continue;
 
-  Future<void> loadChat()async{
-
-    
+      if (data['roal'] == 'user') {
+        lastUserPrompt.add(data['content']?.toString() ?? '');
+      } else if (data['roal'] == 'Ai') {
+        answer.add(data['content']?.toString() ?? '');
+      }
+    }
+    setState(() {});
   }
 
   void _talkToGpt() async {
-
-
     if (controller.text.trim().isEmpty) return;
 
     final String prompt = controller.text.trim();
