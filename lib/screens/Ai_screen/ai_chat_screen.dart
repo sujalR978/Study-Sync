@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:study_sync/API/get_open_router_response.dart';
 import 'package:study_sync/constants/app_colors.dart';
 import 'package:study_sync/screens/BottomNavigation.dart';
@@ -20,6 +21,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
   List<Map<String, String>> messages = [];
 
+  XFile? selectedImage;
+
   void _talkToGpt() async {
     if (controller.text.trim().isEmpty) return;
 
@@ -38,6 +41,16 @@ class _AiChatScreenState extends State<AiChatScreen> {
     });
 
     controller.clear();
+  }
+
+  Future _pickImages() async {
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        selectedImage = image;
+      });
+    }
   }
 
   @override
@@ -265,6 +278,24 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   ),
                   const SizedBox(width: 10),
 
+                  GestureDetector(
+                    onTap: _pickImages,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.all(12),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.image,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 10),
                   // Interactive Elevated Send Controller Circle
                   GestureDetector(
                     onTap: _talkToGpt,
