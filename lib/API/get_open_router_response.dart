@@ -96,3 +96,7 @@ Future<dynamic> getOpenRouterResponseForGpt40(
     throw Exception('Failed: ${response.statusCode} - ${response.body}');
   }
 }
+
+Future<dynamic> getOpenRouterResponseForgemini()async{
+  
+}
