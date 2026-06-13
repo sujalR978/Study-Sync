@@ -23,6 +23,14 @@ class AiAnswer extends StatefulWidget {
 }
 
 class _AiAnswerState extends State<AiAnswer> {
+  List<XFile> selectedimagesdf = [];
+  @override
+  void setState(VoidCallback fn) {
+    // TODO: implement setState
+    super.setState(fn);
+    selectedimagesdf.addAll(widget.selectedimages);
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
@@ -40,24 +48,23 @@ class _AiAnswerState extends State<AiAnswer> {
             alignment: Alignment.centerRight,
             child: Column(
               children: [
-                if (widget.selectedimages.isNotEmpty)
-                  SizedBox(
-                    height: 50,
-                    width: 50,
-                    child: GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                      ),
-                      itemCount: widget.selectedimages.length,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          child: Image.file(
-                            File(widget.selectedimages[index].toString()),
-                          ),
-                        );
-                      },
+                SizedBox(
+                  height: 50,
+                  width: 50,
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
                     ),
+                    itemCount: selectedimagesdf.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        height: 50,
+                        width: 50,
+                        child: Image.file(File(selectedimagesdf[index].path)),
+                      );
+                    },
                   ),
+                ),
 
                 Container(
                   margin: const EdgeInsets.only(bottom: 20, left: 50),
