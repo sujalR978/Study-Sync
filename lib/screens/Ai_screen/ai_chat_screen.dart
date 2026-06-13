@@ -150,7 +150,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
             if (lastUserPrompt.isEmpty && answer.isEmpty && !_isLoading)
               Container(
                 margin: const EdgeInsets.symmetric(
-                  vertical: 40,
+                  vertical: 20,
                   horizontal: 24,
                 ),
                 padding: const EdgeInsets.all(24),
