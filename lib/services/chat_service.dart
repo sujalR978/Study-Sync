@@ -26,5 +26,14 @@ class ChatService {
         .add(chat.toMap());
   }
 
- 
+  Stream<QuerySnapshot> getChat()  {
+    String uid = _auth.currentUser!.uid;
+
+   return  _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('chats')
+        .orderBy('timestamp')
+        .snapshots();
+  }
 }
