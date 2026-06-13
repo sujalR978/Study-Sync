@@ -23,22 +23,13 @@ class AiAnswer extends StatefulWidget {
 }
 
 class _AiAnswerState extends State<AiAnswer> {
-  List<XFile> selectedimagesdf = [];
-  @override
-  void setState(VoidCallback fn) {
-    // TODO: implement setState
-    super.setState(fn);
-    selectedimagesdf.addAll(widget.selectedimages);
-  }
-
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return // --- SCROLLABLE CENTRALIZED CHAT BUBBLE VIEWPORT ---
-    SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+    Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
         children: [
           // Initial Welcome Screen Matrix Card if no prompt has run yet
@@ -47,24 +38,41 @@ class _AiAnswerState extends State<AiAnswer> {
           Align(
             alignment: Alignment.centerRight,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                SizedBox(
-                  height: 50,
-                  width: 50,
-                  child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
+                if (widget.selectedimages.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      alignment: WrapAlignment.end,
+                      children: List.generate(widget.selectedimages.length, (
+                        index,
+                      ) {
+                        return Container(
+                          width: 65,
+                          height: 65,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isDark
+                                  ? AppColors.darkInputFill
+                                  : AppColors.inputFill,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.file(
+                              File(widget.selectedimages[index].path),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        );
+                      }),
                     ),
-                    itemCount: selectedimagesdf.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        height: 50,
-                        width: 50,
-                        child: Image.file(File(selectedimagesdf[index].path)),
-                      );
-                    },
                   ),
-                ),
 
                 Container(
                   margin: const EdgeInsets.only(bottom: 20, left: 50),
