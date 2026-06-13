@@ -56,7 +56,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
   void setState(VoidCallback fn) {
     // TODO: implement setState
     super.setState(fn);
-    loadChat();
   }
 
   void _talkToGpt() async {
@@ -73,7 +72,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
         content: prompt,
         timestamp: Timestamp.now(),
       );
-      lastUserPrompt.add(prompt);
+      // lastUserPrompt.add(prompt);
       messageImagesHistory.add([]);
       messages.add({"role": "user", "content": prompt});
     });
@@ -87,7 +86,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
           content: theAnswer,
           timestamp: Timestamp.now(),
         );
-        answer.add(theAnswer);
+        // answer.add(theAnswer);
         _isLoading = false;
         messages.add({"role": "assistant", "content": theAnswer});
       });
