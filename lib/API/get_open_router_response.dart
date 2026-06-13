@@ -35,7 +35,7 @@ Future<String> getOpenRouterResponse(List<Map<String, String>> massage) async {
 }
 
 Future<dynamic> getOpenRouterResponseForGpt40(
-  String userInput,
+  String message,
   List<XFile> images,
 ) async {
   const String endPoint = "https://openrouter.ai/api/v1/chat/completions";
@@ -44,6 +44,29 @@ Future<dynamic> getOpenRouterResponseForGpt40(
     'Authorization': 'Bearer $API_image',
     'Content-Type': 'application/json',
   };
+  List<Map<String, dynamic>> message_images = [
+    {"type": "text", "text": message},
+  ];
+
+  for (XFile image in images) {
+    try {
+      final bytes = await image.readAsBytes();
+      final base64 = base64Encode(bytes);
+
+      String extension = image.path.split('.').last.toLowerCase();
+      if (extension == 'jpg') extension = 'jpeg';
+
+      message_images.add({
+        "type": "image_url",
+        "image_url": {
+          // Format standard Data URI mapping block
+          "url": "data:image/$extension;base64,$base64",
+        },
+      });
+    } catch (e) {
+      throw Exception('faild $e');
+    }
+  }
 
   final body = jsonEncode({
     "model": "anthropic/claude-sonnet-4",
@@ -51,11 +74,7 @@ Future<dynamic> getOpenRouterResponseForGpt40(
       {
         "role": "user",
         "content": [
-          {"type": "text", "text": userInput},
-          {
-            "type": "image_url",
-            "image_url": {"url": images},
-          },
+          {"type": "text", "text": message_images},
         ],
       },
     ],
