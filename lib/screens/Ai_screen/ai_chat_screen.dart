@@ -237,7 +237,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
               child: Row(
                 children: [
                   if (selectedImage.isNotEmpty)
-                    GridView.builder(
+                    SizedBox(
+                      height: 20,
+                      width: 30,
+                      child: GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
                       ),
@@ -251,6 +254,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                           ),
                         );
                       },
+                    ),
                     ),
 
                   Expanded(
