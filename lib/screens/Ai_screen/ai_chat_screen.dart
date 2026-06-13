@@ -47,21 +47,21 @@ class _AiChatScreenState extends State<AiChatScreen> {
   }
 
   void _talkToGpt40() async {
-  
-
     setState(() {
       _isLoading = true;
       lastUserPrompt.add(controller.text);
-      
     });
     String theAnswer = await getOpenRouterResponseForGpt40(
       controller.text,
       selectedImage,
     );
 
+    // Inside _talkToGpt40()...
     setState(() {
       answer.add(theAnswer);
       _isLoading = false;
+      selectedImage
+          .clear(); // Add this line to clear chosen items upon transmission completion!
     });
 
     controller.clear();
@@ -376,7 +376,13 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   const SizedBox(width: 10),
                   // Interactive Elevated Send Controller Circle
                   GestureDetector(
-                    onTap: _talkToGpt40,
+                    onTap: () {
+                      if (selectedImage.isNotEmpty) {
+                        _talkToGpt40();
+                      } else {
+                        _talkToGpt();
+                      }
+                    },
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.all(12),
