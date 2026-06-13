@@ -47,11 +47,12 @@ class _AiChatScreenState extends State<AiChatScreen> {
   }
 
   void _talkToGpt40() async {
-    if (images) return;
+  
 
     setState(() {
       _isLoading = true;
       lastUserPrompt.add(controller.text);
+      
     });
     String theAnswer = await getOpenRouterResponseForGpt40(
       controller.text,
