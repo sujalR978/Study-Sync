@@ -70,7 +70,13 @@ Future<dynamic> getOpenRouterResponseForGpt40(
 
   final body = jsonEncode({
     "model": "anthropic/claude-sonnet-4",
-    "messages": message_images,
+    "messages": [
+      {
+        "role": "user",
+        "content":
+            message_images, // This is your array holding text + base64 images
+      },
+    ],
 
     "temperature": 0.7,
     "max_tokens": 200,
