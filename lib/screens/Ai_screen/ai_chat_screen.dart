@@ -84,6 +84,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
         messages.add({"role": "assistant", "content": theAnswer});
       });
     } catch (e) {
+      print("THE ACTUAL API CRASH REASON IS: $e");
       setState(() {
         answer.add("Error analyzing images. Please verify your file payload.");
         _isLoading = false;
