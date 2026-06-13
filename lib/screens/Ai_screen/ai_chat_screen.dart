@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:study_sync/API/get_open_router_response.dart';
@@ -23,7 +24,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
   List<Map<String, String>> messages = [];
 
-  XFile? selectedImage;
+  List<XFile>selectedImage = [];
 
   void _talkToGpt() async {
     if (controller.text.trim().isEmpty) return;
@@ -46,11 +47,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
   }
 
   Future _pickImages() async {
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final image = await ImagePicker().pickMultiImage();
 
-    if (image != null) {
+    if (image.isNotEmpty) {
       setState(() {
-        selectedImage = image;
+        selectedImage.addAll(image);
       });
     }
   }
@@ -240,7 +241,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                     SizedBox(
                       width: 10,
                       height: 10,
-                      child: Image.file(File(selectedImage!.path)),
+                      child: Image.file(File(selectedImage![0].path)),
                     ),
 
                   Expanded(
