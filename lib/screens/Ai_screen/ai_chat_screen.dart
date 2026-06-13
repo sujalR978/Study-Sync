@@ -35,6 +35,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
     setState(() {
       _isLoading = true;
       lastUserPrompt.add(prompt);
+      messageImagesHistory.add([]);
       messages.add({"role": "user", "content": prompt});
     });
 
