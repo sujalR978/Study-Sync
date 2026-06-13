@@ -73,7 +73,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
         content: prompt,
         timestamp: Timestamp.now(),
       );
-
+      lastUserPrompt.add(prompt);
       messageImagesHistory.add([]);
       messages.add({"role": "user", "content": prompt});
     });
@@ -87,7 +87,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
           content: theAnswer,
           timestamp: Timestamp.now(),
         );
-
+        answer.add(theAnswer);
         _isLoading = false;
         messages.add({"role": "assistant", "content": theAnswer});
       });
