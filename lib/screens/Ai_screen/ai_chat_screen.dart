@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:study_sync/API/get_open_router_response.dart';
 import 'package:study_sync/constants/app_colors.dart';
 import 'package:study_sync/screens/BottomNavigation.dart';
+import 'package:study_sync/services/chat_service.dart';
 import 'package:study_sync/widgets/Ai_answer.dart'; // Make sure this path is correct
 
 class AiChatScreen extends StatefulWidget {
@@ -34,6 +36,12 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
     setState(() {
       _isLoading = true;
+
+      ChatService().addChat(
+        roal: 'user',
+        content: prompt,
+        timestamp: Timestamp.now(),
+      );
       lastUserPrompt.add(prompt);
       messageImagesHistory.add([]);
       messages.add({"role": "user", "content": prompt});
@@ -43,6 +51,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
       String theAnswer = await getOpenRouterResponse(messages);
 
       setState(() {
+        ChatService().addChat(
+          roal: 'Ai',
+          content: theAnswer,
+          timestamp: Timestamp.now(),
+        );
         answer.add(theAnswer);
         _isLoading = false;
         messages.add({"role": "assistant", "content": theAnswer});
