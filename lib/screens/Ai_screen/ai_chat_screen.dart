@@ -52,8 +52,18 @@ class _AiChatScreenState extends State<AiChatScreen> {
     setState(() {
       _isLoading = true;
       lastUserPrompt.add(controller.text);
-      
     });
+    String theAnswer = await getOpenRouterResponseForGpt40(
+      controller.text,
+      selectedImage,
+    );
+
+    setState(() {
+      answer.add(theAnswer);
+      _isLoading = false;
+    });
+
+    controller.clear();
   }
 
   Future _pickImages() async {
@@ -365,7 +375,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   const SizedBox(width: 10),
                   // Interactive Elevated Send Controller Circle
                   GestureDetector(
-                    onTap: _talkToGpt,
+                    onTap: _talkToGpt40,
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.all(12),
