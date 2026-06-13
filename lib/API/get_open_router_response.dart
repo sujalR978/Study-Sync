@@ -69,7 +69,7 @@ Future<dynamic> getOpenRouterResponseForGpt40(
   }
 
   final body = jsonEncode({
-    "model": "anthropic/claude-sonnet-4",
+    "model": "openai/gpt-4o",
     "messages": [
       {
         "role": "user",
