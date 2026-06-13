@@ -29,42 +29,66 @@ class _AiChatScreenState extends State<AiChatScreen> {
   void _talkToGpt() async {
     if (controller.text.trim().isEmpty) return;
 
+    final String prompt = controller.text.trim();
+    controller.clear();
+
     setState(() {
       _isLoading = true;
-      lastUserPrompt.add(controller.text);
-      messages.add({"role": "user", "content": controller.text});
+      lastUserPrompt.add(prompt);
+      messages.add({"role": "user", "content": prompt});
     });
 
-    String theAnswer = await getOpenRouterResponse(messages);
+    try {
+      String theAnswer = await getOpenRouterResponse(messages);
 
-    setState(() {
-      answer.add(theAnswer);
-      _isLoading = false;
-      messages.add({"role": "assistant", "content": theAnswer});
-    });
-
-    controller.clear();
+      setState(() {
+        answer.add(theAnswer);
+        _isLoading = false;
+        messages.add({"role": "assistant", "content": theAnswer});
+      });
+    } catch (e) {
+      setState(() {
+        answer.add("Error connecting to server. Please try again.");
+        _isLoading = false;
+      });
+    }
   }
 
   void _talkToGpt40() async {
-    setState(() {
-      _isLoading = true;
-      lastUserPrompt.add(controller.text);
-    });
-    String theAnswer = await getOpenRouterResponseForGpt40(
-      controller.text,
-      selectedImage,
-    );
+    if (controller.text.trim().isEmpty) return;
 
-    // Inside _talkToGpt40()...
-    setState(() {
-      answer.add(theAnswer);
-      _isLoading = false;
-      selectedImage
-          .clear(); // Add this line to clear chosen items upon transmission completion!
-    });
+    final String prompt = controller.text.trim();
+    final List<XFile> imagesToSend = List.from(
+      selectedImage,
+    ); // Copy chosen elements safely
 
     controller.clear();
+    setState(() {
+      _isLoading = true;
+      lastUserPrompt.add(prompt);
+      selectedImage
+          .clear(); // Clear local UI queue instantly for responsive feel
+    });
+
+    try {
+      String theAnswer = await getOpenRouterResponseForGpt40(
+        prompt,
+        imagesToSend,
+      );
+
+      setState(() {
+        answer.add(theAnswer);
+        _isLoading = false;
+        // Keep context history updated if needed
+        messages.add({"role": "user", "content": prompt});
+        messages.add({"role": "assistant", "content": theAnswer});
+      });
+    } catch (e) {
+      setState(() {
+        answer.add("Error analyzing images. Please verify your file payload.");
+        _isLoading = false;
+      });
+    }
   }
 
   Future _pickImages() async {
@@ -86,55 +110,48 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Access theme brightness to adjust custom overlay features safely
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      // FIXED: Uses system-configured scaffold background automatically
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(width: 8),
-            Text(
-              "Sync AI Studio",
-              style: TextStyle(
-                // FIXED: Theme-aware font rendering
-                color: Theme.of(context).colorScheme.onBackground,
-                fontWeight: FontWeight.w900,
-                fontSize: 18,
-                letterSpacing: 0.2,
-              ),
-            ),
-          ],
+        title: Text(
+          "Sync AI Studio",
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onBackground,
+            fontWeight: FontWeight.w900,
+            fontSize: 18,
+            letterSpacing: 0.2,
+          ),
         ),
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            // FIXED: Automatically shifts color arrow based on theme state
             color: Theme.of(context).colorScheme.onBackground,
             size: 18,
           ),
           onPressed: () {
-            Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (_) => Bottomnavigation()));
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const Bottomnavigation()),
+            );
           },
         ),
       ),
       body: SafeArea(
         child: Column(
           children: [
+            // Welcome Card Area
             if (lastUserPrompt.isEmpty && answer.isEmpty && !_isLoading)
               Container(
-                margin: const EdgeInsets.only(top: 40),
+                margin: const EdgeInsets.symmetric(
+                  vertical: 40,
+                  horizontal: 24,
+                ),
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  // FIXED: Reads system card surface settings cleanly
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
@@ -176,7 +193,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 13,
-                        // FIXED: Pulls correct adaptive text body colors
                         color: isDark
                             ? AppColors.darkTextBody
                             : AppColors.textBody,
@@ -187,90 +203,107 @@ class _AiChatScreenState extends State<AiChatScreen> {
                 ),
               ),
 
-            Flexible(
-              child: SizedBox(
-                height: 700,
-                child: ListView.builder(
-                  itemCount: answer.length,
-                  itemBuilder: (context, index) {
-                    return AiAnswer(
-                      answer: answer[index],
-                      isLoading: _isLoading,
-                      lastUserPrompt: lastUserPrompt[index],
-                    );
-                  },
+            // Scrollable Chat Message History Block Viewport
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
                 ),
+                itemCount: answer.length,
+                itemBuilder: (context, index) {
+                  // Safe indexing protection guard rails
+                  if (index >= lastUserPrompt.length)
+                    return const SizedBox.shrink();
+                  return AiAnswer(
+                    answer: answer[index],
+                    isLoading: false,
+                    lastUserPrompt: lastUserPrompt[index],
+                  );
+                },
               ),
             ),
 
+            // Network Action Progress Thinking Status Ring Tracker
             if (_isLoading)
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 20, right: 80),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    // FIXED: Uses surface container color safely
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const SizedBox(
-                        width: 14,
-                        height: 14,
-                        child: CircularProgressIndicator(
-                          color: AppColors.primary,
-                          strokeWidth: 2,
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 8,
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: CircularProgressIndicator(
+                            color: AppColors.primary,
+                            strokeWidth: 2,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        "Thinking...",
-                        style: TextStyle(
-                          color: isDark
-                              ? AppColors.darkTextBody
-                              : AppColors.textBody,
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
+                        const SizedBox(width: 12),
+                        Text(
+                          "Thinking...",
+                          style: TextStyle(
+                            color: isDark
+                                ? AppColors.darkTextBody
+                                : AppColors.textBody,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
+
+            // Image Preview Terminal Docking Shelf Component
             if (selectedImage.isNotEmpty)
-              SizedBox(
-                height: 200,
-                width: 300,
-
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                  ),
-
+              Container(
+                height: 90,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
                   itemCount: selectedImage.length,
                   itemBuilder: (context, index) {
                     return Stack(
                       children: [
-                        // Render image asset container frame
-                        Padding(
-                          padding: const EdgeInsets.all(3.0),
+                        Container(
+                          margin: const EdgeInsets.only(right: 10),
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isDark
+                                  ? AppColors.darkInputFill
+                                  : AppColors.inputFill,
+                            ),
+                          ),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(10),
                             child: Image.file(
                               File(selectedImage[index].path),
-                              width: double.infinity,
-                              height: double.infinity,
                               fit: BoxFit.cover,
                             ),
                           ),
                         ),
-                        // Action overlay button UI component to delete images individualistically
                         Positioned(
-                          top: 4,
-                          right: 4,
+                          top: 2,
+                          right: 12,
                           child: GestureDetector(
                             onTap: () {
                               setState(() {
@@ -278,11 +311,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
                               });
                             },
                             child: const CircleAvatar(
-                              radius: 12,
-                              backgroundColor: Colors.black54,
+                              radius: 10,
+                              backgroundColor: Colors.black87,
                               child: Icon(
                                 Icons.close,
-                                size: 14,
+                                size: 12,
                                 color: Colors.white,
                               ),
                             ),
@@ -294,11 +327,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
                 ),
               ),
 
-            // --- BOTTOM PREMIUM CONTROL TERMINAL DOCK ---
+            // --- BOTTOM CONTROL TERMINAL DOCK ---
             Container(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
               decoration: BoxDecoration(
-                // FIXED: Shifts color safely depending on your current mode layout
                 color: Theme.of(context).colorScheme.surface,
                 boxShadow: [
                   BoxShadow(
@@ -315,7 +347,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        // FIXED: Replaces background code structure cleanly
                         color: Theme.of(context).scaffoldBackgroundColor,
                         borderRadius: BorderRadius.circular(28),
                         border: Border.all(
@@ -332,7 +363,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
                           maxLines: null,
                           keyboardType: TextInputType.multiline,
                           style: TextStyle(
-                            // FIXED: Sets terminal text styling correctly
                             color: Theme.of(context).colorScheme.onBackground,
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -356,6 +386,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   ),
                   const SizedBox(width: 10),
 
+                  // Image Selection Attachment Trigger Pin
                   GestureDetector(
                     onTap: _pickImages,
                     child: AnimatedContainer(
@@ -374,7 +405,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   ),
 
                   const SizedBox(width: 10),
-                  // Interactive Elevated Send Controller Circle
+
+                  // Interactive Elevated Dynamic Send Execution Node
                   GestureDetector(
                     onTap: () {
                       if (selectedImage.isNotEmpty) {
