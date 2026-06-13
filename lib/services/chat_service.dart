@@ -14,7 +14,7 @@ class ChatService {
     String uid = _auth.currentUser!.uid;
 
     ChatModel chat = ChatModel(
-      roal: roal,
+      roal: 'user',
       content: content,
       timestamp: timestamp,
     );
