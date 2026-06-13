@@ -14,7 +14,7 @@ class ChatService {
     String uid = _auth.currentUser!.uid;
 
     ChatModel chat = ChatModel(
-      roal: 'user',
+      roal: roal,
       content: content,
       timestamp: timestamp,
     );
@@ -25,4 +25,6 @@ class ChatService {
         .collection('chats')
         .add(chat.toMap());
   }
+
+ 
 }
