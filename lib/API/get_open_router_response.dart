@@ -12,7 +12,7 @@ Future<String> getOpenRouterResponse(List<Map<String, String>> massage) async {
   };
 
   final body = jsonEncode({
-    "model": "google/gemini-2.5-flash", 
+    "model": "google/gemini-2.5-flash",
     "messages": massage,
     "temperature": 0.7,
     "max_tokens": 200,
@@ -35,7 +35,7 @@ Future<String> getOpenRouterResponse(List<Map<String, String>> massage) async {
 // --- MULTIMODAL IMAGE + TEXT COMPLETION (GPT-4o) ---
 Future<dynamic> getOpenRouterResponseForGpt40(
   String message,
-  List<String> base64Images, // FIXED: Now accepts pre-converted Base64 strings directly!
+  List<String> base64Images,
 ) async {
   const String endPoint = "https://openrouter.ai/api/v1/chat/completions";
 
@@ -52,19 +52,14 @@ Future<dynamic> getOpenRouterResponseForGpt40(
   for (String base64DataUri in base64Images) {
     message_images.add({
       "type": "image_url",
-      "image_url": {
-        "url": base64DataUri, // Injecting pre-formatted "data:image/jpeg;base64,..." string
-      },
+      "image_url": {"url": base64DataUri},
     });
   }
 
   final body = jsonEncode({
-    "model": "openai/gpt-4o",
+    "model": "google/gemini-2.5-flash:free",
     "messages": [
-      {
-        "role": "user",
-        "content": message_images,
-      },
+      {"role": "user", "content": message_images},
     ],
     "temperature": 0.7,
     "max_tokens": 200,
@@ -82,9 +77,4 @@ Future<dynamic> getOpenRouterResponseForGpt40(
   } else {
     throw Exception('Failed: ${response.statusCode} - ${response.body}');
   }
-}
-
-// --- FUTURE GEMINI SPECIFIC FUNCTION FRAMEWORK ---
-Future<dynamic> getOpenRouterResponseForgemini() async {
-  // Ready for implementation when needed
 }
