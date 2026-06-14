@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -143,40 +143,64 @@ class _AiChatScreenState extends State<AiChatScreen> {
     if (controller.text.trim().isEmpty) return;
 
     final String prompt = controller.text.trim();
-    final List<XFile> imagesToSend = List.from(
-      selectedImage,
-    ); // Copy chosen elements safely
+    final List<XFile> imagesToSend = List.from(selectedImage);
 
     controller.clear();
     setState(() {
-      ChatService().addImageChat(
-        roal: 'user',
-        content: prompt,
-        images: imagesToSend.toString(),
-        timestamp: Timestamp.now(),
-      );
       _isLoading = true;
       lastUserPrompt.add(prompt);
       messageImagesHistory.add(imagesToSend);
-      selectedImage
-          .clear(); // Clear local UI queue instantly for responsive feel
+      selectedImage.clear();
     });
 
     try {
+      // 1. Convert local file data into light Base64 String paths
+      List<String> base64ImageStrings = await _convertImagesToBase64(
+        imagesToSend,
+      );
+
+      // 2. Save User query structure directly into Firestore as standard string fields
+      String uid = FirebaseAuth.instance.currentUser!.uid;
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('chats')
+          .add({
+            'roal': 'user',
+            'content': prompt,
+            'images':
+                base64ImageStrings, // Successfully saves base64 list arrays!
+            'timestamp': Timestamp.now(),
+          });
+
+      // 3. Request completion payload from OpenRouter
       String theAnswer = await getOpenRouterResponseForGpt40(
         prompt,
         imagesToSend,
       );
 
+      // 4. Record matching AI reply structure to Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('chats')
+          .add({
+            'roal': 'Ai',
+            'content': theAnswer,
+            'images': [], // Empty array for AI responses
+            'timestamp': Timestamp.now(),
+          });
+
+      if (!mounted) return;
       setState(() {
         answer.add(theAnswer);
         _isLoading = false;
-        // Keep context history updated if needed
         messages.add({"role": "user", "content": prompt});
         messages.add({"role": "assistant", "content": theAnswer});
       });
     } catch (e) {
       print("THE ACTUAL API CRASH REASON IS: $e");
+      if (!mounted) return;
       setState(() {
         answer.add("Error analyzing images. Please verify your file payload.");
         _isLoading = false;
@@ -185,7 +209,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
   }
 
   Future _pickImages() async {
-    final image = await ImagePicker().pickMultiImage();
+    final image = await ImagePicker().pickMultiImage(
+      maxWidth: 600, // Downscales maximum width dimensions to 600px
+      imageQuality: 70,
+    );
 
     if (image.isNotEmpty) {
       setState(() {
@@ -199,6 +226,28 @@ class _AiChatScreenState extends State<AiChatScreen> {
   void dispose() {
     controller.dispose();
     super.dispose();
+  }
+
+  Future<List<String>> _convertImagesToBase64(List<XFile> images) async {
+    List<String> base64Strings = [];
+
+    for (XFile image in images) {
+      try {
+        final List<int> imageBytes = await image.readAsBytes();
+        final String base64String = base64Encode(imageBytes);
+
+        // Get the file extension (jpg, png, etc.)
+        String extension = image.path.split('.').last.toLowerCase();
+        if (extension == 'jpg') extension = 'jpeg';
+
+        // Format it as a standard Data URI so your UI can display it easily later
+        String fullBase64DataUri = "data:image/$extension;base64,$base64String";
+        base64Strings.add(fullBase64DataUri);
+      } catch (e) {
+        print("Error converting image to Base64 text string: $e");
+      }
+    }
+    return base64Strings;
   }
 
   @override
