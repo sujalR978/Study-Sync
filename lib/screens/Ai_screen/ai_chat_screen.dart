@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ import 'package:study_sync/API/get_open_router_response.dart';
 import 'package:study_sync/constants/app_colors.dart';
 import 'package:study_sync/screens/BottomNavigation.dart';
 import 'package:study_sync/services/chat_service.dart';
-import 'package:study_sync/widgets/Ai_answer.dart'; // Make sure this path is correct
+import 'package:study_sync/widgets/Ai_answer.dart';
 
 class AiChatScreen extends StatefulWidget {
   const AiChatScreen({super.key});
@@ -23,79 +24,82 @@ class _AiChatScreenState extends State<AiChatScreen> {
   List<String> answer = [];
   bool _isLoading = false;
   List<String> lastUserPrompt = [];
-  List<List<XFile>> messageImagesHistory = [];
+  
+  // FIXED: Changed history container layout parameter tracking types to standard Strings
+  List<List<String>> messageImagesHistory = []; 
   List<Map<String, String>> messages = [];
 
   List<XFile> selectedImage = [];
   bool images = false;
 
-  Future<void> loadChat() async {
-    String uid = FirebaseAuth.instance.currentUser!.uid;
-    QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('chats')
-        .orderBy('timestamp')
-        .get();
-
-    lastUserPrompt.clear();
-    answer.clear();
-
-    for (var doc in snapshot.docs) {
-      final data = doc.data() as Map<String, dynamic>?;
-
-      if (data == null) continue;
-
-      if (data['roal'] == 'user') {
-        lastUserPrompt.add(data['content']?.toString() ?? '');
-      } else if (data['roal'] == 'Ai') {
-        answer.add(data['content']?.toString() ?? '');
-      }
-      messageImagesHistory.add(<XFile>[]);
-    }
-    if (!mounted) return;
-    setState(() {});
-  }
-
-  Future<void> loadImageChat() async {
-    String uid = FirebaseAuth.instance.currentUser!.uid;
-    QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('chats')
-        .orderBy('timestamp')
-        .get();
-
-    for (var doc in snapshot.docs) {
-      final data = doc.data() as Map<String, dynamic>?;
-
-      if (data == null) continue;
-
-      if (data['roal'] == 'user') {
-        lastUserPrompt.add(data['content']?.toString() ?? '');
-      } else if (data['roal'] == 'Ai') {
-        answer.add(data['content']?.toString() ?? '');
-      }
-      messageImagesHistory.add(<XFile>[]);
-    }
-    if (!mounted) return;
-
-    setState(() {});
-  }
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadChat();
   }
 
-  @override
-  void setState(VoidCallback fn) {
-    // TODO: implement setState
-    super.setState(fn);
+  // FIXED: Removed custom overridden setState logic completely to prevent execution loops!
 
-    loadChat();
+  Future<void> loadChat() async {
+    if (!mounted) return;
+    setState(() => _isLoading = true);
+
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('chats')
+          .orderBy('timestamp', descending: false)
+          .get();
+
+      lastUserPrompt.clear();
+      answer.clear();
+      messageImagesHistory.clear();
+      messages.clear();
+
+      String temporaryUserPrompt = "";
+      List<String> temporaryUserImages = [];
+
+      for (var doc in snapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>?;
+        if (data == null) continue;
+
+        String role = data['roal']?.toString() ?? '';
+        String content = data['content']?.toString() ?? '';
+
+        if (role == 'user') {
+          temporaryUserPrompt = content;
+          
+          // FIXED: Safely reads the stored string image arrays out of Firestore rows
+          if (data['images'] != null) {
+            temporaryUserImages = List<String>.from(data['images']);
+          } else {
+            temporaryUserImages = [];
+          }
+          
+          messages.add({"role": "user", "content": content});
+        } else if (role == 'Ai') {
+          lastUserPrompt.add(temporaryUserPrompt.isNotEmpty ? temporaryUserPrompt : "Multimodal Query");
+          answer.add(content);
+          
+          // FIXED: Pushes retrieved image references dynamically synchronized with the item turn index
+          messageImagesHistory.add(List.from(temporaryUserImages));
+          
+          messages.add({"role": "assistant", "content": content});
+          
+          // Reset turn variables
+          temporaryUserPrompt = "";
+          temporaryUserImages = [];
+        }
+      }
+    } catch (e) {
+      print("Error fetching database documents sequence: $e");
+    }
+
+    if (!mounted) return;
+    setState(() => _isLoading = false);
   }
 
   void _talkToGpt() async {
@@ -104,34 +108,37 @@ class _AiChatScreenState extends State<AiChatScreen> {
     final String prompt = controller.text.trim();
     controller.clear();
 
+    if (!mounted) return;
     setState(() {
       _isLoading = true;
-
-      ChatService().addChat(
-        roal: 'user',
-        content: prompt,
-        timestamp: Timestamp.now(),
-      );
-      // lastUserPrompt.add(prompt);
-      messageImagesHistory.add([]);
+      lastUserPrompt.add(prompt);
+      messageImagesHistory.add(<String>[]); // Match index tracking dimensions
       messages.add({"role": "user", "content": prompt});
     });
+
+    await ChatService().addChat(
+      roal: 'user',
+      content: prompt,
+      timestamp: Timestamp.now(),
+    );
 
     try {
       String theAnswer = await getOpenRouterResponse(messages);
 
-      setState(() {
-        ChatService().addChat(
-          roal: 'Ai',
-          content: theAnswer,
-          timestamp: Timestamp.now(),
-        );
+      await ChatService().addChat(
+        roal: 'Ai',
+        content: theAnswer,
+        timestamp: Timestamp.now(),
+      );
 
-        // answer.add(theAnswer);
+      if (!mounted) return;
+      setState(() {
+        answer.add(theAnswer);
         _isLoading = false;
         messages.add({"role": "assistant", "content": theAnswer});
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         answer.add("Error connecting to server. Please try again.");
         _isLoading = false;
@@ -146,20 +153,20 @@ class _AiChatScreenState extends State<AiChatScreen> {
     final List<XFile> imagesToSend = List.from(selectedImage);
 
     controller.clear();
+    
+    // Convert selected images to Base64 strings immediately for the local UI update
+    List<String> base64ImageStrings = await _convertImagesToBase64(imagesToSend);
+
+    if (!mounted) return;
     setState(() {
       _isLoading = true;
       lastUserPrompt.add(prompt);
-      messageImagesHistory.add(imagesToSend);
+      messageImagesHistory.add(base64ImageStrings); // Lock base64 strings into active screen state
       selectedImage.clear();
     });
 
     try {
-      // 1. Convert local file data into light Base64 String paths
-      List<String> base64ImageStrings = await _convertImagesToBase64(
-        imagesToSend,
-      );
-
-      // 2. Save User query structure directly into Firestore as standard string fields
+      // 1. Save standard structured map payload blocks to Firestore database fields directly
       String uid = FirebaseAuth.instance.currentUser!.uid;
       await FirebaseFirestore.instance
           .collection('users')
@@ -168,18 +175,17 @@ class _AiChatScreenState extends State<AiChatScreen> {
           .add({
             'roal': 'user',
             'content': prompt,
-            'images':
-                base64ImageStrings, // Successfully saves base64 list arrays!
+            'images': base64ImageStrings, 
             'timestamp': Timestamp.now(),
           });
 
-      // 3. Request completion payload from OpenRouter
+      // 2. Request completion updates from OpenRouter
       String theAnswer = await getOpenRouterResponseForGpt40(
         prompt,
         imagesToSend,
       );
 
-      // 4. Record matching AI reply structure to Firestore
+      // 3. Save response string profiles
       await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
@@ -187,7 +193,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
           .add({
             'roal': 'Ai',
             'content': theAnswer,
-            'images': [], // Empty array for AI responses
+            'images': [],
             'timestamp': Timestamp.now(),
           });
 
@@ -210,7 +216,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
   Future _pickImages() async {
     final image = await ImagePicker().pickMultiImage(
-      maxWidth: 600, // Downscales maximum width dimensions to 600px
+      maxWidth: 600, 
       imageQuality: 70,
     );
 
@@ -236,11 +242,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
         final List<int> imageBytes = await image.readAsBytes();
         final String base64String = base64Encode(imageBytes);
 
-        // Get the file extension (jpg, png, etc.)
         String extension = image.path.split('.').last.toLowerCase();
         if (extension == 'jpg') extension = 'jpeg';
 
-        // Format it as a standard Data URI so your UI can display it easily later
         String fullBase64DataUri = "data:image/$extension;base64,$base64String";
         base64Strings.add(fullBase64DataUri);
       } catch (e) {
@@ -288,19 +292,14 @@ class _AiChatScreenState extends State<AiChatScreen> {
             // Welcome Card Area
             if (lastUserPrompt.isEmpty && answer.isEmpty && !_isLoading)
               Container(
-                margin: const EdgeInsets.symmetric(
-                  vertical: 20,
-                  horizontal: 24,
-                ),
+                margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: isDark
-                          ? Colors.black26
-                          : Colors.black.withOpacity(0.02),
+                      color: isDark ? Colors.black26 : Colors.black.withOpacity(0.02),
                       blurRadius: 10,
                     ),
                   ],
@@ -335,9 +334,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 13,
-                        color: isDark
-                            ? AppColors.darkTextBody
-                            : AppColors.textBody,
+                        color: isDark ? AppColors.darkTextBody : AppColors.textBody,
                         height: 1.4,
                       ),
                     ),
@@ -348,20 +345,17 @@ class _AiChatScreenState extends State<AiChatScreen> {
             // Scrollable Chat Message History Block Viewport
             Expanded(
               child: ListView.builder(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 itemCount: answer.length,
                 itemBuilder: (context, index) {
-                  // Safe indexing protection guard rails
-                  if (index >= lastUserPrompt.length)
+                  if (index >= lastUserPrompt.length || index >= messageImagesHistory.length) {
                     return const SizedBox.shrink();
+                  }
                   return AiAnswer(
                     answer: answer[index],
                     isLoading: false,
                     lastUserPrompt: lastUserPrompt[index],
-                    selectedimages: messageImagesHistory[index],
+                    selectedimages: messageImagesHistory[index], // Passes the String array flawlessly
                   );
                 },
               ),
@@ -370,10 +364,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
             // Network Action Progress Thinking Status Ring Tracker
             if (_isLoading)
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 8,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
@@ -397,9 +388,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                         Text(
                           "Thinking...",
                           style: TextStyle(
-                            color: isDark
-                                ? AppColors.darkTextBody
-                                : AppColors.textBody,
+                            color: isDark ? AppColors.darkTextBody : AppColors.textBody,
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
                           ),
@@ -414,10 +403,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
             if (selectedImage.isNotEmpty)
               Container(
                 height: 90,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 4,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: selectedImage.length,
@@ -431,9 +417,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: isDark
-                                  ? AppColors.darkInputFill
-                                  : AppColors.inputFill,
+                              color: isDark ? AppColors.darkInputFill : AppColors.inputFill,
                             ),
                           ),
                           child: ClipRRect(
@@ -456,11 +440,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                             child: const CircleAvatar(
                               radius: 10,
                               backgroundColor: Colors.black87,
-                              child: Icon(
-                                Icons.close,
-                                size: 12,
-                                color: Colors.white,
-                              ),
+                              child: Icon(Icons.close, size: 12, color: Colors.white),
                             ),
                           ),
                         ),
@@ -477,9 +457,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                 color: Theme.of(context).colorScheme.surface,
                 boxShadow: [
                   BoxShadow(
-                    color: isDark
-                        ? Colors.black38
-                        : Colors.black.withOpacity(0.04),
+                    color: isDark ? Colors.black38 : Colors.black.withOpacity(0.04),
                     blurRadius: 10,
                     offset: const Offset(0, -4),
                   ),
@@ -493,9 +471,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                         color: Theme.of(context).scaffoldBackgroundColor,
                         borderRadius: BorderRadius.circular(28),
                         border: Border.all(
-                          color: isDark
-                              ? AppColors.darkInputFill
-                              : AppColors.inputFill,
+                          color: isDark ? AppColors.darkInputFill : AppColors.inputFill,
                           width: 1,
                         ),
                       ),
@@ -513,15 +489,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
                           decoration: InputDecoration(
                             hintText: 'Ask Sync AI something...',
                             hintStyle: TextStyle(
-                              color: isDark
-                                  ? AppColors.darkTextBody
-                                  : AppColors.textBody,
+                              color: isDark ? AppColors.darkTextBody : AppColors.textBody,
                               fontWeight: FontWeight.w500,
                             ),
                             border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 12,
-                            ),
+                            contentPadding: const EdgeInsets.symmetric(vertical: 12),
                           ),
                         ),
                       ),
@@ -529,7 +501,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   ),
                   const SizedBox(width: 10),
 
-                  // Image Selection Attachment Trigger Pin
                   GestureDetector(
                     onTap: _pickImages,
                     child: AnimatedContainer(
@@ -539,17 +510,12 @@ class _AiChatScreenState extends State<AiChatScreen> {
                         color: AppColors.primary,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
-                        Icons.image,
-                        color: Colors.white,
-                        size: 20,
-                      ),
+                      child: const Icon(Icons.image, color: Colors.white, size: 20),
                     ),
                   ),
 
                   const SizedBox(width: 10),
 
-                  // Interactive Elevated Dynamic Send Execution Node
                   GestureDetector(
                     onTap: () {
                       if (selectedImage.isNotEmpty) {
@@ -565,11 +531,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                         color: AppColors.primary,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
-                        Icons.send_rounded,
-                        color: Colors.white,
-                        size: 20,
-                      ),
+                      child: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
                     ),
                   ),
                 ],

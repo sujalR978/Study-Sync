@@ -1,15 +1,14 @@
-import 'dart:io';
-
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-
 import 'package:study_sync/constants/app_colors.dart';
 
-class AiAnswer extends StatefulWidget {
+class AiAnswer extends StatelessWidget {
   final String lastUserPrompt;
   final String answer;
   final bool isLoading;
-  final List<XFile> selectedimages;
+  final List<String> selectedimages; // FIXED: Changed to List<String> to accept Base64 content
+
   const AiAnswer({
     super.key,
     required this.answer,
@@ -19,69 +18,68 @@ class AiAnswer extends StatefulWidget {
   });
 
   @override
-  State<AiAnswer> createState() => _AiAnswerState();
-}
-
-class _AiAnswerState extends State<AiAnswer> {
-  @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return // --- SCROLLABLE CENTRALIZED CHAT BUBBLE VIEWPORT ---
-    Padding(
+    return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
         children: [
-          // Initial Welcome Screen Matrix Card if no prompt has run yet
-
           // 1. --- USER PROMPT BUBBLE ---
           Align(
             alignment: Alignment.centerRight,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                if (widget.selectedimages.isNotEmpty)
+                // FIXED: Displays image previews from historical Base64 strings safely
+                if (selectedimages.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Wrap(
                       spacing: 6,
                       runSpacing: 6,
                       alignment: WrapAlignment.end,
-                      children: List.generate(widget.selectedimages.length, (
-                        index,
-                      ) {
-                        return Container(
-                          width: 65,
-                          height: 65,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: isDark
-                                  ? AppColors.darkInputFill
-                                  : AppColors.inputFill,
-                              width: 1.5,
+                      children: List.generate(selectedimages.length, (index) {
+                        try {
+                          // Extract raw Base64 contents by cutting data scheme signatures if present
+                          String base64RawStr = selectedimages[index];
+                          if (base64RawStr.contains(',')) {
+                            base64RawStr = base64RawStr.split(',').last;
+                          }
+                          
+                          Uint8List imageBytes = base64Decode(base64RawStr);
+
+                          return Container(
+                            width: 70,
+                            height: 70,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isDark ? AppColors.darkInputFill : AppColors.inputFill,
+                                width: 1.5,
+                              ),
                             ),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.file(
-                              File(widget.selectedimages[index].path),
-                              fit: BoxFit.cover,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.memory(
+                                imageBytes,
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
-                        );
+                          );
+                        } catch (e) {
+                          print("Failed decoding text string item in UI frame: $e");
+                          return const SizedBox.shrink();
+                        }
                       }),
                     ),
                   ),
 
                 Container(
                   margin: const EdgeInsets.only(bottom: 20, left: 50),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: const BoxDecoration(
-                    color: AppColors.primary, // Brand color remains static
+                    color: AppColors.primary,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20),
@@ -89,10 +87,9 @@ class _AiAnswerState extends State<AiAnswer> {
                     ),
                   ),
                   child: Text(
-                    widget.lastUserPrompt,
+                    lastUserPrompt,
                     style: const TextStyle(
-                      color: Colors
-                          .white, // Text remains white on primary background
+                      color: Colors.white,
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
                       height: 1.3,
@@ -103,16 +100,13 @@ class _AiAnswerState extends State<AiAnswer> {
             ),
           ),
 
-          // 2. --- NETWORK TYPING LOADER STATUS BLOCK ---
-
-          // 3. --- SYSTEM AI ANSWER RESPONDER BUBBLE ---
+          // 2. --- SYSTEM AI ANSWER RESPONDER BUBBLE ---
           Align(
             alignment: Alignment.centerLeft,
             child: Container(
               margin: const EdgeInsets.only(bottom: 20, right: 30),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                // FIXED: Uses structural safe layouts for surfaces
                 color: Theme.of(context).colorScheme.surface,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
@@ -121,9 +115,7 @@ class _AiAnswerState extends State<AiAnswer> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: isDark
-                        ? Colors.black26
-                        : Colors.black.withOpacity(0.02),
+                    color: isDark ? Colors.black26 : Colors.black.withOpacity(0.02),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -156,17 +148,13 @@ class _AiAnswerState extends State<AiAnswer> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Divider(
-                      // FIXED: Use adaptive dynamic borders or fills
-                      color: isDark
-                          ? AppColors.darkInputFill
-                          : AppColors.inputFill,
+                      color: isDark ? AppColors.darkInputFill : AppColors.inputFill,
                       thickness: 0.8,
                     ),
                   ),
                   SelectableText(
-                    widget.answer,
+                    answer,
                     style: TextStyle(
-                      // FIXED: Explicitly sets appropriate contrast font colors
                       color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 15,
                       height: 1.5,
