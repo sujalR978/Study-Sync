@@ -243,9 +243,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
     QuerySnapshot snapshot = await conllectionRef.get();
 
+    WriteBatch batch = FirebaseFirestore.instance.batch();
     for (DocumentSnapshot doc in snapshot.docs) {
-      await doc.reference.delete();
+      batch.delete(doc.reference);
     }
+    await batch.commit();
   }
 
   @override
