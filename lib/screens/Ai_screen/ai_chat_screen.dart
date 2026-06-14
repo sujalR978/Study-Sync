@@ -24,8 +24,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
   List<String> answer = [];
   bool _isLoading = false;
   List<String> lastUserPrompt = [];
-
-  // FIXED: Changed history container layout parameter tracking types to standard Strings
   List<List<String>> messageImagesHistory = [];
   List<Map<String, String>> messages = [];
 
@@ -37,8 +35,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
     super.initState();
     loadChat();
   }
-
-  // FIXED: Removed custom overridden setState logic completely to prevent execution loops!
 
   Future<void> loadChat() async {
     if (!mounted) return;
@@ -72,7 +68,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
         if (role == 'user') {
           temporaryUserPrompt = content;
 
-          // FIXED: Safely reads the stored string image arrays out of Firestore rows
           if (data['images'] != null) {
             temporaryUserImages = List<String>.from(data['images']);
           } else {
@@ -87,13 +82,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
                 : "Multimodal Query",
           );
           answer.add(content);
-
-          // FIXED: Pushes retrieved image references dynamically synchronized with the item turn index
           messageImagesHistory.add(List.from(temporaryUserImages));
-
           messages.add({"role": "assistant", "content": content});
 
-          // Reset turn variables
           temporaryUserPrompt = "";
           temporaryUserImages = [];
         }
@@ -116,7 +107,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
     setState(() {
       _isLoading = true;
       lastUserPrompt.add(prompt);
-      messageImagesHistory.add(<String>[]); // Match index tracking dimensions
+      messageImagesHistory.add(<String>[]);
       messages.add({"role": "user", "content": prompt});
     });
 
@@ -158,7 +149,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
     controller.clear();
 
-    // Convert selected images to Base64 strings immediately for the local UI update
+    // 1. Process local image compression parsing stages first
     List<String> base64ImageStrings = await _convertImagesToBase64(
       imagesToSend,
     );
@@ -167,15 +158,20 @@ class _AiChatScreenState extends State<AiChatScreen> {
     setState(() {
       _isLoading = true;
       lastUserPrompt.add(prompt);
-      messageImagesHistory.add(
-        base64ImageStrings,
-      ); // Lock base64 strings into active screen state
-      selectedImage.clear();
+      messageImagesHistory.add(base64ImageStrings);
+      selectedImage.clear(); // Safe to wipe picker UI elements immediately now
     });
 
     try {
-      // 1. Save standard structured map payload blocks to Firestore database fields directly
+      // 2. Push pre-converted string arrays directly down to OpenRouter
+      String theAnswer = await getOpenRouterResponseForGpt40(
+        prompt,
+        base64ImageStrings, // FIXED: Passing text parameters cleanly
+      );
+
       String uid = FirebaseAuth.instance.currentUser!.uid;
+
+      // 3. Document the User's transaction block parameters inside Firestore
       await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
@@ -187,13 +183,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
             'timestamp': Timestamp.now(),
           });
 
-      // 2. Request completion updates from OpenRouter
-      String theAnswer = await getOpenRouterResponseForGpt40(
-        prompt,
-        imagesToSend,
-      );
-
-      // 3. Save response string profiles
+      // 4. Record responding completion turns inside Firestore
       await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
@@ -297,7 +287,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Welcome Card Area
             if (lastUserPrompt.isEmpty && answer.isEmpty && !_isLoading)
               Container(
                 margin: const EdgeInsets.symmetric(
@@ -357,7 +346,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
                 ),
               ),
 
-            // Scrollable Chat Message History Block Viewport
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(
@@ -374,14 +362,12 @@ class _AiChatScreenState extends State<AiChatScreen> {
                     answer: answer[index],
                     isLoading: false,
                     lastUserPrompt: lastUserPrompt[index],
-                    selectedimages:
-                        messageImagesHistory[index], // Passes the String array flawlessly
+                    selectedimages: messageImagesHistory[index],
                   );
                 },
               ),
             ),
 
-            // Network Action Progress Thinking Status Ring Tracker
             if (_isLoading)
               Padding(
                 padding: const EdgeInsets.symmetric(
@@ -424,7 +410,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
                 ),
               ),
 
-            // Image Preview Terminal Docking Shelf Component
             if (selectedImage.isNotEmpty)
               Container(
                 height: 90,
@@ -484,7 +469,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
                 ),
               ),
 
-            // --- BOTTOM CONTROL TERMINAL DOCK ---
             Container(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
               decoration: BoxDecoration(
