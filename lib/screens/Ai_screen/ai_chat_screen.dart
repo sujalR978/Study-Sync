@@ -297,9 +297,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
               },
               child: Text(
                 'Clear',
-                style: TextStyle(
-                  color: isDark ? Colors.black : Colors.white.withOpacity(0.02),
-                ),
+                style: TextStyle(color: isDark ? Colors.white : Colors.black),
               ),
             ),
           ),
