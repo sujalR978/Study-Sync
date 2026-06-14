@@ -24,9 +24,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
   List<String> answer = [];
   bool _isLoading = false;
   List<String> lastUserPrompt = [];
-  
+
   // FIXED: Changed history container layout parameter tracking types to standard Strings
-  List<List<String>> messageImagesHistory = []; 
+  List<List<String>> messageImagesHistory = [];
   List<Map<String, String>> messages = [];
 
   List<XFile> selectedImage = [];
@@ -45,7 +45,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
     setState(() => _isLoading = true);
 
     String uid = FirebaseAuth.instance.currentUser!.uid;
-    
+
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('users')
@@ -71,24 +71,28 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
         if (role == 'user') {
           temporaryUserPrompt = content;
-          
+
           // FIXED: Safely reads the stored string image arrays out of Firestore rows
           if (data['images'] != null) {
             temporaryUserImages = List<String>.from(data['images']);
           } else {
             temporaryUserImages = [];
           }
-          
+
           messages.add({"role": "user", "content": content});
         } else if (role == 'Ai') {
-          lastUserPrompt.add(temporaryUserPrompt.isNotEmpty ? temporaryUserPrompt : "Multimodal Query");
+          lastUserPrompt.add(
+            temporaryUserPrompt.isNotEmpty
+                ? temporaryUserPrompt
+                : "Multimodal Query",
+          );
           answer.add(content);
-          
+
           // FIXED: Pushes retrieved image references dynamically synchronized with the item turn index
           messageImagesHistory.add(List.from(temporaryUserImages));
-          
+
           messages.add({"role": "assistant", "content": content});
-          
+
           // Reset turn variables
           temporaryUserPrompt = "";
           temporaryUserImages = [];
@@ -153,15 +157,19 @@ class _AiChatScreenState extends State<AiChatScreen> {
     final List<XFile> imagesToSend = List.from(selectedImage);
 
     controller.clear();
-    
+
     // Convert selected images to Base64 strings immediately for the local UI update
-    List<String> base64ImageStrings = await _convertImagesToBase64(imagesToSend);
+    List<String> base64ImageStrings = await _convertImagesToBase64(
+      imagesToSend,
+    );
 
     if (!mounted) return;
     setState(() {
       _isLoading = true;
       lastUserPrompt.add(prompt);
-      messageImagesHistory.add(base64ImageStrings); // Lock base64 strings into active screen state
+      messageImagesHistory.add(
+        base64ImageStrings,
+      ); // Lock base64 strings into active screen state
       selectedImage.clear();
     });
 
@@ -175,7 +183,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
           .add({
             'roal': 'user',
             'content': prompt,
-            'images': base64ImageStrings, 
+            'images': base64ImageStrings,
             'timestamp': Timestamp.now(),
           });
 
@@ -216,7 +224,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
   Future _pickImages() async {
     final image = await ImagePicker().pickMultiImage(
-      maxWidth: 600, 
+      maxWidth: 600,
       imageQuality: 70,
     );
 
@@ -292,14 +300,19 @@ class _AiChatScreenState extends State<AiChatScreen> {
             // Welcome Card Area
             if (lastUserPrompt.isEmpty && answer.isEmpty && !_isLoading)
               Container(
-                margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+                margin: const EdgeInsets.symmetric(
+                  vertical: 20,
+                  horizontal: 24,
+                ),
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: isDark ? Colors.black26 : Colors.black.withOpacity(0.02),
+                      color: isDark
+                          ? Colors.black26
+                          : Colors.black.withOpacity(0.02),
                       blurRadius: 10,
                     ),
                   ],
@@ -334,7 +347,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 13,
-                        color: isDark ? AppColors.darkTextBody : AppColors.textBody,
+                        color: isDark
+                            ? AppColors.darkTextBody
+                            : AppColors.textBody,
                         height: 1.4,
                       ),
                     ),
@@ -345,17 +360,22 @@ class _AiChatScreenState extends State<AiChatScreen> {
             // Scrollable Chat Message History Block Viewport
             Expanded(
               child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
                 itemCount: answer.length,
                 itemBuilder: (context, index) {
-                  if (index >= lastUserPrompt.length || index >= messageImagesHistory.length) {
+                  if (index >= lastUserPrompt.length ||
+                      index >= messageImagesHistory.length) {
                     return const SizedBox.shrink();
                   }
                   return AiAnswer(
                     answer: answer[index],
                     isLoading: false,
                     lastUserPrompt: lastUserPrompt[index],
-                    selectedimages: messageImagesHistory[index], // Passes the String array flawlessly
+                    selectedimages:
+                        messageImagesHistory[index], // Passes the String array flawlessly
                   );
                 },
               ),
@@ -364,7 +384,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
             // Network Action Progress Thinking Status Ring Tracker
             if (_isLoading)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 8,
+                ),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
@@ -388,7 +411,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
                         Text(
                           "Thinking...",
                           style: TextStyle(
-                            color: isDark ? AppColors.darkTextBody : AppColors.textBody,
+                            color: isDark
+                                ? AppColors.darkTextBody
+                                : AppColors.textBody,
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
                           ),
@@ -403,7 +428,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
             if (selectedImage.isNotEmpty)
               Container(
                 height: 90,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: selectedImage.length,
@@ -417,7 +445,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: isDark ? AppColors.darkInputFill : AppColors.inputFill,
+                              color: isDark
+                                  ? AppColors.darkInputFill
+                                  : AppColors.inputFill,
                             ),
                           ),
                           child: ClipRRect(
@@ -440,7 +470,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
                             child: const CircleAvatar(
                               radius: 10,
                               backgroundColor: Colors.black87,
-                              child: Icon(Icons.close, size: 12, color: Colors.white),
+                              child: Icon(
+                                Icons.close,
+                                size: 12,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -457,7 +491,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
                 color: Theme.of(context).colorScheme.surface,
                 boxShadow: [
                   BoxShadow(
-                    color: isDark ? Colors.black38 : Colors.black.withOpacity(0.04),
+                    color: isDark
+                        ? Colors.black38
+                        : Colors.black.withOpacity(0.04),
                     blurRadius: 10,
                     offset: const Offset(0, -4),
                   ),
@@ -471,7 +507,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
                         color: Theme.of(context).scaffoldBackgroundColor,
                         borderRadius: BorderRadius.circular(28),
                         border: Border.all(
-                          color: isDark ? AppColors.darkInputFill : AppColors.inputFill,
+                          color: isDark
+                              ? AppColors.darkInputFill
+                              : AppColors.inputFill,
                           width: 1,
                         ),
                       ),
@@ -489,11 +527,15 @@ class _AiChatScreenState extends State<AiChatScreen> {
                           decoration: InputDecoration(
                             hintText: 'Ask Sync AI something...',
                             hintStyle: TextStyle(
-                              color: isDark ? AppColors.darkTextBody : AppColors.textBody,
+                              color: isDark
+                                  ? AppColors.darkTextBody
+                                  : AppColors.textBody,
                               fontWeight: FontWeight.w500,
                             ),
                             border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 12,
+                            ),
                           ),
                         ),
                       ),
@@ -510,7 +552,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
                         color: AppColors.primary,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.image, color: Colors.white, size: 20),
+                      child: const Icon(
+                        Icons.image,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
                   ),
 
@@ -531,7 +577,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
                         color: AppColors.primary,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
+                      child: const Icon(
+                        Icons.send_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
                   ),
                 ],
