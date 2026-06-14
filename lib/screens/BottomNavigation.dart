@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:study_sync/screens/Notes/createNotes.dart';
 import 'package:study_sync/screens/Task%20Screen/add_Task_Screen.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/screens/profile/profileScreen.dart';
@@ -16,7 +17,7 @@ class _MainState extends State<Bottomnavigation> {
 
   final List<Widget> page = [
     const HomeScreen(),
-    const AddTaskScreen(),
+    const Createnotes(),
     const Profilescreen(),
     const SettingScreen(),
   ];
@@ -37,10 +38,7 @@ class _MainState extends State<Bottomnavigation> {
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_task),
-            label: "Add Task",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.notes), label: "Notes"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Setting"),
         ],
