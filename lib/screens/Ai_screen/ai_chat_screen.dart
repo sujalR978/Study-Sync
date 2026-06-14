@@ -283,6 +283,13 @@ class _AiChatScreenState extends State<AiChatScreen> {
             );
           },
         ),
+
+        actions: [
+          TextButton(
+            onPressed: () {},
+            child: Text('Clear', style: TextStyle(color: Colors.black)),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
