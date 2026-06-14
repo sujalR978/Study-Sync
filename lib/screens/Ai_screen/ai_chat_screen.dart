@@ -51,7 +51,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
       } else if (data['roal'] == 'Ai') {
         answer.add(data['content']?.toString() ?? '');
       }
-      selectedImage.add([] as XFile);
+      messageImagesHistory.add([] as List<XFile>);
     }
     if (!mounted) return;
     setState(() {});
@@ -280,7 +280,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                     answer: answer[index],
                     isLoading: false,
                     lastUserPrompt: lastUserPrompt[index],
-                    // selectedimages: messageImagesHistory[index],
+                    selectedimages: messageImagesHistory[index],
                   );
                 },
               ),
