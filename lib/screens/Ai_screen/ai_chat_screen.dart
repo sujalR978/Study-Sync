@@ -288,8 +288,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: TextButton(
-              onPressed: () {
-                ChatService().deleteChat();
+              onPressed: () async {
+                await ChatService().deleteChat();
 
                 Navigator.of(
                   context,
