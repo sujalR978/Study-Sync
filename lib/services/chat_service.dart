@@ -41,6 +41,12 @@ class ChatService {
         .snapshots();
   }
 
+  Stream<QuerySnapshot> deleteChat() {
+    String uid = _auth.currentUser!.uid;
+
+    return _firestore.collection('users').doc(uid).collection('chats');
+  }
+
   Future<void> addImageChat({
     required String roal,
     required String content,
