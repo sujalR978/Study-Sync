@@ -227,9 +227,12 @@ class _AiChatScreenState extends State<AiChatScreen> {
   }
 
   Future<void> deleteChat() async {
-
     setState(() {
-      
+      answer.clear();
+      lastUserPrompt.clear();
+      messageImagesHistory.clear();
+      messages.clear();
+      _isLoading = false; // Stop any active loading indicators
     });
     String uid = FirebaseAuth.instance.currentUser!.uid;
 
