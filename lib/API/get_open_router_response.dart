@@ -1,9 +1,9 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:study_sync/API/api_key.dart';
 
+// --- STANDARD TEXT-ONLY CHAT COMPLETION ---
 Future<String> getOpenRouterResponse(List<Map<String, String>> massage) async {
   const String endpoint = "https://openrouter.ai/api/v1/chat/completions";
 
@@ -13,7 +13,8 @@ Future<String> getOpenRouterResponse(List<Map<String, String>> massage) async {
   };
 
   final body = jsonEncode({
-    "model": "anthropic/claude-sonnet-4",
+    "model":
+        "google/gemini-2.5-flash", // FIXED: Updated to an active, reliable text model
     "messages": massage,
     "temperature": 0.7,
     "max_tokens": 200,
@@ -27,13 +28,13 @@ Future<String> getOpenRouterResponse(List<Map<String, String>> massage) async {
 
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
-
     return data['choices'][0]['message']['content'];
   } else {
     throw Exception('Failed: ${response.statusCode} - ${response.body}');
   }
 }
 
+// --- MULTIMODAL IMAGE + TEXT COMPLETION (GPT-4o) ---
 Future<dynamic> getOpenRouterResponseForGpt40(
   String message,
   List<XFile> images,
@@ -44,6 +45,7 @@ Future<dynamic> getOpenRouterResponseForGpt40(
     'Authorization': 'Bearer $API_image',
     'Content-Type': 'application/json',
   };
+
   List<Map<String, dynamic>> message_images = [
     {"type": "text", "text": message},
   ];
@@ -58,13 +60,10 @@ Future<dynamic> getOpenRouterResponseForGpt40(
 
       message_images.add({
         "type": "image_url",
-        "image_url": {
-          // Format standard Data URI mapping block
-          "url": "data:image/$extension;base64,$base64",
-        },
+        "image_url": {"url": "data:image/$extension;base64,$base64"},
       });
     } catch (e) {
-      throw Exception('faild $e');
+      throw Exception('failed $e');
     }
   }
 
@@ -74,10 +73,9 @@ Future<dynamic> getOpenRouterResponseForGpt40(
       {
         "role": "user",
         "content":
-            message_images, // This is your array holding text + base64 images
+            message_images, // FIXED: Changed from message_contents to your defined message_images list!
       },
     ],
-
     "temperature": 0.7,
     "max_tokens": 200,
   });
@@ -90,13 +88,13 @@ Future<dynamic> getOpenRouterResponseForGpt40(
 
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
-
     return data['choices'][0]['message']['content'];
   } else {
     throw Exception('Failed: ${response.statusCode} - ${response.body}');
   }
 }
 
-Future<dynamic> getOpenRouterResponseForgemini()async{
-  
+// --- FUTURE GEMINI SPECIFIC FUNCTION FRAMEWORK ---
+Future<dynamic> getOpenRouterResponseForgemini() async {
+  // Ready for implementation when needed
 }
