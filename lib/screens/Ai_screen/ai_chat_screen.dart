@@ -291,7 +291,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
               onPressed: () {},
               child: Text(
                 'Clear',
-                style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black.withOpacity(0.02),
+                ),
               ),
             ),
           ),
