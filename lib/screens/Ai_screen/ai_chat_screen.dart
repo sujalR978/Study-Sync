@@ -38,6 +38,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
         .orderBy('timestamp')
         .get();
 
+    lastUserPrompt.clear();
+    answer.clear();
+
     for (var doc in snapshot.docs) {
       final data = doc.data() as Map<String, dynamic>?;
 
@@ -86,6 +89,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
           content: theAnswer,
           timestamp: Timestamp.now(),
         );
+
         // answer.add(theAnswer);
         _isLoading = false;
         messages.add({"role": "assistant", "content": theAnswer});
