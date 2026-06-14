@@ -285,9 +285,12 @@ class _AiChatScreenState extends State<AiChatScreen> {
         ),
 
         actions: [
-          TextButton(
-            onPressed: () {},
-            child: Text('Clear', style: TextStyle(color: Colors.black)),
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: TextButton(
+              onPressed: () {},
+              child: Text('Clear', style: TextStyle(color: Colors.black)),
+            ),
           ),
         ],
       ),
