@@ -226,6 +226,25 @@ class _AiChatScreenState extends State<AiChatScreen> {
     }
   }
 
+  Future<void> deleteChat() async {
+
+    setState(() {
+      
+    });
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+
+    final CollectionReference conllectionRef = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('chats');
+
+    QuerySnapshot snapshot = await conllectionRef.get();
+
+    for (DocumentSnapshot doc in snapshot.docs) {
+      await doc.reference.delete();
+    }
+  }
+
   @override
   void dispose() {
     controller.dispose();
@@ -289,7 +308,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
             padding: const EdgeInsets.only(right: 8.0),
             child: TextButton(
               onPressed: () async {
-                await ChatService().deleteChat();
+                await deleteChat();
 
                 Navigator.of(
                   context,
