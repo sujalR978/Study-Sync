@@ -57,6 +57,32 @@ class _AiChatScreenState extends State<AiChatScreen> {
     setState(() {});
   }
 
+  Future<void> loadImageChat() async {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('chats')
+        .orderBy('timestamp')
+        .get();
+
+    for (var doc in snapshot.docs) {
+      final data = doc.data() as Map<String, dynamic>?;
+
+      if (data == null) continue;
+
+      if (data['roal'] == 'user') {
+        lastUserPrompt.add(data['content']?.toString() ?? '');
+      } else if (data['roal'] == 'Ai') {
+        answer.add(data['content']?.toString() ?? '');
+      }
+      messageImagesHistory.add(<XFile>[]);
+    }
+    if (!mounted) return;
+
+    setState(() {});
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -123,6 +149,12 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
     controller.clear();
     setState(() {
+      ChatService().addImageChat(
+        roal: 'user',
+        content: prompt,
+        images: imagesToSend.toString(),
+        timestamp: Timestamp.now(),
+      );
       _isLoading = true;
       lastUserPrompt.add(prompt);
       messageImagesHistory.add(imagesToSend);
