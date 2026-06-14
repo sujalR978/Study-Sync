@@ -41,20 +41,7 @@ class ChatService {
         .snapshots();
   }
 
-  Future<void> deleteChat() async {
-    String uid = _auth.currentUser!.uid;
 
-    final CollectionReference conllectionRef = await _firestore
-        .collection('users')
-        .doc(uid)
-        .collection('chats');
-
-    QuerySnapshot snapshot = await conllectionRef.get();
-
-    for (DocumentSnapshot doc in snapshot.docs) {
-      await doc.reference.delete();
-    }
-  }
 
   Future<void> addImageChat({
     required String roal,
