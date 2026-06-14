@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
 import 'package:study_sync/API/api_key.dart';
 
 // --- STANDARD TEXT-ONLY CHAT COMPLETION ---
@@ -13,8 +12,7 @@ Future<String> getOpenRouterResponse(List<Map<String, String>> massage) async {
   };
 
   final body = jsonEncode({
-    "model":
-        "google/gemini-2.5-flash", // FIXED: Updated to an active, reliable text model
+    "model": "google/gemini-2.5-flash", 
     "messages": massage,
     "temperature": 0.7,
     "max_tokens": 200,
@@ -37,7 +35,7 @@ Future<String> getOpenRouterResponse(List<Map<String, String>> massage) async {
 // --- MULTIMODAL IMAGE + TEXT COMPLETION (GPT-4o) ---
 Future<dynamic> getOpenRouterResponseForGpt40(
   String message,
-  List<XFile> images,
+  List<String> base64Images, // FIXED: Now accepts pre-converted Base64 strings directly!
 ) async {
   const String endPoint = "https://openrouter.ai/api/v1/chat/completions";
 
@@ -50,21 +48,14 @@ Future<dynamic> getOpenRouterResponseForGpt40(
     {"type": "text", "text": message},
   ];
 
-  for (XFile image in images) {
-    try {
-      final bytes = await image.readAsBytes();
-      final base64 = base64Encode(bytes);
-
-      String extension = image.path.split('.').last.toLowerCase();
-      if (extension == 'jpg') extension = 'jpeg';
-
-      message_images.add({
-        "type": "image_url",
-        "image_url": {"url": "data:image/$extension;base64,$base64"},
-      });
-    } catch (e) {
-      throw Exception('failed $e');
-    }
+  // Map pre-converted strings directly into your payload structures
+  for (String base64DataUri in base64Images) {
+    message_images.add({
+      "type": "image_url",
+      "image_url": {
+        "url": base64DataUri, // Injecting pre-formatted "data:image/jpeg;base64,..." string
+      },
+    });
   }
 
   final body = jsonEncode({
@@ -72,8 +63,7 @@ Future<dynamic> getOpenRouterResponseForGpt40(
     "messages": [
       {
         "role": "user",
-        "content":
-            message_images, // FIXED: Changed from message_contents to your defined message_images list!
+        "content": message_images,
       },
     ],
     "temperature": 0.7,
