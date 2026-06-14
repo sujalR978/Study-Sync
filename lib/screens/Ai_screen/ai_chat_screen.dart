@@ -314,10 +314,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
             child: TextButton(
               onPressed: () async {
                 await deleteChat();
-
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (context) => AiChatScreen()));
               },
               child: Text(
                 'Clear',
