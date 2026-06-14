@@ -51,7 +51,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
       } else if (data['roal'] == 'Ai') {
         answer.add(data['content']?.toString() ?? '');
       }
-      messageImagesHistory.add([] as List<XFile>);
+      messageImagesHistory.add(<XFile>[]);
     }
     if (!mounted) return;
     setState(() {});
