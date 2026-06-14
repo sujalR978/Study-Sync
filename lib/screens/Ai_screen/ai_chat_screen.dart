@@ -52,13 +52,23 @@ class _AiChatScreenState extends State<AiChatScreen> {
         answer.add(data['content']?.toString() ?? '');
       }
     }
+    if (!mounted) return;
     setState(() {});
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadChat();
   }
 
   @override
   void setState(VoidCallback fn) {
     // TODO: implement setState
     super.setState(fn);
+
+    loadChat();
   }
 
   void _talkToGpt() async {
