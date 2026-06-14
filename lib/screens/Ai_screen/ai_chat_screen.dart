@@ -289,9 +289,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
             padding: const EdgeInsets.only(right: 8.0),
             child: TextButton(
               onPressed: () {
-                setState(() {
-                  ChatService().deleteChat();
-                });
+                ChatService().deleteChat();
+
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (context) => AiChatScreen()));
               },
               child: Text(
                 'Clear',
