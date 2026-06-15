@@ -93,9 +93,9 @@ class _CreatenotesState extends State<Createnotes> {
                     body: notesBody.text,
                   );
 
-                  Navigator.of(
-                    context,
-                  ).push(MaterialPageRoute(builder: (context) => Notes()));
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => Notes()),
+                  );
                 }
               },
               child: Text('Create Note'),
