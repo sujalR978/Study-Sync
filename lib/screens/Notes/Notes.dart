@@ -23,7 +23,8 @@ class _NotesState extends State<Notes> {
           icon: Icon(Icons.arrow_back_ios),
         ),
 
-        title: Center(
+        title: Padding(
+          padding: const EdgeInsets.only(left: 110),
           child: Text('Notes', style: TextStyle(fontWeight: FontWeight.w500)),
         ),
       ),
