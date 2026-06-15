@@ -121,11 +121,14 @@ class _NotesState extends State<Notes> {
                           0.85, // Balances heights beautifully for note descriptions
                     ),
                     itemBuilder: (context, index) {
+
+                      
                       final data = notes[index];
                       String title = data['title'] ?? 'Untitled';
                       String body = data['body'] ?? '';
 
                       return Container(
+
                         decoration: BoxDecoration(
                           color: isDark
                               ? AppColors.darkSurface
@@ -150,6 +153,7 @@ class _NotesState extends State<Notes> {
                           ],
                         ),
                         child: ClipRRect(
+                          
                           borderRadius: BorderRadius.circular(20),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
