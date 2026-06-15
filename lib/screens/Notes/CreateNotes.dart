@@ -61,7 +61,7 @@ class _CreatenotesState extends State<Createnotes> {
                     context: context,
                     valideter: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Add Notes title';
+                        return 'Add Note title';
                       }
                       return null;
                     },
@@ -76,7 +76,7 @@ class _CreatenotesState extends State<Createnotes> {
                     context: context,
                     valideter: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Add Notes title';
+                        return 'Add Note body';
                       }
                       return null;
                     },
