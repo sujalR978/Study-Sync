@@ -38,4 +38,15 @@ class NotesService {
         .collection('notes')
         .add(note.toMap());
   }
+
+  Future<void> getNotes() async {
+    String uid = _auth.currentUser!.uid;
+
+    await _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('notes')
+        .orderBy('order')
+        .get();
+  }
 }
