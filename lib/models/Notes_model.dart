@@ -1,7 +1,7 @@
 class NotesModel {
   final String title;
   final String body;
-  final int id;
+  final String id;
   final int order;
 
   NotesModel({
