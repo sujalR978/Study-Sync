@@ -10,6 +10,11 @@ class Createnotes extends StatefulWidget {
 class _CreatenotesState extends State<Createnotes> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(onPressed: () {}, icon: Icon(Icons.arrow_back_ios)),
+        title: Text('Notes'),
+      ),
+    );
   }
 }
