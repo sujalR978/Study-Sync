@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:study_sync/screens/BottomNavigation.dart';
 import 'package:study_sync/screens/Notes/createNotes.dart';
-import 'package:study_sync/screens/home/home_screen.dart';
+
 
 class Notes extends StatefulWidget {
   const Notes({super.key});
@@ -38,9 +38,6 @@ class _NotesState extends State<Notes> {
         },
         child: Icon(Icons.add),
       ),
-
-
-
     );
   }
 }
