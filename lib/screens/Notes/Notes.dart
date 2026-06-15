@@ -46,58 +46,62 @@ class _NotesState extends State<Notes> {
       body: SafeArea(
         child: Column(
           children: [
-            StreamBuilder(
-              stream: NotesService().getNotes(),
-              builder: (context, snepshot) {
-                if (snepshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(color: AppColors.primary),
-                  );
-                }
-                if (snepshot.hasError) {
-                  return Center(child: Text(snepshot.error.toString()));
-                }
-                if (!snepshot.hasData || snepshot.data!.docs.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.task_rounded,
-                          size: 80,
-                          color: isDark
-                              ? AppColors.darkInputFill
-                              : AppColors.inputFill,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          "No Tasks Found",
-                          style: TextStyle(
+            // ✅ CHANGED: Swapped SizedBox with Expanded to stop the unbounded height layout crash
+            Expanded(
+              child: StreamBuilder(
+                stream: NotesService().getNotes(),
+                builder: (context, snepshot) {
+                  if (snepshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primary,
+                      ),
+                    );
+                  }
+                  if (snepshot.hasError) {
+                    return Center(child: Text(snepshot.error.toString()));
+                  }
+                  if (!snepshot.hasData || snepshot.data!.docs.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.task_rounded,
+                            size: 80,
                             color: isDark
-                                ? AppColors.darkTextBody
-                                : AppColors.textBody,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
+                                ? AppColors.darkInputFill
+                                : AppColors.inputFill,
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
+                          const SizedBox(height: 16),
+                          Text(
+                            "No Tasks Found",
+                            style: TextStyle(
+                              color: isDark
+                                  ? AppColors.darkTextBody
+                                  : AppColors.textBody,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
 
-                final notes = snepshot.data!.docs.toList();
+                  final notes = snepshot.data!.docs.toList();
 
-                return SizedBox(
-                  child: ListView.builder(
+                  // ✅ FIXED: Removed the redundant wrapping SizedBox from here as well to keep layout clean
+                  return ListView.builder(
                     itemCount: notes.length,
                     itemBuilder: (context, index) {
                       final data = notes[index];
                       String title = data['title'];
                       return SizedBox(child: Column(children: [Text(title)]));
                     },
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ],
         ),
