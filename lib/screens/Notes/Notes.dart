@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:study_sync/screens/BottomNavigation.dart';
 import 'package:study_sync/screens/Notes/createNotes.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 
@@ -18,7 +19,7 @@ class _NotesState extends State<Notes> {
           onPressed: () {
             Navigator.of(
               context,
-            ).push(MaterialPageRoute(builder: (context) => HomeScreen()));
+            ).push(MaterialPageRoute(builder: (context) => Bottomnavigation()));
           },
           icon: Icon(Icons.arrow_back_ios),
         ),
@@ -39,7 +40,7 @@ class _NotesState extends State<Notes> {
       ),
 
 
-      
+
     );
   }
 }
