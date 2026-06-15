@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:study_sync/screens/Notes/createNotes.dart';
+import 'package:study_sync/screens/Notes/Notes.dart';
 
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/screens/profile/profileScreen.dart';
@@ -17,7 +17,7 @@ class _MainState extends State<Bottomnavigation> {
 
   final List<Widget> page = [
     const HomeScreen(),
-    const Createnotes(),
+    const Notes(),
     const Profilescreen(),
     const SettingScreen(),
   ];
