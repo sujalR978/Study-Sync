@@ -39,14 +39,14 @@ class NotesService {
         .add(note.toMap());
   }
 
-  Future<void> getNotes() async {
+  Stream<QuerySnapshot<Map<String, dynamic>>> getNotes() {
     String uid = _auth.currentUser!.uid;
 
-    await _firestore
+    return _firestore
         .collection('users')
         .doc(uid)
         .collection('notes')
         .orderBy('order')
-        .get();
+        .snapshots();
   }
 }
