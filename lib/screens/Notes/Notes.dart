@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:study_sync/constants/app_colors.dart';
-import 'package:study_sync/providers/them_provider.dart';
+
 import 'package:study_sync/screens/BottomNavigation.dart';
 import 'package:study_sync/screens/Notes/createNotes.dart';
 import 'package:study_sync/services/Notes_service.dart';
@@ -91,7 +91,7 @@ class _NotesState extends State<Notes> {
                   itemCount: notes.length,
                   itemBuilder: (context, index) {
                     final data = notes[index].data();
-                    final String title = data['title'].toString() ?? '';
+                    String title = data['title'].toString() ?? '';
                     return SizedBox(child: Column(children: [Text(title)]));
                   },
                 );
