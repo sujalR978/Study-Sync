@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:study_sync/screens/Notes/Notes.dart';
+import 'package:study_sync/widgets/custom_textfield.dart';
 
 class Createnotes extends StatefulWidget {
   const Createnotes({super.key});
@@ -9,6 +10,11 @@ class Createnotes extends StatefulWidget {
 }
 
 class _CreatenotesState extends State<Createnotes> {
+  final TextEditingController notesName = TextEditingController();
+
+  final TextEditingController notesBody = TextEditingController();
+  final GlobalKey<FormState> KeyForm = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,11 +29,32 @@ class _CreatenotesState extends State<Createnotes> {
         ),
 
         title: Padding(
-          padding: const EdgeInsets.only(left: 110),
+          padding: const EdgeInsets.only(left: 90),
           child: Text(
             'Add Notes',
             style: TextStyle(fontWeight: FontWeight.w500),
           ),
+        ),
+      ),
+
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Form(
+              key: KeyForm,
+              child: Column(
+                children: [
+                  CustomTextfield.customTextField(
+                    hintText: 'Add Note Title...',
+                    icon: Icons.note,
+                    controller: notesName,
+                    context: context,
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
