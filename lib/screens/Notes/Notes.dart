@@ -42,7 +42,9 @@ class _NotesState extends State<Notes> {
 
       body: SafeArea(child: Column(
         children: [
-          StreamBuilder(stream: NotesService().getNotes(), builder: builder)
+          StreamBuilder(stream: NotesService().getNotes(), builder: (context,index){
+            
+          })
         ],
       )),
     );
