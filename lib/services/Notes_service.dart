@@ -17,6 +17,19 @@ class NotesService {
     DocumentReference idRef = notes.doc();
     String id = idRef.id;
 
-    
+    QuerySnapshot snapshot = await _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('notes')
+        .get();
+
+    int order = snapshot.docs.length;
+
+    NotesModel note = NotesModel(
+      title: title,
+      body: body,
+      id: id,
+      order: order,
+    );
   }
 }
