@@ -38,6 +38,12 @@ class _NotesState extends State<Notes> {
         },
         child: Icon(Icons.add),
       ),
+
+      body: SafeArea(child: Column(
+        children: [
+          grid
+        ],
+      )),
     );
   }
 }
