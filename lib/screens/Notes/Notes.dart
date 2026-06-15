@@ -41,7 +41,7 @@ class _NotesState extends State<Notes> {
 
       body: SafeArea(child: Column(
         children: [
-          grid
+          
         ],
       )),
     );
