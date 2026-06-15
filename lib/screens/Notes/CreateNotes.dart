@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:study_sync/screens/Notes/Notes.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 
@@ -64,6 +65,11 @@ class _CreatenotesState extends State<Createnotes> {
                       }
                       return null;
                     },
+                    regex: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp('r[0-9,a-z,A-Z]'),
+                      ),
+                    ],
                   ),
                   CustomTextfield.customTextField(
                     hintText: 'Add Note Body...',
