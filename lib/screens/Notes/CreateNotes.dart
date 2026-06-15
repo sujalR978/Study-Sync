@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:study_sync/screens/Notes/Notes.dart';
+import 'package:study_sync/services/Notes_service.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 
 class Createnotes extends StatefulWidget {
@@ -87,12 +88,11 @@ class _CreatenotesState extends State<Createnotes> {
             ElevatedButton(
               onPressed: () {
                 if (KeyForm.currentState!.validate()) {
+                  NotesService().AddNotes(
+                    title: notesName.text,
+                    body: notesBody.text,
+                  );
 
-
-
-
-
-                  
                   Navigator.of(
                     context,
                   ).push(MaterialPageRoute(builder: (context) => Notes()));
