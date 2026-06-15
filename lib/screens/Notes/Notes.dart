@@ -97,7 +97,10 @@ class _NotesState extends State<Notes> {
                     itemBuilder: (context, index) {
                       final data = notes[index];
                       String title = data['title'];
-                      return SizedBox(child: Column(children: [Text(title)]));
+                      String body = data['body'];
+                      return SizedBox(
+                        child: Column(children: [Text(title), Text(body)]),
+                      );
                     },
                   );
                 },
