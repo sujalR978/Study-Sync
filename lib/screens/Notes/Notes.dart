@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:study_sync/screens/BottomNavigation.dart';
 import 'package:study_sync/screens/Notes/createNotes.dart';
+import 'package:study_sync/services/Notes_service.dart';
 
 
 class Notes extends StatefulWidget {
@@ -41,7 +42,7 @@ class _NotesState extends State<Notes> {
 
       body: SafeArea(child: Column(
         children: [
-          StreamBuilder(stream: , builder: builder)
+          StreamBuilder(stream: NotesService().getNotes(), builder: builder)
         ],
       )),
     );
