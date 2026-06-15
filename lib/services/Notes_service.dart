@@ -9,14 +9,14 @@ class NotesService {
   Future<void> AddNotes({required String title, required String body}) async {
     String uid = _auth.currentUser!.uid;
 
-    NotesModel notes = NotesModel(title: title, body: body);
-
-    await _firestore
+    CollectionReference notes = await _firestore
         .collection('users')
         .doc(uid)
-        .collection('notes')
-        .add(notes.toMap());
-  }
+        .collection('notes');
 
-  
+    DocumentReference idRef = notes.doc();
+    String id = idRef.id;
+
+    
+  }
 }
