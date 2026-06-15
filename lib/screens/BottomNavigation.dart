@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:study_sync/screens/Notes/createNotes.dart';
-import 'package:study_sync/screens/Task%20Screen/add_Task_Screen.dart';
+
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/screens/profile/profileScreen.dart';
 import 'package:study_sync/screens/setting/setting_screen.dart';
