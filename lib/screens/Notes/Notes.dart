@@ -91,7 +91,7 @@ class _NotesState extends State<Notes> {
                   itemCount: notes.length,
                   itemBuilder: (context, index) {
                     final data = notes[index].data();
-                    String title = data['title'].toString();
+                    String title = data['title'];
                     return SizedBox(child: Column(children: [Text(title)]));
                   },
                 );
