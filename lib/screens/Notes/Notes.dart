@@ -87,13 +87,15 @@ class _NotesState extends State<Notes> {
 
                 final notes = snepshot.data!.docs.toList();
 
-                return ListView.builder(
-                  itemCount: notes.length,
-                  itemBuilder: (context, index) {
-                    final data = notes[index].data();
-                    String title = data['title'];
-                    return SizedBox(child: Column(children: [Text(title)]));
-                  },
+                return SizedBox(
+                  child: ListView.builder(
+                    itemCount: notes.length,
+                    itemBuilder: (context, index) {
+                      final data = notes[index];
+                      String title = data['title'];
+                      return SizedBox(child: Column(children: [Text(title)]));
+                    },
+                  ),
                 );
               },
             ),
