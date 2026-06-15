@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:study_sync/screens/Notes/createNotes.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 
 class Notes extends StatefulWidget {
@@ -28,7 +29,11 @@ class _NotesState extends State<Notes> {
       ),
 
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => Createnotes()));
+        },
         child: Icon(Icons.add),
       ),
     );
