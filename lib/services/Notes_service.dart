@@ -31,5 +31,11 @@ class NotesService {
       id: id,
       order: order,
     );
+
+    await _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('notes')
+        .add(note.toMap());
   }
 }
