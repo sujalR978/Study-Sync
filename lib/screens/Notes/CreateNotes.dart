@@ -50,6 +50,24 @@ class _CreatenotesState extends State<Createnotes> {
                     icon: Icons.note,
                     controller: notesName,
                     context: context,
+                    valideter: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Add Notes title';
+                      }
+                      return null;
+                    },
+                  ),
+                  CustomTextfield.customTextField(
+                    hintText: 'Add Note Body...',
+                    icon: Icons.note,
+                    controller: notesBody,
+                    context: context,
+                    valideter: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Add Notes title';
+                      }
+                      return null;
+                    },
                   ),
                 ],
               ),
