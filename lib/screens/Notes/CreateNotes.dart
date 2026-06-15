@@ -16,6 +16,14 @@ class _CreatenotesState extends State<Createnotes> {
   final GlobalKey<FormState> KeyForm = GlobalKey<FormState>();
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    notesBody.dispose();
+    notesName.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
