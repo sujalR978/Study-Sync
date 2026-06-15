@@ -13,7 +13,10 @@ class _CreatenotesState extends State<Createnotes> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(onPressed: () {}, icon: Icon(Icons.arrow_back_ios)),
-        title: Text('Notes'),
+
+        title: Center(
+          child: Text('Notes', style: TextStyle(fontWeight: FontWeight.w500)),
+        ),
       ),
     );
   }
