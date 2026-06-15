@@ -1,10 +1,17 @@
 class NotesModel {
   final String title;
   final String body;
+  final int id;
+  final int order;
 
-  NotesModel({required this.title, required this.body});
+  NotesModel({
+    required this.title,
+    required this.body,
+    required this.id,
+    required this.order,
+  });
 
-  Map<String, String> toMap() {
-    return {'title': title, 'body': body};
+  Map<String, dynamic> toMap() {
+    return {'title': title, 'body': body, 'id': id, 'order': order};
   }
 }
