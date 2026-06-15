@@ -37,6 +37,9 @@ class _NotesState extends State<Notes> {
         },
         child: Icon(Icons.add),
       ),
+
+
+      
     );
   }
 }
