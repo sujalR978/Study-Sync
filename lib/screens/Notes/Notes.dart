@@ -1,0 +1,36 @@
+import 'package:flutter/material.dart';
+import 'package:study_sync/screens/home/home_screen.dart';
+
+class Notes extends StatefulWidget {
+  const Notes({super.key});
+
+  @override
+  State<Notes> createState() => _NotesState();
+}
+
+class _NotesState extends State<Notes> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => HomeScreen()));
+          },
+          icon: Icon(Icons.arrow_back_ios),
+        ),
+
+        title: Center(
+          child: Text('Notes', style: TextStyle(fontWeight: FontWeight.w500)),
+        ),
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
