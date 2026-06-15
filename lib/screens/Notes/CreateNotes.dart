@@ -67,7 +67,7 @@ class _CreatenotesState extends State<Createnotes> {
                       return null;
                     },
                     regex: [
-                      FilteringTextInputFormatter.allow(RegExp('[0-9a-zA-Z]')),
+                      FilteringTextInputFormatter.allow(RegExp('[0-9a-zA-Z ]')),
                     ],
                   ),
                   CustomTextfield.customTextField(
