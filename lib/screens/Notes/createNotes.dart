@@ -27,7 +27,12 @@ class _CreatenotesState extends State<Createnotes> {
         ),
       ),
 
-      floatingActionButton: FloatingActionButton(onPressed: () {}),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          
+        },
+        child: Icon(Icons.add),
+      ),
     );
   }
 }
