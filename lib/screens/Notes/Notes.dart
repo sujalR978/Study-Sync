@@ -190,8 +190,9 @@ class _NotesState extends State<Notes> {
                                       ),
                                     ),
 
+SizedBox(width: 300,)
                                     Align(
-                                      alignment: AlignmentGeometry.topEnd,
+                                      
                                       child: IconButton(
                                         onPressed: () {
                                           show();
