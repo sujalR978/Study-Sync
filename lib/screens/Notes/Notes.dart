@@ -182,6 +182,7 @@ class _NotesState extends State<Notes> {
                                         : AppColors.neutral,
                                   ),
                                 ),
+                                
                               ),
 
                               // 2. --- BOX BODY (Notes Description Section) ---
