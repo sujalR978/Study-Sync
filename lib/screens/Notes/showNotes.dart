@@ -24,7 +24,7 @@ class _ShownotesState extends State<Shownotes> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        FutureBuilder(
           future: showNotes(),
 
           builder: (context, snepshot) {
