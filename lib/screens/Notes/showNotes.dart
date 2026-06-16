@@ -27,8 +27,24 @@ class _ShownotesState extends State<Shownotes> {
         FutureBuilder(
           future: showNotes(),
 
-          builder: (context, snepshot) {
-            final data = snepshot.data!.data();
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(color: AppColors.primary),
+              );
+            }
+
+            if (snapshot.hasError ||
+                !snapshot.hasData ||
+                !snapshot.data!.exists) {
+              return Center(
+                child: Text(
+                  'Task could not be found',
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
+              );
+            }
+            final data = snapshot.data!.data();
 
             return Container(
               child: Column(
