@@ -25,7 +25,9 @@ class _NotesState extends State<Notes> {
             TextButton(
               onPressed: () {
                 NotesService().DeleteNotes(noteId);
-                
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => Notes()),
+                );
               },
               child: Text('Delete'),
             ),
