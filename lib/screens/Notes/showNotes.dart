@@ -31,7 +31,12 @@ class _ShownotesState extends State<Shownotes> {
             final data = snepshot.data!.data();
 
             return Container(
-              child: Column(children: [Text(data['title'] ?? '')]),
+              child: Column(
+                children: [
+                  Text(data?['title'] ?? ''),
+                  Text(data?['body'] ?? ''),
+                ],
+              ),
             );
           },
         ),
