@@ -17,7 +17,14 @@ class _NotesState extends State<Notes> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(title: Text('hi'));
+        return AlertDialog(title: Text('hi'),
+        
+        
+        actions: [
+          TextButton(onPressed: (){}, child: Text('show'))
+        ],
+        );
+        
       },
     );
   }
