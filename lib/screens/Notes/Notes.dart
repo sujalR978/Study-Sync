@@ -176,35 +176,34 @@ class _NotesState extends State<Notes> {
                                             : AppColors.inputFill)
                                         .withOpacity(0.3),
                                 child: SingleChildScrollView(
-                                child:        Row(
-                                  children: [
-                                    Text(
-                                      title,
-                                      maxLines: 1,
-                                      overflow: TextOverflow
-                                          .ellipsis, // Clips text with '...' if title is long
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                        color: isDark
-                                            ? AppColors.darkNeutral
-                                            : AppColors.neutral,
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow
+                                            .ellipsis, // Clips text with '...' if title is long
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15,
+                                          color: isDark
+                                              ? AppColors.darkNeutral
+                                              : AppColors.neutral,
+                                        ),
                                       ),
-                                    ),
 
-                                    SizedBox(width: 35),
-                                    Expanded(
-                                      child: IconButton(
-                                        onPressed: () {
-                                          show();
-                                        },
-                                        icon: Icon(Icons.more_vert),
+                                      SizedBox(width: 35),
+                                      Expanded(
+                                        child: IconButton(
+                                          onPressed: () {
+                                            show();
+                                          },
+                                          icon: Icon(Icons.more_vert),
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                                )
-                          
                               ),
 
                               // 2. --- BOX BODY (Notes Description Section) ---
