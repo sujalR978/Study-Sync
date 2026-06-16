@@ -26,8 +26,13 @@ class _ShownotesState extends State<Shownotes> {
       children: [
         FutureBuilder(
           future: showNotes(),
+
           builder: (context, snepshot) {
-            return Container(child: Column(children: []));
+            final data = snepshot.data!.data();
+
+            return Container(
+              child: Column(children: [Text(data['title'] ?? '')]),
+            );
           },
         ),
       ],
