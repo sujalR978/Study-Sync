@@ -25,6 +25,7 @@ class _NotesState extends State<Notes> {
             TextButton(
               onPressed: () {
                 NotesService().DeleteNotes(noteId);
+                
               },
               child: Text('Delete'),
             ),
