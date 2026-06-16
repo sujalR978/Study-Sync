@@ -59,7 +59,7 @@ class NotesService {
         .collection('notes')
         .doc(noteId)
         .delete();
-
-  
   }
+
+
 }
