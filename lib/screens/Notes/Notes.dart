@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:study_sync/constants/app_colors.dart';
 import 'package:study_sync/screens/BottomNavigation.dart';
 import 'package:study_sync/screens/Notes/createNotes.dart';
+import 'package:study_sync/screens/Notes/showNotes.dart';
 import 'package:study_sync/services/Notes_service.dart';
 
 class Notes extends StatefulWidget {
@@ -20,9 +21,16 @@ class _NotesState extends State<Notes> {
           title: Text('hi'),
 
           actions: [
-            TextButton(onPressed: () {
-              
-            }, child: Text('Show')),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => Shownotes(taskid: noteId),
+                  ),
+                );
+              },
+              child: Text('Show'),
+            ),
             TextButton(onPressed: () {}, child: Text('Edit')),
             TextButton(
               onPressed: () {
