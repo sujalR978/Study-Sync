@@ -168,7 +168,7 @@ class _NotesState extends State<Notes> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               // 1. --- BOX HEADER (Title Section) ---
-                              Container(d
+                              Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 14,
                                   vertical: 12,
