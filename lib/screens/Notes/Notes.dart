@@ -191,7 +191,7 @@ class _NotesState extends State<Notes> {
                                     ),
 
                                     SizedBox(width: 35),
-                                    Align(
+                                    Expanded(
                                       child: IconButton(
                                         onPressed: () {
                                           show();
