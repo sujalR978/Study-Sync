@@ -190,11 +190,14 @@ class _NotesState extends State<Notes> {
                                       ),
                                     ),
 
-                                    IconButton(
-                                      onPressed: () {
-                                        show();
-                                      },
-                                      icon: Icon(Icons.more_vert),
+                                    Align(
+                                      alignment: AlignmentGeometry.topEnd,
+                                      child: IconButton(
+                                        onPressed: () {
+                                          show();
+                                        },
+                                        icon: Icon(Icons.more_vert),
+                                      ),
                                     ),
                                   ],
                                 ),
