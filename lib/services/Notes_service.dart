@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:study_sync/models/Notes_model.dart';
+import 'package:study_sync/screens/Notes/Notes.dart';
 
 class NotesService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -50,8 +51,13 @@ class NotesService {
         .snapshots();
   }
 
-  Future<void> DeleteNotes(String noteId)async{
-String uid = _auth.currentUser!.uid;
-    await _firestore.collection('users').doc(uid)
+  Future<void> DeleteNotes(String noteId) async {
+    String uid = _auth.currentUser!.uid;
+    await _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('notes')
+        .doc(noteId)
+        .delete();
   }
 }
