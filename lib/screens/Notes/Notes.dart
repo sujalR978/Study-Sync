@@ -31,7 +31,7 @@ class _NotesState extends State<Notes> {
               },
               child: Text('Delete'),
             ),
-                TextButton(onPressed: () {}, child: Text('Cancle')),
+            TextButton(onPressed: () {}, child: Text('Cancle')),
           ],
         );
       },
