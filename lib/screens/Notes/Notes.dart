@@ -25,7 +25,7 @@ class _NotesState extends State<Notes> {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => Shownotes(taskid: noteId),
+                    builder: (context) => Shownotes(noteId: noteId),
                   ),
                 );
               },
