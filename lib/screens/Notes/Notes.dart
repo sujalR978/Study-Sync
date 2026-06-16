@@ -19,7 +19,14 @@ class _NotesState extends State<Notes> {
         return AlertDialog(
           title: Text('hi'),
 
-          actions: [TextButton(onPressed: () {}, child: Text('Show')),TextButton(onPressed: () {}, child: Text('Edit')),TextButton(onPressed: () {}, child: Text('Delete'))],
+          actions: [
+            TextButton(onPressed: () {
+                
+
+            }, child: Text('Show')),
+            TextButton(onPressed: () {}, child: Text('Edit')),
+            TextButton(onPressed: () {}, child: Text('Delete')),
+          ],
         );
       },
     );
