@@ -11,7 +11,7 @@ class Shownotes extends StatefulWidget {
 }
 
 class _ShownotesState extends State<Shownotes> {
-  Future<DocumentSnapshot> showNotes() async {
+  Future<DocumentSnapshot<Map<String, dynamic>>> showNotes() async {
     return await FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -24,7 +24,7 @@ class _ShownotesState extends State<Shownotes> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        FutureBuilder(
+        FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
           future: showNotes(),
 
           builder: (context, snepshot) {
