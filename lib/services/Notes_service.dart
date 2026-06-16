@@ -49,4 +49,9 @@ class NotesService {
         .orderBy('order')
         .snapshots();
   }
+
+  Future<void> DeleteNotes(String noteId)async{
+String uid = _auth.currentUser!.uid;
+    await _firestore.collection('users').doc(uid)
+  }
 }
