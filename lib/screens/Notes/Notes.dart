@@ -176,6 +176,7 @@ class _NotesState extends State<Notes> {
                                             : AppColors.inputFill)
                                         .withOpacity(0.3),
                                 child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
                                   child: Row(
                                     children: [
                                       Text(
