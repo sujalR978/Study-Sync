@@ -12,13 +12,13 @@ class Notes extends StatefulWidget {
 }
 
 class _NotesState extends State<Notes> {
-
-
- void show(){
-  showDialog(context: context, builder: (BuildContext context){
-
-  });
- }
+  void show() {
+    showDialog(context: context, builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('hi'),
+      )
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,14 +129,11 @@ class _NotesState extends State<Notes> {
                           0.85, // Balances heights beautifully for note descriptions
                     ),
                     itemBuilder: (context, index) {
-
-                      
                       final data = notes[index];
                       String title = data['title'] ?? 'Untitled';
                       String body = data['body'] ?? '';
 
                       return Container(
-
                         decoration: BoxDecoration(
                           color: isDark
                               ? AppColors.darkSurface
@@ -161,8 +158,6 @@ class _NotesState extends State<Notes> {
                           ],
                         ),
                         child: ClipRRect(
-                          
-                          
                           borderRadius: BorderRadius.circular(20),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -181,26 +176,27 @@ class _NotesState extends State<Notes> {
                                 child: Row(
                                   children: [
                                     Text(
-                                  title,
-                                  maxLines: 1,
-                                  overflow: TextOverflow
-                                      .ellipsis, // Clips text with '...' if title is long
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15,
-                                    color: isDark
-                                        ? AppColors.darkNeutral
-                                        : AppColors.neutral,
-                                  ),
-                                ),
-                                
-                                IconButton(onPressed: (){
+                                      title,
+                                      maxLines: 1,
+                                      overflow: TextOverflow
+                                          .ellipsis, // Clips text with '...' if title is long
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                        color: isDark
+                                            ? AppColors.darkNeutral
+                                            : AppColors.neutral,
+                                      ),
+                                    ),
 
-                                  
-
-                                }, icon: Icon(Icons.more_vert))
+                                    IconButton(
+                                      onPressed: () {
+                                        show();
+                                      },
+                                      icon: Icon(Icons.more_vert),
+                                    ),
                                   ],
-                                )
+                                ),
                               ),
 
                               // 2. --- BOX BODY (Notes Description Section) ---
