@@ -20,7 +20,9 @@ class _NotesState extends State<Notes> {
           title: Text('hi'),
 
           actions: [
-            TextButton(onPressed: () {}, child: Text('Show')),
+            TextButton(onPressed: () {
+              
+            }, child: Text('Show')),
             TextButton(onPressed: () {}, child: Text('Edit')),
             TextButton(
               onPressed: () {
