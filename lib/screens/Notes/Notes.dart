@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:study_sync/constants/app_colors.dart';
 import 'package:study_sync/screens/BottomNavigation.dart';
@@ -17,14 +16,11 @@ class _NotesState extends State<Notes> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(title: Text('hi'),
-        
-        
-        actions: [
-          TextButton(onPressed: (){}, child: Text('show'))
-        ],
+        return AlertDialog(
+          title: Text('hi'),
+
+          actions: [TextButton(onPressed: () {}, child: Text('show')),TextButton(onPressed: () {}, child: Text('show'))],
         );
-        
       },
     );
   }
