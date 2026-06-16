@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:study_sync/constants/app_colors.dart';
 import 'package:study_sync/screens/BottomNavigation.dart';
@@ -174,7 +175,8 @@ class _NotesState extends State<Notes> {
                                             ? AppColors.darkInputFill
                                             : AppColors.inputFill)
                                         .withOpacity(0.3),
-                                child: Row(
+                                child: SingleChildScrollView(
+                                child:        Row(
                                   children: [
                                     Text(
                                       title,
@@ -201,6 +203,8 @@ class _NotesState extends State<Notes> {
                                     ),
                                   ],
                                 ),
+                                )
+                          
                               ),
 
                               // 2. --- BOX BODY (Notes Description Section) ---
