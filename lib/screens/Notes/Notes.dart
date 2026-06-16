@@ -12,6 +12,14 @@ class Notes extends StatefulWidget {
 }
 
 class _NotesState extends State<Notes> {
+
+
+ void show(){
+  showDialog(context: context, builder: (BuildContext context){
+
+  });
+ }
+
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
@@ -154,12 +162,13 @@ class _NotesState extends State<Notes> {
                         ),
                         child: ClipRRect(
                           
+                          
                           borderRadius: BorderRadius.circular(20),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               // 1. --- BOX HEADER (Title Section) ---
-                              Container(
+                              Container(d
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 14,
                                   vertical: 12,
@@ -169,7 +178,9 @@ class _NotesState extends State<Notes> {
                                             ? AppColors.darkInputFill
                                             : AppColors.inputFill)
                                         .withOpacity(0.3),
-                                child: Text(
+                                child: Row(
+                                  children: [
+                                    Text(
                                   title,
                                   maxLines: 1,
                                   overflow: TextOverflow
@@ -183,6 +194,13 @@ class _NotesState extends State<Notes> {
                                   ),
                                 ),
                                 
+                                IconButton(onPressed: (){
+
+                                  
+
+                                }, icon: Icon(Icons.more_vert))
+                                  ],
+                                )
                               ),
 
                               // 2. --- BOX BODY (Notes Description Section) ---
