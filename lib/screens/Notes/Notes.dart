@@ -12,7 +12,7 @@ class Notes extends StatefulWidget {
 }
 
 class _NotesState extends State<Notes> {
-  void show() {
+  void show(String noteId) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -20,12 +20,14 @@ class _NotesState extends State<Notes> {
           title: Text('hi'),
 
           actions: [
-            TextButton(onPressed: () {
-                
-
-            }, child: Text('Show')),
+            TextButton(onPressed: () {}, child: Text('Show')),
             TextButton(onPressed: () {}, child: Text('Edit')),
-            TextButton(onPressed: () {}, child: Text('Delete')),
+            TextButton(
+              onPressed: () {
+                NotesService().DeleteNotes(noteId);
+              },
+              child: Text('Delete'),
+            ),
           ],
         );
       },
@@ -142,6 +144,7 @@ class _NotesState extends State<Notes> {
                     ),
                     itemBuilder: (context, index) {
                       final data = notes[index];
+                      String noteId = data.id;
                       String title = data['title'] ?? 'Untitled';
                       String body = data['body'] ?? '';
 
@@ -206,7 +209,7 @@ class _NotesState extends State<Notes> {
                                     Expanded(
                                       child: IconButton(
                                         onPressed: () {
-                                          show();
+                                          show(noteId);
                                         },
                                         icon: Icon(Icons.more_vert),
                                       ),
