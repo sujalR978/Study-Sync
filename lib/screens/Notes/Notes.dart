@@ -13,11 +13,12 @@ class Notes extends StatefulWidget {
 
 class _NotesState extends State<Notes> {
   void show() {
-    showDialog(context: context, builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('hi'),
-      )
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(title: Text('hi'));
+      },
+    );
   }
 
   @override
