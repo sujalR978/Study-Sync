@@ -50,8 +50,8 @@ class _ShownotesState extends State<Shownotes> {
             return Container(
               child: Column(
                 children: [
-                  Text(data?['title'] ?? ''),
-                  Text(data?['body'] ?? ''),
+                  Text(data?['title']),
+                  Text(data?['body']),
                 ],
               ),
             );
