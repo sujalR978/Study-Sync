@@ -16,21 +16,13 @@ class NotesModel {
   }
 }
 
-
 class EditNotesModel {
-  
   final String body;
-  final String id;
-  
+  final String title;
 
-  EditNotesModel({
-    required this.title,
-    required this.body,
-    required this.id,
-    required this.order,
-  });
+  EditNotesModel({required this.title, required this.body});
 
   Map<String, dynamic> toMap() {
-    return {'title': title, 'body': body, 'id': id, 'order': order};
+    return {'title': title, 'body': body};
   }
 }
