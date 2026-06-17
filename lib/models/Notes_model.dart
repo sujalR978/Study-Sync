@@ -18,13 +18,13 @@ class NotesModel {
 
 
 class EditNotesModel {
-  final String title;
+  
   final String body;
   final String id;
-  final int order;
+  
 
   EditNotesModel({
-    required this.title,
+    
     required this.body,
     required this.id,
     required this.order,
