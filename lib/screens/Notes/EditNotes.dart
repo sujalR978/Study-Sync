@@ -38,6 +38,12 @@ class _EditnotesState extends State<Editnotes> {
                   controller: title,
                   context: context,
                 ),
+                CustomTextfield.customTextField(
+                  hintText: '',
+                  icon: Icons.icecream_outlined,
+                  controller: body,
+                  context: context,
+                ),
               ],
             ),
           ),
