@@ -66,8 +66,13 @@ class _EditnotesState extends State<Editnotes> {
                   controller: body,
                   context: context,
                 ),
+
+                ElevatedButton(onPressed: (){}, child: Text('update'))
+          
               ],
             ),
+
+            
           ),
         ],
       ),
