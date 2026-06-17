@@ -12,8 +12,8 @@ class Editnotes extends StatefulWidget {
 }
 
 class _EditnotesState extends State<Editnotes> {
-   TextEditingController title = TextEditingController();
-  = TextEditingController body = TextEditingController();
+  late TextEditingController title =;
+  late TextEditingController body ;
 
   Future<void> shownotes() async {
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
