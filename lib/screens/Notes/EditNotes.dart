@@ -67,12 +67,9 @@ class _EditnotesState extends State<Editnotes> {
                   context: context,
                 ),
 
-                ElevatedButton(onPressed: (){}, child: Text('update'))
-          
+                ElevatedButton(onPressed: () {}, child: Text('update')),
               ],
             ),
-
-            
           ),
         ],
       ),
