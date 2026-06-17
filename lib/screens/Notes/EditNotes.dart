@@ -53,6 +53,8 @@ class _EditnotesState extends State<Editnotes> {
         children: [
           Form(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomTextfield.customTextField(
                   hintText: '',
