@@ -12,9 +12,8 @@ class Editnotes extends StatefulWidget {
 }
 
 class _EditnotesState extends State<Editnotes> {
-  late TextEditingController title ;
-  late TextEditingController body ;
-
+  late TextEditingController title;
+  late TextEditingController body;
   Future<void> shownotes() async {
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
         .collection('users')
@@ -23,11 +22,27 @@ class _EditnotesState extends State<Editnotes> {
         .doc(widget.noteId)
         .get();
 
-    final data = snapshot.data();
+    final data = snapshot.data() as Map<String, dynamic>?;
 
-    if(data != null){
-      title =
+    if (data != null) {
+      title.text = data['title'] ?? '';
+      body.text = data['body'] ?? '';
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    title = TextEditingController();
+    body = TextEditingController();
+    shownotes();
+  }
+
+  @override
+  void dispose() {
+    title.dispose();
+    body.dispose();
+    super.dispose();
   }
 
   @override
