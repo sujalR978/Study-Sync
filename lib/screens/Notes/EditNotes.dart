@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:study_sync/screens/Notes/Notes.dart';
 import 'package:study_sync/services/Notes_service.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 
@@ -74,6 +75,10 @@ class _EditnotesState extends State<Editnotes> {
                     body.text,
                     widget.noteId,
                   );
+
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (context) => Notes()));
                 },
                 child: Text('update'),
               ),
