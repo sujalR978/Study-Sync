@@ -44,10 +44,9 @@ class _EditnotesState extends State<Editnotes> {
 
     final data = snapshot.data() as Map<String, dynamic>;
 
-    if (data != null) {
-      title.text = data['title'] ?? '';
-      body.text = data['body'] ?? '';
-    }
+    title.text = data['title'] ?? '';
+    body.text = data['body'] ?? '';
+
     setState(() {});
   }
 
