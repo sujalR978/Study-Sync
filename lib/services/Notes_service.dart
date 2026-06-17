@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:study_sync/models/Notes_model.dart';
 
-
 class NotesService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -61,5 +60,10 @@ class NotesService {
         .delete();
   }
 
+  Future<void> EditNotes() async {
+    String uid = _auth.currentUser!.uid;
 
+
+    await 
+  }
 }
