@@ -12,8 +12,8 @@ class Editnotes extends StatefulWidget {
 }
 
 class _EditnotesState extends State<Editnotes> {
-
-final
+  final TextEditingController title = TextEditingController();
+  final TextEditingController body = TextEditingController();
 
   Future<DocumentSnapshot> shownotes() async {
     return await FirebaseFirestore.instance
@@ -26,14 +26,23 @@ final
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Column(children: [
-
-          Form(child: Column(
-            children: [
-              CustomTextfield.customTextField(hintText: '', icon: Icons.icecream_outlined, controller: controller, context: context)
-            ],
-          ))
+    return Scaffold(
+      body: Column(
+        children: [
+          Form(
+            child: Column(
+              children: [
+                CustomTextfield.customTextField(
+                  hintText: '',
+                  icon: Icons.icecream_outlined,
+                  controller: title,
+                  context: context,
+                ),
+              ],
+            ),
+          ),
         ],
-      ));
+      ),
+    );
   }
 }
