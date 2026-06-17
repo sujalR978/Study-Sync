@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:study_sync/widgets/custom_textfield.dart';
 
 class Editnotes extends StatefulWidget {
   final String noteId;
@@ -11,6 +12,9 @@ class Editnotes extends StatefulWidget {
 }
 
 class _EditnotesState extends State<Editnotes> {
+
+final
+
   Future<DocumentSnapshot> shownotes() async {
     return await FirebaseFirestore.instance
         .collection('users')
@@ -24,6 +28,11 @@ class _EditnotesState extends State<Editnotes> {
   Widget build(BuildContext context) {
     return Scaffold(body: Column(children: [
 
+          Form(child: Column(
+            children: [
+              CustomTextfield.customTextField(hintText: '', icon: Icons.icecream_outlined, controller: controller, context: context)
+            ],
+          ))
         ],
       ));
   }
