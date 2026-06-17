@@ -12,7 +12,7 @@ class Editnotes extends StatefulWidget {
 }
 
 class _EditnotesState extends State<Editnotes> {
-  late TextEditingController title =
+  late TextEditingController title ;
   late TextEditingController body ;
 
   Future<void> shownotes() async {
