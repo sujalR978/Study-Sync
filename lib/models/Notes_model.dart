@@ -23,7 +23,7 @@ class EditNotesModel {
   final String id;
   final int order;
 
-  NotesModel({
+  EditNotesModel({
     required this.title,
     required this.body,
     required this.id,
