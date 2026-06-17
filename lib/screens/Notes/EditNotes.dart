@@ -65,12 +65,7 @@ class _EditnotesState extends State<Editnotes> {
                 controller: body,
                 context: context,
               ),
-              CustomTextfield.customTextField(
-                hintText: '',
-                icon: Icons.icecream_outlined,
-                controller: title,
-                context: context,
-              ),
+     
 
               ElevatedButton(onPressed: () {}, child: Text('update')),
             ],
