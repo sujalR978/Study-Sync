@@ -24,7 +24,7 @@ class EditNotesModel {
   
 
   EditNotesModel({
-    
+    required this.title,
     required this.body,
     required this.id,
     required this.order,
