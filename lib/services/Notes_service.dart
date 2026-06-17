@@ -60,10 +60,9 @@ class NotesService {
         .delete();
   }
 
-  Future<void> EditNotes() async {
+  Future<void> EditNotes(String title, String body) async {
     String uid = _auth.currentUser!.uid;
 
-
-    await 
+    EditNotesModel note = EditNotesModel(title: title, body: body);
   }
 }
