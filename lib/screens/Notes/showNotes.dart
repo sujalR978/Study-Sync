@@ -23,41 +23,40 @@ class _ShownotesState extends State<Shownotes> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        FutureBuilder(
-          future: showNotes(),
+    return Scaffold(
+      body: Column(
+        children: [
+          FutureBuilder(
+            future: showNotes(),
 
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              );
-            }
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(color: AppColors.primary),
+                );
+              }
 
-            if (snapshot.hasError ||
-                !snapshot.hasData ||
-                !snapshot.data!.exists) {
-              return Center(
-                child: Text(
-                  'Task could not be found',
-                  style: TextStyle(fontWeight: FontWeight.w500),
+              if (snapshot.hasError ||
+                  !snapshot.hasData ||
+                  !snapshot.data!.exists) {
+                return Center(
+                  child: Text(
+                    'Task could not be found',
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                );
+              }
+              final data = snapshot.data!.data();
+
+              return Container(
+                child: Column(
+                  children: [Text(data?['title']), Text(data?['body'])],
                 ),
               );
-            }
-            final data = snapshot.data!.data();
-
-            return Container(
-              child: Column(
-                children: [
-                  Text(data?['title']),
-                  Text(data?['body']),
-                ],
-              ),
-            );
-          },
-        ),
-      ],
+            },
+          ),
+        ],
+      ),
     );
   }
 }
