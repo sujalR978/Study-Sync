@@ -49,31 +49,27 @@ class _EditnotesState extends State<Editnotes> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Form(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CustomTextfield.customTextField(
-                  hintText: '',
-                  icon: Icons.icecream_outlined,
-                  controller: title,
-                  context: context,
-                ),
-                CustomTextfield.customTextField(
-                  hintText: '',
-                  icon: Icons.icecream_outlined,
-                  controller: body,
-                  context: context,
-                ),
+      body: Center(
+        child: Form(
+          child: Column(
+            children: [
+              CustomTextfield.customTextField(
+                hintText: '',
+                icon: Icons.icecream_outlined,
+                controller: title,
+                context: context,
+              ),
+              CustomTextfield.customTextField(
+                hintText: '',
+                icon: Icons.icecream_outlined,
+                controller: body,
+                context: context,
+              ),
 
-                ElevatedButton(onPressed: () {}, child: Text('update')),
-              ],
-            ),
+              ElevatedButton(onPressed: () {}, child: Text('update')),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
