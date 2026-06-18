@@ -32,7 +32,7 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatelessWidgeet {
   const MyApp({super.key});
 
   @override
