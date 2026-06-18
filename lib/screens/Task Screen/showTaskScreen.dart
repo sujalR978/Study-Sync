@@ -75,8 +75,7 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: CircularProgressIndicator(color: AppColors.primary),
-            );
-          }
+     
 
           if (snapshot.hasError ||
               !snapshot.hasData ||
