@@ -33,7 +33,7 @@ class _EditnotesState extends State<Editnotes> {
     super.didChangeDependencies();
     shownotes();
   }
-e
+
   Future<void> shownotes() async {
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
         .collection('users')
