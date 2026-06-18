@@ -18,7 +18,10 @@ class _MainState extends State<Bottomnavigation> {
   final List<Widget> page = [
     const HomeScreen(),
     const Notes(),
-    c
+    const Profilescreen(),
+    const SettingScreen(),
+  ];
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: page[currentIndex],
