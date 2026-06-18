@@ -20,7 +20,7 @@ class EditNotesModel {
   final String body;
   final String title;
 
-  EditNotesModel({required this.title, required this.body});
+  EditNotesModel({required this.title, required this.body});s
 
   Map<String, dynamic> toMap() {
     return {'title': title, 'body': body};
