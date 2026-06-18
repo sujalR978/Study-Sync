@@ -16,7 +16,7 @@ class _ShownotesState extends State<Shownotes> {
   // Caching the future variable at state level prevents infinite database re-reads on rebuilds
   late Future<DocumentSnapshot<Map<String, dynamic>>> _notesFuture;
 
-  @override
+  @overridee
   void initState() {
     super.initState();
     _notesFuture = _fetchNotes();
