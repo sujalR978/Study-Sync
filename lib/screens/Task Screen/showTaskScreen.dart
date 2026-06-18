@@ -61,12 +61,13 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
         ),
         leading: IconButton(
           icon: Icon(
-            
             Icons.close_rounded,
             color: Theme.of(context).colorScheme.onBackground,
             size: 24,
           ),
-          onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_)=> Bottomnavigation())),
+          onPressed: () => Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => Bottomnavigation())),
         ),
       ),
       body: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -75,7 +76,8 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: CircularProgressIndicator(color: AppColors.primary),
-     
+            );
+          }
 
           if (snapshot.hasError ||
               !snapshot.hasData ||
