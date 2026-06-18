@@ -301,7 +301,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           text: 'Create Account',
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              final AuthService registerService = AuthService();
+                           e   final AuthService registerService = AuthService();
 
                               await registerService.registerUser(
                                 fullname: fullname.text.trim(),
