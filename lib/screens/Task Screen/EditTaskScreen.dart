@@ -92,13 +92,7 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
     setState(() {
       Category =
           sp.getStringList('category') ??
-          ["Study", "Work", "Personal", "Health", "Shopping"];
-    });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+          ["Study", "Work
     _loadTask();
   }
 
