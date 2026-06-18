@@ -61,7 +61,8 @@ class NotesService {
   }
 
   Future<void> EditNotes(String title, String body, String taskId) async {
-    String u
+    String uid = _auth.currentUser!.uid;
+
     EditNotesModel note = EditNotesModel(title: title, body: body);
 
     await _firestore
