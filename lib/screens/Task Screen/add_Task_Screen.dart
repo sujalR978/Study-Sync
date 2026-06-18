@@ -32,7 +32,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   // Set default priority to medium
   String priority = 'medium';
 
-
+  @override
+  void dispose() {
+    newcategory.dispose();
+    title.dispose();
+    description.dispose();
     super.dispose();
   }
 
