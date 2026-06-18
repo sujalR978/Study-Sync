@@ -186,7 +186,7 @@ class _NotesState extends State<Notes> {
                   size: 32,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 20),e
               Text(
                 'Discard Note?',
                 style: TextStyle(
