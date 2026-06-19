@@ -6,7 +6,7 @@ class ChatModel {
 
   Timestamp timestamp;
 
-  ChatModel({
+  ChatModel({ 
     required this.roal,
     required this.content,
 
