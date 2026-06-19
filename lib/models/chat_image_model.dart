@@ -6,7 +6,7 @@ class chatImageModel {
   String images;
   Timestamp timestamp;
 
-  chatImageModel({
+  chatImageModel({ 
     required this.roal,
     required this.content,
     required this.images,
