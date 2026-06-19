@@ -18,7 +18,7 @@ class customText {
   }
 
   static Widget opacityText(String text, {BuildContext? context}) {
-    Color? fallbackColor;
+    Color? fallbackColor; 
     if (context != null) {
       final bool isDark = Theme.of(context).brightness == Brightness.dark;
       fallbackColor = isDark ? AppColors.darkTextBody : AppColors.textBody;
