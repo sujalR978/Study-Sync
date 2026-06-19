@@ -11,7 +11,7 @@ import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/constants/app_colors.dart'; // Ensure path is correct
 
 class GoogleInfoScreen extends StatefulWidget {
-  const GoogleInfoScreen({super.key});
+  const GoogleInfoScreen({super.key}); 
 
   @override
   State<GoogleInfoScreen> createState() => _GoogleInfoScreenState();
