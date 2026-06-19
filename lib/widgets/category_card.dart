@@ -89,7 +89,7 @@ class CategoryCard extends StatelessWidget {
                 fontSize: 14,
               ),
             ),
-          ],
+          ], 
         ),
       ),
     );
