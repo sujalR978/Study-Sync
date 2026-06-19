@@ -14,7 +14,7 @@ class Authprovider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void clearUser() {
+  void clearUser() { 
     _user = null;
     notifyListeners();
   }
