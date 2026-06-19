@@ -11,9 +11,9 @@ class ThemeProvider extends ChangeNotifier {
   bool isDarkMode(BuildContext context) {
     if (_themeMode == ThemeMode.system) {
       return MediaQuery.of(context).platformBrightness == Brightness.dark;
-    }
+    } 
     return _themeMode == ThemeMode.dark;
-  }
+  }  
 
   // Toggle function called by your UI switch
   void toggleTheme(bool isOn) {
