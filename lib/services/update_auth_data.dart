@@ -11,7 +11,7 @@ class UpdateAuthData {
     required username,
     required phone,
     required photoUrl,
-    
+     
   }) async{
     String uid = _auth.currentUser!.uid;
 
