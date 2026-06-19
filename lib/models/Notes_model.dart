@@ -16,7 +16,7 @@ class NotesModel {
   }
 }
 
-class EditNotesModel {
+class EditNotesModel { 
   final String body;
   final String title;
 
