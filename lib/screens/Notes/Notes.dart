@@ -189,7 +189,7 @@ class _NotesState extends State<Notes> {
               const SizedBox(height: 20),
               Text(
                 'Discard Note?',
-                style: TextStyle(
+                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
                   color: isDark ? AppColors.darkNeutral : AppColors.neutral,
