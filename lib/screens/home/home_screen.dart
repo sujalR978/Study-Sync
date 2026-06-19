@@ -297,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       for (final task in tasks) ...[
                         () {
-                          final bool isCompleted = task['isCompleted'] ?? false;
+                          final bool  isCompleted = task['isCompleted'] ?? false;
 
                           final DateTime taskDeadline = _getTaskDeadline(
                             task['dueDate'] as Timestamp,
