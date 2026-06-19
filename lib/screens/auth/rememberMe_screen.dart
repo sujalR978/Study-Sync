@@ -25,7 +25,7 @@ class _RememberMeScreenState extends State<RememberMeScreen> {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Center(
-            child: Container(
+            child: Container( 
               padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
                 // FIXED: Card wrapper adapts to global brightness state
