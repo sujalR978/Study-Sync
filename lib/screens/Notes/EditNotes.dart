@@ -37,7 +37,7 @@ class _EditnotesState extends State<Editnotes> {
   Future<void> shownotes() async {
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
         .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .doc(FirebaseAuth.instance.currentUser!.uid )
         .collection('notes')
         .doc(widget.noteId)
         .get();
