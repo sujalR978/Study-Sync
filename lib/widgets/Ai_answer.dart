@@ -26,7 +26,7 @@ class AiAnswer extends StatelessWidget {
       child: Column(
         children: [
           // 1. --- USER PROMPT BUBBLE ---
-          Align(
+          Align( 
             alignment: Alignment.centerRight,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
