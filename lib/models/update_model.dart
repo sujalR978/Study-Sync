@@ -10,7 +10,7 @@ class UpdateProfileData {
     required this.phone,
     required this.photoUrl,
     required this.updatedAt,
-  });
+  }); 
 
   Map<String, dynamic> updateMap() {
     return {
