@@ -67,7 +67,7 @@ class NotesService {
 
     await _firestore
         .collection('users')
-        .doc(uid)
+        .doc(uid) 
         .collection('notes')
         .doc(taskId)
         .update(note.toMap());
