@@ -6,7 +6,7 @@ import 'package:study_sync/screens/Notes/Notes.dart';
 
 class Shownotes extends StatefulWidget {
   final String noteId;
-  const Shownotes({super.key, required      this.noteId});
+  const Shownotes({super.key, required this.noteId});
 
   @override
   State<Shownotes> createState() => _ShownotesState();
