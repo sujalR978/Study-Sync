@@ -10,7 +10,7 @@ class CustomButton {
       height: 56,
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: onPressed, 
         style: ElevatedButton.styleFrom(
           // FIXED: Background color now shifts with the theme mode natively
           backgroundColor: Theme.of(context).colorScheme.surface,
