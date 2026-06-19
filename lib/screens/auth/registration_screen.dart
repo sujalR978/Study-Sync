@@ -317,7 +317,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
                                   builder: (context) => const LoginScreen(),
-                                ),
+                                 ),
                               );
                             }
                           },
