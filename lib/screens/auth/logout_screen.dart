@@ -25,7 +25,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
     getData();
   }
 
-  void getData() async {}
+  void  getData() async {}
 
   @override
   Widget build(BuildContext context) {
