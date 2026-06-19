@@ -33,7 +33,7 @@ class ChatService {
   Stream<QuerySnapshot> getChat() {
     String uid = _auth.currentUser!.uid;
 
-    return _firestore
+    return _firestore 
         .collection('users')
         .doc(uid)
         .collection('chats')
