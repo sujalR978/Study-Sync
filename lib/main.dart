@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
     final themProvider = context.watch<ThemeProvider>();
     return MaterialApp(
       title: 'Flutter Demo',
-
+ 
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.light,
