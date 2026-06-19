@@ -106,7 +106,7 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
     String uid = FirebaseAuth.instance.currentUser!.uid;
     final taskSnapshot = await FirebaseFirestore.instance
         .collection('users')
-        .doc(uid)
+         .doc(uid)
         .collection('tasks')
         .doc(widget.taskId)
         .get();
