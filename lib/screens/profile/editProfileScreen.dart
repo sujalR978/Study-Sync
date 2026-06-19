@@ -14,7 +14,7 @@ import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/services/update_auth_data.dart';
 import 'package:study_sync/constants/app_colors.dart'; // Adjust path if needed
 
-class Editprofilescreen extends StatefulWidget {
+class Editprofilescreen extends StatefulWidget  {
   const Editprofilescreen({super.key});
 
   @override
