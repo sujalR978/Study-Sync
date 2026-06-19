@@ -191,7 +191,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                       borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 0,
                   ),
