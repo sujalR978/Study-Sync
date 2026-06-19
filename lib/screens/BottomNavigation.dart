@@ -20,7 +20,7 @@ class _MainState extends State<Bottomnavigation> {
     const Notes(),
     const Profilescreen(),
     const SettingScreen(),
-  ];
+  ]; 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
