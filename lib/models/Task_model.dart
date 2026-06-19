@@ -12,7 +12,7 @@ class TaskModel {
 
   DateTime createdAt;
   DateTime updatedAt;
-  TaskModel({
+  TaskModel({ 
     required this.id,
 
     required this.title,
