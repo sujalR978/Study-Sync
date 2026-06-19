@@ -37,7 +37,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     newcategory.dispose();
     title.dispose();
     description.dispose();
-    super.dispose();
+    super.dispose(); 
   }
 
   void _showDatePicker() {
