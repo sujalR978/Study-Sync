@@ -39,7 +39,7 @@ class TaskService {
       title: title,
       description: description,
       category: category,
-      priority: priority,
+      priority: priority, 
       dueDate: dueDate,
       dueTime: dueTime,
       isCompleted: false,
