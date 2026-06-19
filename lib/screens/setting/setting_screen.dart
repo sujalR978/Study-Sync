@@ -19,7 +19,7 @@ class SettingScreen extends StatelessWidget {
           icon: Icon(
             Icons.arrow_back,
             color: Theme.of(context).colorScheme.onBackground,
-          ),
+          ), 
           onPressed: () => Navigator.of(
             context,
           ).push(MaterialPageRoute(builder: (context) => Bottomnavigation())),
