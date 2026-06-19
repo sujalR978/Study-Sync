@@ -9,7 +9,9 @@ class AppColors {
   // ==========================================
   // LIGHT MODE PALETTE
   // ==========================================
-  static const Color background = Color(
+
+    
+  static const Color background = Color( 
     0xFFF0F4F8,
   ); // Light blue/grey app background
   static const Color surface = Colors.white; // Card background
