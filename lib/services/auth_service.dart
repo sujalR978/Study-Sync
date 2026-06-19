@@ -13,7 +13,7 @@ class AuthService {
   Future<void> registerUser({
     required String fullname,
     required String username,
-    required String email,
+    required String email, 
     required String phone,
     required String password,
   }) async {
