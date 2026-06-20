@@ -50,7 +50,7 @@ class TaskService {
     await _firestore
         .collection('users')
         .doc(uid)
-        .collection('tasks')
+        .collection('tasks') 
         .doc(id)
         .set(task.TaskMap());
   }
