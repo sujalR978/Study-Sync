@@ -17,7 +17,7 @@ class UpdateAuthData {
 
     UpdateProfileData updateUser = UpdateProfileData(
       fullname: fullname,
-      username: username,
+      username: username, 
       phone: phone,
       photoUrl: photoUrl,
       updatedAt: DateTime.now(),
