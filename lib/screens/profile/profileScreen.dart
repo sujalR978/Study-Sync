@@ -194,7 +194,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 0,
-                  ),
+                  ), 
                 ),
               ),
               const SizedBox(height: 10),
