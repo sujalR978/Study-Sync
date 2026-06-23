@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:provider/provider.dart';
 
 import 'package:study_sync/providers/auth_provider.dart';
 import 'package:study_sync/screens/auth/logout_screen.dart';
@@ -186,7 +185,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
-                      fontWeight: FontWeight.w600,  
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
@@ -195,7 +194,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 0,
-                  ), 
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
