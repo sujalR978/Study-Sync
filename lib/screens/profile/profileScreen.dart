@@ -185,7 +185,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w600,  
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
