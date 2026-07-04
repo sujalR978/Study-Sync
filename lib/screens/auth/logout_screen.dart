@@ -32,7 +32,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      // FIXED: Dynamic structural scaffolding canvas mapping
+      
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Container(
         width: double.infinity,
@@ -140,7 +140,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w800,
-                                // FIXED: Theme-aware font rendering
+                                
                                 color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
@@ -217,7 +217,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
                                 child: Text(
                                   "Cancel",
                                   style: TextStyle(
-                                    // FIXED: Adaptive font selection overlay bounds
+                                    
                                     color: isDark
                                         ? AppColors.darkTextBody
                                         : const Color(0xFF475569),
@@ -240,7 +240,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          // FIXED: Uses surface container shifts smoothly
+                          
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(50),
                           boxShadow: [
@@ -280,10 +280,10 @@ class _LogoutScreenState extends State<LogoutScreen> {
               ),
             ),
 
-            /// --- NEW: ADAPTIVE LOADING OVERLAY ---
+           
             if (isLoading)
               Container(
-                // FIXED: Adapts contrast screen dim transparency configurations
+  
                 color: isDark ? Colors.black54 : Colors.white.withOpacity(0.6),
                 child: const Center(
                   child: CircularProgressIndicator(color: Color(0xFF0052FF)),

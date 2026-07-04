@@ -159,14 +159,14 @@ class _AiChatScreenState extends State<AiChatScreen> {
       _isLoading = true;
       lastUserPrompt.add(prompt);
       messageImagesHistory.add(base64ImageStrings);
-      selectedImage.clear(); // Safe to wipe picker UI elements immediately now
+      selectedImage.clear(); 
     });
 
     try {
       // 2. Push pre-converted string arrays directly down to OpenRouter
       String theAnswer = await getOpenRouterResponseForGpt40(
         prompt,
-        base64ImageStrings, // FIXED: Passing text parameters cleanly
+        base64ImageStrings,
       );
 
       String uid = FirebaseAuth.instance.currentUser!.uid;

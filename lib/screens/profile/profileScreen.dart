@@ -24,7 +24,7 @@ class _ProfilescreenState extends State<Profilescreen> {
 
     if (user == null) {
       return Scaffold(
-        // FIXED: Adaptive background framework binding
+
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: const Center(
           child: CircularProgressIndicator(color: AppColors.primary),
@@ -33,7 +33,7 @@ class _ProfilescreenState extends State<Profilescreen> {
     }
 
     return Scaffold(
-      // FIXED: Adaptive background framework binding
+
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -122,7 +122,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                 decoration: BoxDecoration(
                   color: Theme.of(context)
                       .colorScheme
-                      .surface, // FIXED: Surface shifts with light/dark properties
+                      .surface, 
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
@@ -253,7 +253,7 @@ class _ProfilescreenState extends State<Profilescreen> {
     }
   }
 
-  // FIXED: Added BuildContext to the info tile mapper to correctly determine active theme typography values
+ 
   Widget _buildInfoTile(
     BuildContext context,
     IconData icon,

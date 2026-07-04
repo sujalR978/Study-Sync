@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:study_sync/constants/app_colors.dart';
-import 'package:study_sync/screens/BottomNavigation.dart'; // Make sure this path is correct
+import 'package:study_sync/screens/BottomNavigation.dart'; 
 
 class Showtaskscreen extends StatefulWidget {
   final String taskid;
@@ -44,7 +44,7 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      // FIXED: Adaptive core background
+      
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -155,7 +155,7 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        // FIXED: Card container surface color switches adaptively
+                     
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [

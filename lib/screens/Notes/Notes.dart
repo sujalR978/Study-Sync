@@ -15,7 +15,7 @@ class Notes extends StatefulWidget {
 }
 
 class _NotesState extends State<Notes> {
-  // --- UPGRADED: PREMIUM OPTIONS & DELETION CONFIRMATION STRIP ---
+
   void showOptionsDialog(String noteId, String noteTitle, bool isDark) {
     showDialog(
       context: context,
@@ -127,12 +127,12 @@ class _NotesState extends State<Notes> {
                 height: 44,
                 child: TextButton.icon(
                   onPressed: () {
-                    Navigator.pop(context); // Dismiss options panel framework
+                    Navigator.pop(context); 
                     showDeleteConfirmation(
                       noteId,
                       noteTitle,
                       isDark,
-                    ); // Open target warning dialog
+                    ); 
                   },
                   icon: const Icon(
                     Icons.delete_outline_rounded,
@@ -158,7 +158,7 @@ class _NotesState extends State<Notes> {
     );
   }
 
-  // --- NEW: DEDICATED RED WARNING CONFIRMATION MATRIX ---
+  
   void showDeleteConfirmation(String noteId, String noteTitle, bool isDark) {
     showDialog(
       context: context,

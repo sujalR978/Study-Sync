@@ -41,12 +41,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      // FIXED: Dynamic structural scaffolding canvas layout mapping
+      
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          // FIXED: Adaptive ambient gradient backdrop sequence
+
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -89,7 +89,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text(
                   "StudySync",
                   style: TextStyle(
-                    // FIXED: Color configuration shifts dynamically
+                   
                     color: Theme.of(context).colorScheme.onBackground,
                     fontSize: 34,
                     fontWeight: FontWeight.w800,
@@ -101,7 +101,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text(
                   "Create your productivity hub",
                   style: TextStyle(
-                    // FIXED: Dynamic text body color allocation
+                 
                     color: isDark
                         ? AppColors.darkTextBody
                         : const Color(0xFF64748B),
@@ -118,7 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      // FIXED: Card wrapper adapts to global brightness state
+                      
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(28),
                       boxShadow: [
@@ -234,7 +234,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             if (value == null || value.isEmpty) {
                               return 'Enter password.';
                             }
-                            // FIX: Logic structural bug fixed (should check if length is LESS than 7)
+                      
                             if (value.length < 7) {
                               return 'Password length must be at least 7 characters.';
                             }
@@ -261,7 +261,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             if (value == null || value.isEmpty) {
                               return 'Confirm password';
                             }
-                            // FIX: Safely unpack and parse controller text assignments
+                            
                             if (value != password.text) {
                               return 'Confirm password does not match password';
                             }
@@ -312,7 +312,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               );
 
                               if (!context.mounted)
-                                return; // FIXED: Prevents unsafe route pops across async barriers
+                                return; 
 
                               Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(

@@ -73,7 +73,6 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
     print(Imagepath);
   }
 
-  // FIXED: Added BuildContext to the input decoration mapping to allow dark theme swapping dynamically
   InputDecoration _lucidInputDecoration(
     BuildContext context,
     String hint,
@@ -186,7 +185,7 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                             border: Border.all(
                               color: Theme.of(
                                 context,
-                              ).scaffoldBackgroundColor, // FIXED: Syncs background anchor ring
+                              ).scaffoldBackgroundColor, 
                               width: 4,
                             ),
                           ),
@@ -209,7 +208,7 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                   decoration: BoxDecoration(
                     color: Theme.of(context)
                         .colorScheme
-                        .surface, // FIXED: Surface shifts with light/dark properties
+                        .surface, 
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(

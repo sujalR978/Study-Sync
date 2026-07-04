@@ -34,7 +34,7 @@ Future<String> getOpenRouterResponse(List<Map<String, String>> massage) async {
   }
 }
 
-// --- MULTIMODAL IMAGE + TEXT COMPLETION (GPT-4o) ---
+
 Future<dynamic> getOpenRouterResponseForGpt40(
   String message,
   List<String> base64Images,

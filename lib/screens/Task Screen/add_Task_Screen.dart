@@ -49,7 +49,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            // FIXED: Automatically adopts native light/dark properties
+           
             colorScheme: Theme.of(
               context,
             ).colorScheme.copyWith(primary: AppColors.primary),
@@ -76,7 +76,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            // FIXED: Automatically adopts native light/dark properties
+            
             colorScheme: Theme.of(
               context,
             ).colorScheme.copyWith(primary: AppColors.primary),
@@ -146,7 +146,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      // FIXED: Adaptive core canvas color layout
+      
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,

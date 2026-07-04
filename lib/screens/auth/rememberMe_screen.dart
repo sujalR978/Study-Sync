@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:study_sync/screens/BottomNavigation.dart';
 
-import 'package:study_sync/constants/app_colors.dart'; // Ensure path is correct
+import 'package:study_sync/constants/app_colors.dart'; 
 
 class RememberMeScreen extends StatefulWidget {
   const RememberMeScreen({super.key});
@@ -19,7 +19,7 @@ class _RememberMeScreenState extends State<RememberMeScreen> {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      // FIXED: Dynamic structural scaffolding background canvas mapping
+      
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
@@ -28,7 +28,7 @@ class _RememberMeScreenState extends State<RememberMeScreen> {
             child: Container( 
               padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                // FIXED: Card wrapper adapts to global brightness state
+               
                 color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: [
@@ -75,7 +75,7 @@ class _RememberMeScreenState extends State<RememberMeScreen> {
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
-                      // FIXED: Color configuration shifts dynamically
+                     
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
@@ -86,7 +86,7 @@ class _RememberMeScreenState extends State<RememberMeScreen> {
                     "Keep your account signed in for faster access to your study sessions and tasks.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      // FIXED: Dynamic text body color allocation
+                 
                       color: isDark
                           ? AppColors.darkTextBody
                           : const Color(0xFF64748B),
@@ -104,7 +104,7 @@ class _RememberMeScreenState extends State<RememberMeScreen> {
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      // FIXED: Container row adapts fields layout settings cleanly
+               
                       color: isDark
                           ? AppColors.darkInputFill
                           : const Color(0xFFF8FAFC),
@@ -132,7 +132,7 @@ class _RememberMeScreenState extends State<RememberMeScreen> {
                             "Remember me on this device",
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              // FIXED: Title font adapts text layers correctly
+                          
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),

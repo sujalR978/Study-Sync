@@ -88,8 +88,7 @@ class NotificationService {
     }
   }
 
-  // --- CLEAN INTEGRATED CANCELLATION METHOD ---
-  // --- UPDATE THIS METHOD IN YOUR NOTIFICATION_SERVICE.DART ---
+
   Future<void> cancelNotification(int id) async {
     try {
       // FIX: Change from cancel(id) to cancel(id: id)
@@ -98,5 +97,5 @@ class NotificationService {
     } catch (e) {
       print('Error cancelling notification: $e');
     }
-  } // <-- ADDED MISSING CLASS CLOSING BRACE
+  } 
 }

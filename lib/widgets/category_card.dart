@@ -55,7 +55,7 @@ class CategoryCard extends StatelessWidget {
           horizontal: 20,
         ), // Prevents wall-clipping
         decoration: BoxDecoration(
-          // FIXED: Uses global primary color when active, falls back to adaptive surface colors when open
+         
           color: isSelected ? AppColors.primary : unselectedBg,
           borderRadius: BorderRadius.circular(30),
           boxShadow: isSelected
@@ -75,7 +75,7 @@ class CategoryCard extends StatelessWidget {
           children: [
             Icon(
               getIcon(),
-              // FIXED: Content shifts cleanly from brand white to muted slate
+              
               color: isSelected ? Colors.white : unselectedContent,
               size: 18,
             ),
@@ -83,7 +83,7 @@ class CategoryCard extends StatelessWidget {
             Text(
               category,
               style: TextStyle(
-                // FIXED: Font color matches tracking states
+                
                 color: isSelected ? Colors.white : unselectedContent,
                 fontWeight: FontWeight.w600,
                 fontSize: 14,

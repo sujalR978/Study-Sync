@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   bool isClick = false;
 
-  // Helper function to color coordinate priority pills (Colors remain vivid in both modes)
+  // color coordinate priority 
   Color _getPriorityColor(String priority) {
     switch (priority.toLowerCase()) {
       case 'high':
@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Refactored helper: Calculates exact deadline and schedules background alarm safely
+
   DateTime _getTaskDeadline(Timestamp dueDateTimestamp, dynamic dueTimeRaw) {
     try {
       final DateTime dueDate = dueDateTimestamp.toDate();
@@ -99,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      // FIXED: Adaptive background
+     
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       // --- MODERN FLOATING ACTION BUTTON ---
@@ -171,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w800,
-                          // FIXED: Light text on dark background / Dark text on light background
+                        
                           color: Theme.of(context).colorScheme.onBackground,
                           letterSpacing: -0.5,
                         ),
@@ -181,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         "Let's get things done!",
                         style: TextStyle(
                           fontSize: 14,
-                          // FIXED: Uses adaptive descriptive typography mappings
+                       
                           color: isDark
                               ? AppColors.darkTextBody
                               : AppColors.textBody,
@@ -202,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 48,
                       width: 48,
                       decoration: BoxDecoration(
-                        // FIXED: Uses adaptive input fill styles
+                       
                         color: isDark
                             ? AppColors.darkInputFill
                             : AppColors.inputFill,
@@ -336,7 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Container(
                               margin: const EdgeInsets.only(bottom: 16),
                               decoration: BoxDecoration(
-                                // FIXED: Card container surface color switches adaptively
+                            
                                 color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
@@ -456,7 +456,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         decoration: isCompleted
                                             ? TextDecoration.lineThrough
                                             : null,
-                                        // FIXED: Changes based on completion and layout settings
+                                       
                                         color: isCompleted
                                             ? (isDark
                                                   ? AppColors.darkTextBody
@@ -507,7 +507,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               vertical: 4,
                                             ),
                                             decoration: BoxDecoration(
-                                              // FIXED: Adaptive tag container background
+                                         
                                               color: isDark
                                                   ? AppColors.darkInputFill
                                                   : AppColors.inputFill,
@@ -555,7 +555,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                     trailing: IconButton(
                                       icon: const Icon(Icons.more_vert_rounded),
-                                      // FIXED: Dynamic icon coloring
+                                    
                                       color: Theme.of(
                                         context,
                                       ).colorScheme.onSurface,
@@ -574,7 +574,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     horizontal: 16,
                                                     vertical: 20,
                                                   ),
-                                              // FIXED: Modal window dark adjustments
+                                  
                                               backgroundColor: Theme.of(
                                                 context,
                                               ).colorScheme.surface,
@@ -711,7 +711,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                     24,
                                                                     16,
                                                                   ),
-                                                              // FIXED: Sub-modal uses surface coloring dynamically
+                                                             
                                                               backgroundColor:
                                                                   Theme.of(
                                                                         context,

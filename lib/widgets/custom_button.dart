@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:study_sync/constants/app_colors.dart'; // Ensure path is correct
+import 'package:study_sync/constants/app_colors.dart'; 
 
 class CustomButton {
   // --- GOOGLE SIGN IN BUTTON ---
@@ -12,7 +12,7 @@ class CustomButton {
       child: ElevatedButton(
         onPressed: onPressed, 
         style: ElevatedButton.styleFrom(
-          // FIXED: Background color now shifts with the theme mode natively
+  
           backgroundColor: Theme.of(context).colorScheme.surface,
           elevation: 0,
           shape: RoundedRectangleBorder(
@@ -30,7 +30,7 @@ class CustomButton {
           children: [
             Icon(
               Icons.g_mobiledata, 
-              // FIXED: Matches standard typography colors dynamically
+ 
               color: Theme.of(context).colorScheme.onSurface, 
               size: 32,
             ),
@@ -38,7 +38,7 @@ class CustomButton {
             Text(
               "Continue with Google",
               style: TextStyle(
-                // FIXED: Text flips from dark slate to crisp white automatically
+
                 color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
                 fontSize: 15,

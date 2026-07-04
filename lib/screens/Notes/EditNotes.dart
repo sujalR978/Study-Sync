@@ -53,11 +53,11 @@ class _EditnotesState extends State<Editnotes> {
   @override
   Widget build(BuildContext context) {
     // --- DYNAMIC THEME DETECTOR BLOCK ---
-    // Reads from your ThemeProvider system defined in main.dart
+ 
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      // Smoothly switches matching your MaterialApp theme mapping guidelines
+      
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,

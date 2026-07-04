@@ -13,7 +13,7 @@ class Shownotes extends StatefulWidget {
 }
 
 class _ShownotesState extends State<Shownotes> {
-  // Caching the future variable at state level prevents infinite database re-reads on rebuilds
+  
   late Future<DocumentSnapshot<Map<String, dynamic>>> _notesFuture;
 
   @override
@@ -34,7 +34,7 @@ class _ShownotesState extends State<Shownotes> {
 
   @override
   Widget build(BuildContext context) {
-    // --- DYNAMIC THEME DETECTOR BLOCK ---
+    
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -50,7 +50,7 @@ class _ShownotesState extends State<Shownotes> {
             );
           },
           icon: Icon(
-            Icons.close_rounded, // Cohesive notepad layout close controller
+            Icons.close_rounded, 
             color: isDark ? AppColors.darkNeutral : AppColors.neutral,
             size: 22,
           ),
@@ -89,7 +89,7 @@ class _ShownotesState extends State<Shownotes> {
               );
             }
 
-            // Explicit cast safely resolves the Object operator '[]' verification error
+          
             final data = snapshot.data!.data() as Map<String, dynamic>;
 
             return Container(

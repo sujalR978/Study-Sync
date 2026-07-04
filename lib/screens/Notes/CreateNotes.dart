@@ -41,7 +41,7 @@ class _CreatenotesState extends State<Createnotes> {
           },
           icon: Icon(
             Icons
-                .close_rounded, // Changed to a clean "close" icon for a modern notepad feel
+                .close_rounded, 
             color: isDark ? AppColors.darkNeutral : AppColors.neutral,
             size: 22,
           ),
@@ -56,7 +56,7 @@ class _CreatenotesState extends State<Createnotes> {
           ),
         ),
         actions: [
-          // Moved the action button to the Top Right AppBar for a premium, clean layout workflow
+          
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: TextButton(
@@ -87,7 +87,7 @@ class _CreatenotesState extends State<Createnotes> {
       body: SafeArea(
         child: Form(
           key: KeyForm,
-          // ✅ CHANGED: Replaced Column with an immersive full-page expansion layout container block
+  
           child: Container(
             margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             padding: const EdgeInsets.all(20),
@@ -153,7 +153,7 @@ class _CreatenotesState extends State<Createnotes> {
                     controller: notesBody,
                     maxLines: null, // Allows infinite lines internally
                     expands:
-                        true, // ✅ CHANGED: Forces the input field box to dynamically stretch to the bottom of the page!
+                        true,
                     keyboardType: TextInputType.multiline,
                     textAlignVertical: TextAlignVertical
                         .top, // Starts typing from the very top-left corner

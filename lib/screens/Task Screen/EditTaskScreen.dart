@@ -9,7 +9,7 @@ import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/services/Task_service.dart';
 import 'package:study_sync/widgets/category_card.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
-import 'package:study_sync/constants/app_colors.dart'; // Make sure this path is correct
+import 'package:study_sync/constants/app_colors.dart';  
 
 class Edittaskscreen extends StatefulWidget {
   final String taskId;
@@ -38,7 +38,7 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            // FIXED: Automatically adapts to native light/dark profiles
+         
             colorScheme: Theme.of(
               context,
             ).colorScheme.copyWith(primary: AppColors.primary),
@@ -62,7 +62,7 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            // FIXED: Automatically adapts to native light/dark profiles
+            
             colorScheme: Theme.of(
               context,
             ).colorScheme.copyWith(primary: AppColors.primary),
@@ -173,7 +173,7 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
           margin: const EdgeInsets.symmetric(horizontal: 4),
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
-            // FIXED: Adaptive non-selected container fill
+      
             color: isSelected
                 ? targetColor
                 : (isDark ? AppColors.darkInputFill : AppColors.inputFill),
@@ -206,7 +206,7 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      // FIXED: Adaptive application wrapper canvas
+     
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -539,7 +539,7 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                                 24,
                                 16,
                               ),
-                              // FIXED: Uses dynamic theme surfaces inside dialogue modals
+                     
                               backgroundColor: Theme.of(
                                 context,
                               ).colorScheme.surface,

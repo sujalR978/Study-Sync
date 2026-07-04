@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:study_sync/constants/app_colors.dart'; // Ensure path is correct
+import 'package:study_sync/constants/app_colors.dart'; 
 
 class customText {
   static Widget titalText(String text, {BuildContext? context}) {
@@ -9,7 +9,7 @@ class customText {
       style: TextStyle(
         fontSize: 30,
         fontWeight: FontWeight.w700,
-        // FIXED: Title automatically inherits light/dark color from theme context
+      
         color: context != null
             ? Theme.of(context).colorScheme.onBackground
             : null,
@@ -31,7 +31,7 @@ class customText {
         style: TextStyle(
           fontSize: 16,
           color:
-              fallbackColor, // FIXED: Adapts based on base brightness palette
+              fallbackColor, 
         ),
       ),
     );
@@ -48,7 +48,7 @@ class CustomTextfield {
     List<TextInputFormatter>? regex,
     required TextEditingController controller,
     required BuildContext
-    context, // FIXED: Added required context to look up light/dark mode properties
+    context,
   }) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -58,7 +58,7 @@ class CustomTextfield {
       validator: valideter,
       inputFormatters: regex,
       style: TextStyle(
-        // FIXED: Ensures text typed inside the field is readable in dark mode
+       
         color: Theme.of(context).colorScheme.onSurface,
         fontWeight: FontWeight.w500,
       ),
@@ -75,7 +75,7 @@ class CustomTextfield {
         ),
         suffixIcon: suffixIcon,
         filled: true,
-        // FIXED: Adapts the background color of the input field
+      
         fillColor: isDark ? AppColors.darkInputFill : const Color(0xFFF8FAFC),
         contentPadding: const EdgeInsets.symmetric(
           vertical: 18,

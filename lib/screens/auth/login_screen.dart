@@ -14,7 +14,7 @@ import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/widgets/custom_button.dart';
 import 'package:study_sync/widgets/custom_textfield.dart';
 import 'package:study_sync/screens/auth/registration_screen.dart';
-import 'package:study_sync/constants/app_colors.dart'; // Ensure path is correct
+import 'package:study_sync/constants/app_colors.dart'; 
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      // FIXED: Dynamic structural scaffolding background layout
+     
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
@@ -130,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        // FIXED: Surface card layer colors updates automatically
+                        
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(28),
                         boxShadow: [
@@ -193,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           : AppColors.textBody,
                                     ),
                                     filled: true,
-                                    // FIXED: Container field backgrounds tracking configuration
+                                   
                                     fillColor: isDark
                                         ? AppColors.darkInputFill
                                         : AppColors.inputFill,
@@ -528,10 +528,10 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
 
-          /// --- NEW: ADAPTIVE LOADING OVERLAY ---
+       
           if (isLoading)
             Container(
-              // FIXED: Adapts contrast screen dim transparency properties
+              
               color: isDark ? Colors.black54 : Colors.white.withOpacity(0.6),
               child: const Center(
                 child: CircularProgressIndicator(color: Color(0xFF0052FF)),
