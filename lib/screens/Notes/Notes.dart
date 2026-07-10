@@ -15,7 +15,6 @@ class Notes extends StatefulWidget {
 }
 
 class _NotesState extends State<Notes> {
-
   void showOptionsDialog(String noteId, String noteTitle, bool isDark) {
     showDialog(
       context: context,
@@ -77,12 +76,12 @@ class _NotesState extends State<Notes> {
                       ),
                     );
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.visibility_rounded,
                     color: AppColors.primary,
                     size: 18,
                   ),
-                  label: Text(
+                  label: const Text(
                     'Open Note',
                     style: TextStyle(
                       color: AppColors.primary,
@@ -105,12 +104,12 @@ class _NotesState extends State<Notes> {
                       ),
                     );
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.edit_note_rounded,
                     color: AppColors.primary,
                     size: 20,
                   ),
-                  label: Text(
+                  label: const Text(
                     'Edit Content',
                     style: TextStyle(
                       color: AppColors.primary,
@@ -127,12 +126,8 @@ class _NotesState extends State<Notes> {
                 height: 44,
                 child: TextButton.icon(
                   onPressed: () {
-                    Navigator.pop(context); 
-                    showDeleteConfirmation(
-                      noteId,
-                      noteTitle,
-                      isDark,
-                    ); 
+                    Navigator.pop(context);
+                    showDeleteConfirmation(noteId, noteTitle, isDark);
                   },
                   icon: const Icon(
                     Icons.delete_outline_rounded,
@@ -158,7 +153,6 @@ class _NotesState extends State<Notes> {
     );
   }
 
-  
   void showDeleteConfirmation(String noteId, String noteTitle, bool isDark) {
     showDialog(
       context: context,
@@ -189,7 +183,7 @@ class _NotesState extends State<Notes> {
               const SizedBox(height: 20),
               Text(
                 'Discard Note?',
-                 style: TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
                   color: isDark ? AppColors.darkNeutral : AppColors.neutral,
@@ -293,31 +287,20 @@ class _NotesState extends State<Notes> {
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const Bottomnavigation()),
-            );
-          },
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: isDark ? AppColors.darkNeutral : AppColors.neutral,
-            size: 18,
-          ),
-        ),
-        title: Text(
-          'Notes Directory',
-          style: TextStyle(
-            fontWeight: FontWeight.w800,
-            fontSize: 18,
-            color: isDark ? AppColors.darkNeutral : AppColors.neutral,
-          ),
-        ),
-      ),
+ appBar: AppBar(
+  backgroundColor: Colors.transparent,
+  elevation: 0,
+  centerTitle: true,
+  // ❌ REMOVED: The custom leading IconButton that pushed Bottomnavigation again
+  title: Text(
+    'Notes Directory',
+    style: TextStyle(
+      fontWeight: FontWeight.w800,
+      fontSize: 18,
+      color: isDark ? AppColors.darkNeutral : AppColors.neutral,
+    ),
+  ),
+),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppColors.primary,
         elevation: 4,
@@ -391,10 +374,12 @@ class _NotesState extends State<Notes> {
                           childAspectRatio: 0.88,
                         ),
                     itemBuilder: (context, index) {
-                      final data = notes[index];
-                      String noteId = data.id;
-                      String title = data['title'] ?? 'Untitled';
-                      String body = data['body'] ?? '';
+                      // ✅ FIXED: Safely cast data to Map data type configurations
+                      final Map<String, dynamic>? data =
+                          notes[index].data() as Map<String, dynamic>?;
+                      String noteId = notes[index].id;
+                      String title = data?['title']?.toString() ?? 'Untitled';
+                      String body = data?['body']?.toString() ?? '';
 
                       return Container(
                         decoration: BoxDecoration(
@@ -425,7 +410,7 @@ class _NotesState extends State<Notes> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // 1. --- APP BAR HEADER (Title Block Grid) ---
+                              // 1. --- APP BAR HEADER ---
                               Container(
                                 padding: const EdgeInsets.only(
                                   left: 14,

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:study_sync/constants/app_colors.dart';
 import 'package:study_sync/screens/BottomNavigation.dart';
+import 'package:study_sync/screens/home/home_screen.dart';
 
 import 'package:study_sync/services/Task_service.dart';
 import 'package:study_sync/widgets/category_card.dart';
@@ -165,7 +166,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           ),
           onPressed: () => Navigator.of(
             context,
-          ).push(MaterialPageRoute(builder: (context) => Bottomnavigation())),
+          ).push(MaterialPageRoute(builder: (context) => HomeScreen())),
         ),
         centerTitle: true,
       ),

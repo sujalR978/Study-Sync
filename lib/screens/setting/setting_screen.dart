@@ -15,15 +15,7 @@ class SettingScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Theme.of(context).colorScheme.onBackground,
-          ), 
-          onPressed: () => Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (context) => Bottomnavigation())),
-        ),
+        
         title: const Text(
           'Settings',
           style: TextStyle(fontWeight: FontWeight.bold),

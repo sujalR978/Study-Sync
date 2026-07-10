@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:study_sync/screens/Notes/Notes.dart';
-
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/screens/profile/profileScreen.dart';
 import 'package:study_sync/screens/setting/setting_screen.dart';
@@ -23,6 +22,7 @@ class _MainState extends State<Bottomnavigation> {
 
   @override
   Widget build(BuildContext context) {
+    // WillPopScope ensures back button presses pop nested routes first
     return WillPopScope(
       onWillPop: () async {
         if (_navigatorKeys[currentIndex].currentState?.canPop() ?? false) {
@@ -51,11 +51,15 @@ class _MainState extends State<Bottomnavigation> {
           backgroundColor: Colors.white,
           selectedItemColor: const Color.fromARGB(255, 89, 33, 243),
           unselectedItemColor: Colors.grey,
+          type: BottomNavigationBarType.fixed,
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
             BottomNavigationBarItem(icon: Icon(Icons.notes), label: "Notes"),
             BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-            BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Setting"),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: "Setting",
+            ),
           ],
         ),
       ),
@@ -66,9 +70,7 @@ class _MainState extends State<Bottomnavigation> {
     return Navigator(
       key: _navigatorKeys[index],
       onGenerateRoute: (RouteSettings settings) {
-        return MaterialPageRoute(
-          builder: (context) => initialPage,
-        );
+        return MaterialPageRoute(builder: (context) => initialPage);
       },
     );
   }
