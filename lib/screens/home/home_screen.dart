@@ -51,7 +51,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-
   DateTime _getTaskDeadline(Timestamp dueDateTimestamp, dynamic dueTimeRaw) {
     try {
       final DateTime dueDate = dueDateTimestamp.toDate();
@@ -99,7 +98,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-     
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       // --- MODERN FLOATING ACTION BUTTON ---
@@ -111,7 +109,8 @@ class _HomeScreenState extends State<HomeScreen> {
           FloatingActionButton.extended(
             heroTag: 'ai_task_btn',
             onPressed: () {
-              Navigator.of(context).push(
+              // ✅ FIXED: Using rootNavigator to force full-screen layer presentation
+              Navigator.of(context, rootNavigator: true).push(
                 MaterialPageRoute(builder: (context) => const AiChatScreen()),
               );
             },
@@ -171,7 +170,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w800,
-                        
                           color: Theme.of(context).colorScheme.onBackground,
                           letterSpacing: -0.5,
                         ),
@@ -181,7 +179,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         "Let's get things done!",
                         style: TextStyle(
                           fontSize: 14,
-                       
                           color: isDark
                               ? AppColors.darkTextBody
                               : AppColors.textBody,
@@ -202,7 +199,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 48,
                       width: 48,
                       decoration: BoxDecoration(
-                       
                         color: isDark
                             ? AppColors.darkInputFill
                             : AppColors.inputFill,
@@ -297,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       for (final task in tasks) ...[
                         () {
-                          final bool  isCompleted = task['isCompleted'] ?? false;
+                          final bool isCompleted = task['isCompleted'] ?? false;
 
                           final DateTime taskDeadline = _getTaskDeadline(
                             task['dueDate'] as Timestamp,
@@ -336,7 +332,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Container(
                               margin: const EdgeInsets.only(bottom: 16),
                               decoration: BoxDecoration(
-                            
                                 color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
@@ -456,7 +451,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         decoration: isCompleted
                                             ? TextDecoration.lineThrough
                                             : null,
-                                       
                                         color: isCompleted
                                             ? (isDark
                                                   ? AppColors.darkTextBody
@@ -507,7 +501,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                               vertical: 4,
                                             ),
                                             decoration: BoxDecoration(
-                                         
                                               color: isDark
                                                   ? AppColors.darkInputFill
                                                   : AppColors.inputFill,
@@ -555,7 +548,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                     trailing: IconButton(
                                       icon: const Icon(Icons.more_vert_rounded),
-                                    
                                       color: Theme.of(
                                         context,
                                       ).colorScheme.onSurface,
@@ -574,7 +566,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     horizontal: 16,
                                                     vertical: 20,
                                                   ),
-                                  
                                               backgroundColor: Theme.of(
                                                 context,
                                               ).colorScheme.surface,
@@ -711,7 +702,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                     24,
                                                                     16,
                                                                   ),
-                                                             
                                                               backgroundColor:
                                                                   Theme.of(
                                                                         context,

@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:study_sync/API/get_open_router_response.dart';
-import 'package:study_sync/constants/app_colors.dart'; 
+import 'package:study_sync/constants/app_colors.dart';
 
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/services/chat_service.dart';
@@ -150,7 +150,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
     controller.clear();
 
-    // 1. Process local image compression parsing stages first
     List<String> base64ImageStrings = await _convertImagesToBase64(
       imagesToSend,
     );
@@ -160,11 +159,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
       _isLoading = true;
       lastUserPrompt.add(prompt);
       messageImagesHistory.add(base64ImageStrings);
-      selectedImage.clear(); 
+      selectedImage.clear();
     });
 
     try {
-      // 2. Push pre-converted string arrays directly down to OpenRouter
       String theAnswer = await getOpenRouterResponseForGpt40(
         prompt,
         base64ImageStrings,
@@ -172,7 +170,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
       String uid = FirebaseAuth.instance.currentUser!.uid;
 
-      // 3. Document the User's transaction block parameters inside Firestore
       await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
@@ -184,7 +181,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
             'timestamp': Timestamp.now(),
           });
 
-      // 4. Record responding completion turns inside Firestore
       await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
@@ -233,11 +229,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
       lastUserPrompt.clear();
       messageImagesHistory.clear();
       messages.clear();
-      _isLoading = false; // Stop any active loading indicators
+      _isLoading = false;
     });
     String uid = FirebaseAuth.instance.currentUser!.uid;
 
-    final CollectionReference conllectionRef = await FirebaseFirestore.instance
+    final CollectionReference conllectionRef = FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
         .collection('chats');
@@ -303,12 +299,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
             size: 18,
           ),
           onPressed: () {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
-            );
+            // Correctly pops out of the full-screen view overlay
+            Navigator.of(context).pop();
           },
         ),
-
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
