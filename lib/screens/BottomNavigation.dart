@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:study_sync/constants/app_colors.dart';
 import 'package:study_sync/screens/Notes/Notes.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/screens/profile/profileScreen.dart';
@@ -22,6 +23,8 @@ class _MainState extends State<Bottomnavigation> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     // WillPopScope ensures back button presses pop nested routes first
     return WillPopScope(
       onWillPop: () async {
@@ -48,9 +51,9 @@ class _MainState extends State<Bottomnavigation> {
               currentIndex = value;
             });
           },
-          backgroundColor: Colors.white,
-          selectedItemColor: const Color.fromARGB(255, 89, 33, 243),
-          unselectedItemColor: Colors.grey,
+          backgroundColor: isDark ? AppColors.darkSurface : AppColors.surface,
+          selectedItemColor: AppColors.primary,
+          unselectedItemColor: isDark ? AppColors.darkTextBody : Colors.grey,
           type: BottomNavigationBarType.fixed,
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
