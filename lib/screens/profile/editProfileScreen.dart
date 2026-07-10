@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,7 +10,9 @@ import 'package:study_sync/screens/BottomNavigation.dart';
 import 'package:study_sync/screens/profile/profileScreen.dart';
 import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/services/update_auth_data.dart';
-import 'package:study_sync/constants/app_colors.dart'; // Adjust path if needed
+import 'package:study_sync/constants/app_colors.dart';
+import 'package:study_sync/utils/profile_image_utils.dart';
+import 'package:study_sync/widgets/profile_avatar.dart';
 
 class Editprofilescreen extends StatefulWidget  {
   const Editprofilescreen({super.key});
@@ -145,32 +145,10 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    CircleAvatar(
+                    ProfileAvatar(
+                      photoUrl: photoUrl ?? '',
+                      localImagePath: Imagepath.isNotEmpty ? Imagepath : null,
                       radius: 64,
-                      backgroundColor: isDark
-                          ? AppColors.darkInputFill
-                          : AppColors.inputFill,
-                      backgroundImage: Imagepath.isNotEmpty
-                          ? FileImage(File(Imagepath))
-                          : (photoUrl != null && photoUrl!.isNotEmpty)
-                          ? (photoUrl!.startsWith('http')
-                                ? NetworkImage(photoUrl!) as ImageProvider
-                                : (photoUrl!.startsWith('/data/')
-                                      ? FileImage(File(photoUrl!))
-                                            as ImageProvider
-                                      : AssetImage(photoUrl!)))
-                          : null,
-                      child:
-                          (Imagepath.isEmpty &&
-                              (photoUrl == null || photoUrl!.isEmpty))
-                          ? Icon(
-                              Icons.person,
-                              size: 60,
-                              color: isDark
-                                  ? AppColors.darkTextBody
-                                  : AppColors.textBody,
-                            )
-                          : null,
                     ),
                     Positioned(
                       bottom: 0,
@@ -307,10 +285,18 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                   child: ElevatedButton(
                     onPressed: () async {
                       if (keyForm.currentState!.validate()) {
-                        String finalImageUrl = Imagepath.isNotEmpty
-                            ? Imagepath
-                            : (photoUrl ?? '');
-                        UpdateAuthData().updateAuthData(
+                        final uid = FirebaseAuth.instance.currentUser!.uid;
+                        String finalImageUrl = photoUrl ?? '';
+
+                        if (Imagepath.isNotEmpty) {
+                          finalImageUrl =
+                              await ProfileImageUtils.persistLocalImage(
+                            Imagepath,
+                            uid,
+                          );
+                        }
+
+                        await UpdateAuthData().updateAuthData(
                           fullname: fullname.text,
                           username: username.text,
                           phone: phone.text,
@@ -320,7 +306,7 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                           UserModel? userData = await AuthService()
                               .getCurrentUserData();
 
-                          if (userData != null) {
+                          if (userData != null && context.mounted) {
                             context.read<Authprovider>().setUser(userData);
                           }
                         }
