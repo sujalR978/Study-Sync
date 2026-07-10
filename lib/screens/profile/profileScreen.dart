@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -6,8 +8,7 @@ import 'package:study_sync/providers/auth_provider.dart';
 import 'package:study_sync/screens/auth/logout_screen.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/screens/profile/editProfileScreen.dart';
-import 'package:study_sync/constants/app_colors.dart';
-import 'package:study_sync/widgets/profile_avatar.dart';
+import 'package:study_sync/constants/app_colors.dart'; // Adjust path if needed
 
 class Profilescreen extends StatefulWidget {
   const Profilescreen({super.key});
@@ -72,9 +73,24 @@ class _ProfilescreenState extends State<Profilescreen> {
                     width: 2,
                   ),
                 ),
-                child: ProfileAvatar(
-                  photoUrl: user.photoUrl,
+                child: CircleAvatar(
                   radius: 60,
+                  backgroundColor: isDark
+                      ? AppColors.darkInputFill
+                      : AppColors.inputFill,
+                  backgroundImage: _getProfileImage(
+                    user.photoUrl,
+                    user.loginMethod,
+                  ),
+                  child: (user.photoUrl.isEmpty)
+                      ? Icon(
+                          Icons.person,
+                          size: 60,
+                          color: isDark
+                              ? AppColors.darkTextBody
+                              : AppColors.textBody,
+                        )
+                      : null,
                 ),
               ),
 
@@ -225,6 +241,34 @@ class _ProfilescreenState extends State<Profilescreen> {
     );
   }
 
+  // --- HELPER METHODS ---
+  ImageProvider? _getProfileImage(String url, String method) {
+    if (url.isEmpty) return null;
+
+    if (url.startsWith('http') || method == 'google') {
+      return NetworkImage(url);
+    } else if (url.startsWith('/data/')) {
+      return FileImage(File(url));
+    } else {
+      return AssetImage(url);
+    }
+  }
+
+ 
+  // --- HELPER METHODS ---
+  ImageProvider? _getProfileImage(String url, String method) {
+    if (url.isEmpty) return null;
+
+    if (url.startsWith('http') || method == 'google') {
+      return NetworkImage(url);
+    } else if (url.startsWith('/data/')) {
+      return FileImage(File(url));
+    } else {
+      return AssetImage(url);
+    }
+  }
+
+ 
   Widget _buildInfoTile(
     BuildContext context,
     IconData icon,
