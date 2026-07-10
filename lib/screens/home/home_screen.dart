@@ -12,6 +12,7 @@ import 'package:study_sync/screens/profile/profileScreen.dart';
 import 'package:study_sync/services/Task_service.dart';
 import 'package:study_sync/constants/app_colors.dart';
 import 'package:study_sync/services/notification_service.dart';
+import 'package:study_sync/widgets/profile_avatar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,7 +22,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  void updateMyTiel(int oldindex, int newindex, List tasks) async {
+  void updateMyTile(int oldindex, int newindex, List tasks) async {
     if (newindex > oldindex) {
       newindex--;
     }
@@ -109,7 +110,6 @@ class _HomeScreenState extends State<HomeScreen> {
           FloatingActionButton.extended(
             heroTag: 'ai_task_btn',
             onPressed: () {
-              // ✅ FIXED: Using rootNavigator to force full-screen layer presentation
               Navigator.of(context, rootNavigator: true).push(
                 MaterialPageRoute(builder: (context) => const AiChatScreen()),
               );
@@ -199,30 +199,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 48,
                       width: 48,
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? AppColors.darkInputFill
-                            : AppColors.inputFill,
+                        color: isDark ? AppColors.darkInputFill : AppColors.inputFill,
                         shape: BoxShape.circle,
                         border: Border.all(
                           color: AppColors.primary.withOpacity(0.3),
                           width: 2,
                         ),
                       ),
-                      child: CircleAvatar(
-                        radius: 25,
-                        backgroundColor: isDark
-                            ? AppColors.darkInputFill
-                            : AppColors.inputFill,
-                        backgroundImage:
-                            user != null && user.loginMethod == 'google'
-                            ? NetworkImage(user.photoUrl) as ImageProvider
-                            : null,
-                        child: user == null || user.loginMethod != 'google'
-                            ? Icon(
-                                Icons.person_off,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              )
-                            : null,
+                      child: ProfileAvatar(
+                        // Uses fallback operator to cleanly handle any 'String?' type assignment issues safely
+                        photoUrl: user?.photoUrl ?? '', 
+                        radius: 22,
                       ),
                     ),
                   ),
@@ -289,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     },
                     onReorder: (oldindex, newindex) =>
-                        updateMyTiel(oldindex, newindex, tasks),
+                        updateMyTile(oldindex, newindex, tasks),
                     children: [
                       for (final task in tasks) ...[
                         () {
@@ -417,13 +404,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     BorderRadius.circular(6),
                                               ),
                                               side: BorderSide(
-                                                color:
-                                                    (isDark
-                                                            ? AppColors
-                                                                  .darkTextBody
-                                                            : AppColors
-                                                                  .textBody)
-                                                        .withOpacity(0.5),
+                                                color: (isDark
+                                                        ? AppColors.darkTextBody
+                                                        : AppColors.textBody)
+                                                    .withOpacity(0.5),
                                                 width: 1.5,
                                               ),
                                               onChanged: (value) async {
@@ -603,13 +587,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   Text(
                                                     "Task Options",
                                                     style: TextStyle(
-                                                      color:
-                                                          (isDark
-                                                                  ? AppColors
-                                                                        .darkTextBody
-                                                                  : AppColors
-                                                                        .textBody)
-                                                              .withOpacity(0.7),
+                                                      color: (isDark
+                                                              ? AppColors.darkTextBody
+                                                              : AppColors.textBody)
+                                                          .withOpacity(0.7),
                                                       fontSize: 12,
                                                       fontWeight:
                                                           FontWeight.w500,
@@ -623,8 +604,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         ),
                                                     child: Divider(
                                                       color: isDark
-                                                          ? AppColors
-                                                                .darkInputFill
+                                                          ? AppColors.darkInputFill
                                                           : AppColors.inputFill,
                                                       thickness: 1.2,
                                                     ),
@@ -650,28 +630,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           );
                                                         },
                                                         icon: const Icon(
-                                                          Icons
-                                                              .edit_calendar_rounded,
-                                                          color:
-                                                              AppColors.primary,
+                                                          Icons.edit_calendar_rounded,
+                                                          color: AppColors.primary,
                                                           size: 20,
                                                         ),
                                                         label: const Text(
                                                           'Edit Details',
                                                           style: TextStyle(
-                                                            color: AppColors
-                                                                .primary,
-                                                            fontWeight:
-                                                                FontWeight.w700,
+                                                            color: AppColors.primary,
+                                                            fontWeight: FontWeight.w700,
                                                             fontSize: 15,
                                                           ),
                                                         ),
                                                         style: TextButton.styleFrom(
                                                           shape: RoundedRectangleBorder(
                                                             borderRadius:
-                                                                BorderRadius.circular(
-                                                                  12,
-                                                                ),
+                                                                BorderRadius.circular(12),
                                                           ),
                                                         ),
                                                       ),
@@ -686,152 +660,93 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         Navigator.pop(context);
                                                         showDialog(
                                                           context: context,
-                                                          barrierDismissible:
-                                                              true,
+                                                          barrierDismissible: true,
                                                           builder: (context) {
                                                             return AlertDialog(
                                                               insetPadding:
                                                                   const EdgeInsets.symmetric(
-                                                                    horizontal:
-                                                                        40,
+                                                                    horizontal: 40,
                                                                   ),
                                                               contentPadding:
                                                                   const EdgeInsets.fromLTRB(
-                                                                    24,
-                                                                    24,
-                                                                    24,
-                                                                    16,
+                                                                    24, 24, 24, 16,
                                                                   ),
                                                               backgroundColor:
-                                                                  Theme.of(
-                                                                        context,
-                                                                      )
-                                                                      .colorScheme
-                                                                      .surface,
+                                                                  Theme.of(context).colorScheme.surface,
                                                               shape: RoundedRectangleBorder(
                                                                 borderRadius:
-                                                                    BorderRadius.circular(
-                                                                      28,
-                                                                    ),
+                                                                    BorderRadius.circular(28),
                                                               ),
                                                               content: Column(
-                                                                mainAxisSize:
-                                                                    MainAxisSize
-                                                                        .min,
+                                                                mainAxisSize: MainAxisSize.min,
                                                                 children: [
                                                                   Container(
-                                                                    padding:
-                                                                        const EdgeInsets.all(
-                                                                          14,
-                                                                        ),
+                                                                    padding: const EdgeInsets.all(14),
                                                                     decoration: BoxDecoration(
-                                                                      color: const Color(
-                                                                        0xFFEF4444,
-                                                                      ).withOpacity(0.1),
-                                                                      shape: BoxShape
-                                                                          .circle,
+                                                                      color: const Color(0xFFEF4444).withOpacity(0.1),
+                                                                      shape: BoxShape.circle,
                                                                     ),
                                                                     child: const Icon(
-                                                                      Icons
-                                                                          .delete_sweep_rounded,
-                                                                      color: Color(
-                                                                        0xFFEF4444,
-                                                                      ),
+                                                                      Icons.delete_sweep_rounded,
+                                                                      color: Color(0xFFEF4444),
                                                                       size: 32,
                                                                     ),
                                                                   ),
-                                                                  const SizedBox(
-                                                                    height: 20,
-                                                                  ),
+                                                                  const SizedBox(height: 20),
                                                                   Text(
                                                                     'Delete Task?',
                                                                     style: TextStyle(
-                                                                      fontSize:
-                                                                          20,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w800,
-                                                                      color: Theme.of(
-                                                                        context,
-                                                                      ).colorScheme.onSurface,
-                                                                      letterSpacing:
-                                                                          -0.5,
+                                                                      fontSize: 20,
+                                                                      fontWeight: FontWeight.w800,
+                                                                      color: Theme.of(context).colorScheme.onSurface,
+                                                                      letterSpacing: -0.5,
                                                                     ),
                                                                   ),
-                                                                  const SizedBox(
-                                                                    height: 8,
-                                                                  ),
+                                                                  const SizedBox(height: 8),
                                                                   RichText(
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .center,
+                                                                    textAlign: TextAlign.center,
                                                                     text: TextSpan(
                                                                       style: TextStyle(
-                                                                        color:
-                                                                            isDark
+                                                                        color: isDark
                                                                             ? AppColors.darkTextBody
                                                                             : AppColors.textBody,
-                                                                        fontSize:
-                                                                            14,
-                                                                        height:
-                                                                            1.4,
+                                                                        fontSize: 14,
+                                                                        height: 1.4,
                                                                       ),
                                                                       children: [
-                                                                        const TextSpan(
-                                                                          text:
-                                                                              'Are you sure you want to permanently delete ',
-                                                                        ),
+                                                                        const TextSpan(text: 'Are you sure you want to permanently delete '),
                                                                         TextSpan(
-                                                                          text:
-                                                                              '"${task['title']}"',
+                                                                          text: '"${task['title']}"',
                                                                           style: TextStyle(
-                                                                            fontWeight:
-                                                                                FontWeight.bold,
-                                                                            color: Theme.of(
-                                                                              context,
-                                                                            ).colorScheme.onSurface,
-                                                                          ),
+                                                                            fontWeight: FontWeight.bold,
+                                                                            color: Theme.of(context).colorScheme.onSurface,
                                                                         ),
-                                                                        const TextSpan(
-                                                                          text:
-                                                                              '? This action cannot be undone.',
                                                                         ),
+                                                                        const TextSpan(text: '? This action cannot be undone.'),
                                                                       ],
                                                                     ),
                                                                   ),
-                                                                  const SizedBox(
-                                                                    height: 28,
-                                                                  ),
+                                                                  const SizedBox(height: 28),
                                                                   Row(
                                                                     children: [
                                                                       Expanded(
                                                                         child: SizedBox(
-                                                                          height:
-                                                                              48,
+                                                                          height: 48,
                                                                           child: TextButton(
-                                                                            onPressed: () => Navigator.pop(
-                                                                              context,
-                                                                            ),
+                                                                            onPressed: () => Navigator.pop(context),
                                                                             style: TextButton.styleFrom(
                                                                               shape: RoundedRectangleBorder(
-                                                                                borderRadius: BorderRadius.circular(
-                                                                                  14,
-                                                                                ),
+                                                                                borderRadius: BorderRadius.circular(14),
                                                                               ),
-                                                                              backgroundColor:
-                                                                                  (isDark
-                                                                                          ? AppColors.darkInputFill
-                                                                                          : AppColors.inputFill)
-                                                                                      .withOpacity(
-                                                                                        0.5,
-                                                                                      ),
+                                                                              backgroundColor: (isDark
+                                                                                      ? AppColors.darkInputFill
+                                                                                      : AppColors.inputFill)
+                                                                                  .withOpacity(0.5),
                                                                             ),
                                                                             child: Text(
                                                                               'Cancel',
                                                                               style: TextStyle(
-                                                                                color: Theme.of(
-                                                                                  context,
-                                                                                ).colorScheme.onSurface,
+                                                                                color: Theme.of(context).colorScheme.onSurface,
                                                                                 fontWeight: FontWeight.w700,
                                                                                 fontSize: 15,
                                                                               ),
@@ -839,34 +754,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                           ),
                                                                         ),
                                                                       ),
-                                                                      const SizedBox(
-                                                                        width:
-                                                                            12,
-                                                                      ),
+                                                                      const SizedBox(width: 12),
                                                                       Expanded(
                                                                         child: SizedBox(
-                                                                          height:
-                                                                              48,
+                                                                          height: 48,
                                                                           child: ElevatedButton(
                                                                             onPressed: () async {
-                                                                              Navigator.pop(
-                                                                                context,
-                                                                              );
+                                                                              Navigator.pop(context);
                                                                               try {
-                                                                                await NotificationService().cancelNotification(
-                                                                                  task.id.hashCode,
-                                                                                );
-                                                                                await TaskService().taskDelete(
-                                                                                  task.id,
-                                                                                );
+                                                                                await NotificationService().cancelNotification(task.id.hashCode);
+                                                                                await TaskService().taskDelete(task.id);
                                                                                 if (context.mounted) {
-                                                                                  ScaffoldMessenger.of(
-                                                                                    context,
-                                                                                  ).showSnackBar(
+                                                                                  ScaffoldMessenger.of(context).showSnackBar(
                                                                                     SnackBar(
-                                                                                      content: Text(
-                                                                                        '"${task['title']}" deleted successfully',
-                                                                                      ),
+                                                                                      content: Text('"${task['title']}" deleted successfully'),
                                                                                       backgroundColor: isDark
                                                                                           ? AppColors.darkSurface
                                                                                           : Colors.black87,
@@ -874,20 +775,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                     ),
                                                                                   );
                                                                                 }
-                                                                              } catch (
-                                                                                e
-                                                                              ) {
+                                                                              } catch (e) {
                                                                                 if (context.mounted) {
-                                                                                  ScaffoldMessenger.of(
-                                                                                    context,
-                                                                                  ).showSnackBar(
+                                                                                  ScaffoldMessenger.of(context).showSnackBar(
                                                                                     SnackBar(
-                                                                                      content: Text(
-                                                                                        'Failed to delete: $e',
-                                                                                      ),
-                                                                                      backgroundColor: const Color(
-                                                                                        0xFFEF4444,
-                                                                                      ),
+                                                                                      content: Text('Failed to delete: $e'),
+                                                                                      backgroundColor: const Color(0xFFEF4444),
                                                                                       behavior: SnackBarBehavior.floating,
                                                                                     ),
                                                                                   );
@@ -895,14 +788,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                               }
                                                                             },
                                                                             style: ElevatedButton.styleFrom(
-                                                                              backgroundColor: const Color(
-                                                                                0xFFEF4444,
-                                                                              ),
+                                                                              backgroundColor: const Color(0xFFEF4444),
                                                                               elevation: 0,
                                                                               shape: RoundedRectangleBorder(
-                                                                                borderRadius: BorderRadius.circular(
-                                                                                  14,
-                                                                                ),
+                                                                                borderRadius: BorderRadius.circular(14),
                                                                               ),
                                                                             ),
                                                                             child: const Text(
@@ -925,34 +814,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         );
                                                       },
                                                       icon: const Icon(
-                                                        Icons
-                                                            .delete_outline_rounded,
-                                                        color: Color(
-                                                          0xFFEF4444,
-                                                        ),
+                                                        Icons.delete_outline_rounded,
+                                                        color: Color(0xFFEF4444),
                                                       ),
                                                       label: const Text(
                                                         'Delete Task',
                                                         style: TextStyle(
-                                                          color: Color(
-                                                            0xFFEF4444,
-                                                          ),
-                                                          fontWeight:
-                                                              FontWeight.w700,
+                                                          color: Color(0xFFEF4444),
+                                                          fontWeight: FontWeight.w700,
                                                           fontSize: 15,
                                                         ),
                                                       ),
                                                       style: TextButton.styleFrom(
                                                         shape: RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                12,
-                                                              ),
+                                                          borderRadius: BorderRadius.circular(12),
                                                         ),
-                                                        overlayColor:
-                                                            const Color(
-                                                              0xFFEF4444,
-                                                            ).withOpacity(0.1),
+                                                        overlayColor: const Color(0xFFEF4444).withOpacity(0.1),
                                                       ),
                                                     ),
                                                   ),
