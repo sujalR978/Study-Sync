@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:study_sync/constants/app_colors.dart';
-import 'package:study_sync/screens/BottomNavigation.dart';
+
 import 'package:study_sync/screens/Notes/EditNotes.dart';
 import 'package:study_sync/screens/Notes/createNotes.dart';
 import 'package:study_sync/screens/Notes/showNotes.dart';
