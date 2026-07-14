@@ -7,8 +7,6 @@ Future<String> getOpenRouterResponse(List<Map<String, String>> massage) async {
   const String endpoint = "https://openrouter.ai/api/v1/chat/completions";
 
   final headers = {
-
-    
     'Authorization': 'Bearer $API',
     'Content-Type': 'application/json',
   };
@@ -34,7 +32,6 @@ Future<String> getOpenRouterResponse(List<Map<String, String>> massage) async {
   }
 }
 
-
 Future<dynamic> getOpenRouterResponseForGpt40(
   String message,
   List<String> base64Images,
@@ -59,7 +56,7 @@ Future<dynamic> getOpenRouterResponseForGpt40(
   }
 
   final body = jsonEncode({
-    "model": "qwen/qwen-2.5-vl-72b-instruct:free",
+    "model": "openai/gpt-5.6-luna-pro",
     "messages": [
       {"role": "user", "content": message_images},
     ],
