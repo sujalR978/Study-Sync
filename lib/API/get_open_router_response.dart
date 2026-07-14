@@ -56,7 +56,7 @@ Future<dynamic> getOpenRouterResponseForGpt40(
   }
 
   final body = jsonEncode({
-    "model": "openai/gpt-5.6-luna-pro",
+    "model": "nvidia/llama-nemotron-rerank-vl-1b-v2:free",
     "messages": [
       {"role": "user", "content": message_images},
     ],
