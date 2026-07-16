@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:study_sync/constants/app_colors.dart';
-import 'package:study_sync/screens/BottomNavigation.dart';
+
 import 'package:study_sync/screens/home/home_screen.dart';
 
 class Showtaskscreen extends StatefulWidget {
