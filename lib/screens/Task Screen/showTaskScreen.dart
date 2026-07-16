@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:study_sync/constants/app_colors.dart';
-import 'package:study_sync/screens/BottomNavigation.dart'; 
+import 'package:study_sync/screens/BottomNavigation.dart';
+import 'package:study_sync/screens/home/home_screen.dart';
 
 class Showtaskscreen extends StatefulWidget {
   final String taskid;
@@ -44,7 +45,6 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -67,7 +67,7 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
           ),
           onPressed: () => Navigator.of(
             context,
-          ).push(MaterialPageRoute(builder: (_) => Bottomnavigation())),
+          ).push(MaterialPageRoute(builder: (_) => HomeScreen())),
         ),
       ),
       body: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -81,7 +81,7 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
 
           if (snapshot.hasError ||
               !snapshot.hasData ||
-               !snapshot.data!.exists) {
+              !snapshot.data!.exists) {
             return Center(
               child: Text(
                 'Task could not be found',
@@ -155,7 +155,6 @@ class _ShowtaskscreenState extends State<Showtaskscreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                     
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
