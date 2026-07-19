@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:provider/provider.dart';
 import 'package:study_sync/providers/them_provider.dart';
 import 'package:study_sync/constants/app_colors.dart';
-import 'package:study_sync/screens/home/home_screen.dart';
+
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
