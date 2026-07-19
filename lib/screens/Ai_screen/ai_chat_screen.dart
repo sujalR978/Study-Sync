@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:study_sync/API/get_open_router_response.dart';
-import 'package:study_sync/constants/app_colors.dart';
+
 import 'package:study_sync/services/chat_service.dart';
 import 'package:study_sync/widgets/Ai_answer.dart';
 

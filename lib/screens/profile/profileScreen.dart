@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:provider/provider.dart';
 import 'package:study_sync/providers/auth_provider.dart';
 import 'package:study_sync/screens/auth/logout_screen.dart';
-import 'package:study_sync/screens/home/home_screen.dart';
+
 import 'package:study_sync/screens/profile/editProfileScreen.dart';
 import 'package:study_sync/widgets/profile_avatar.dart';
 

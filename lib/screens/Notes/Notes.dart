@@ -2,9 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import 'package:study_sync/providers/auth_provider.dart';
 import 'package:study_sync/screens/Notes/EditNotes.dart';
 import 'package:study_sync/screens/Notes/createNotes.dart';
 import 'package:study_sync/screens/Notes/showNotes.dart';
