@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:study_sync/constants/app_colors.dart'; // Ensure path is correct
 
-class CategoryCard extends StatelessWidget {
+class CategoryCard extends StatefulWidget {
   final String category;
   final bool isSelected;
   final VoidCallback onTap;
@@ -15,81 +14,101 @@ class CategoryCard extends StatelessWidget {
     required this.onLongPress,
   });
 
-  IconData getIcon() {
-    switch (category) {
+  @override
+  State<CategoryCard> createState() => _CategoryCardState();
+}
+
+class _CategoryCardState extends State<CategoryCard> {
+  bool _isPressed = false;
+
+  IconData _getCategoryIcon() {
+    switch (widget.category) {
       case "Study":
-        return Icons.school_outlined;
+        return Icons.school_rounded;
       case "Work":
-        return Icons.work_outline_rounded;
+        return Icons.work_rounded;
       case "Personal":
-        return Icons.person_outline_rounded;
+        return Icons.person_rounded;
       case "Health":
-        return Icons.favorite_border_rounded;
+        return Icons.favorite_rounded;
       case "Shopping":
-        return Icons.shopping_cart_outlined;
+        return Icons.shopping_cart_rounded;
       default:
-        return Icons.category_outlined;
+        return Icons.category_rounded;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final bool isDark = theme.brightness == Brightness.dark;
 
-    // Determine background color based on theme selection context
-    final Color unselectedBg = isDark
-        ? AppColors.darkInputFill
-        : const Color(0xFFE9EDF7);
-    final Color unselectedContent = isDark
-        ? AppColors.darkTextBody
-        : const Color(0xFF4B5563);
+    final Color primaryColor = theme.colorScheme.primary;
+    final Color surfaceColor = theme.colorScheme.surface;
+    final Color onSurfaceColor = theme.colorScheme.onSurface;
+
+    // UPGRADE: Alpha blending handles clean contrast levels for all 8 light/dark background variations
+    final Color unselectedBg = Color.alphaBlend(
+      primaryColor.withOpacity(isDark ? 0.12 : 0.06),
+      surfaceColor,
+    );
+    final Color unselectedContent = onSurfaceColor.withOpacity(0.6);
 
     return GestureDetector(
-      onTap: onTap,
-      onLongPress: onLongPress,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        height:
-            50, // Slightly slimmed down to 50 for a premium, compact pill feel
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-        ), // Prevents wall-clipping
-        decoration: BoxDecoration(
-         
-          color: isSelected ? AppColors.primary : unselectedBg,
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppColors.primary.withOpacity(0.25),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-              : [],
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize
-              .min, // Allows the Wrap widget to bundle chips closely
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              getIcon(),
-              
-              color: isSelected ? Colors.white : unselectedContent,
-              size: 18,
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) => setState(() => _isPressed = false),
+      onTapCancel: () => setState(() => _isPressed = false),
+      onTap: widget.onTap,
+      onLongPress: widget.onLongPress,
+      child: AnimatedScale(
+        scale: _isPressed ? 0.95 : 1.0,
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.easeOutCubic,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          height: 48, // Premium compact pill sizing
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          decoration: BoxDecoration(
+            color: widget.isSelected ? primaryColor : unselectedBg,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: widget.isSelected 
+                  ? Colors.transparent 
+                  : (isDark ? Colors.white.withOpacity(0.02) : Colors.black.withOpacity(0.02)),
+              width: 1.5,
             ),
-            const SizedBox(width: 8),
-            Text(
-              category,
-              style: TextStyle(
-                
-                color: isSelected ? Colors.white : unselectedContent,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
+            boxShadow: widget.isSelected
+                ? [
+                    BoxShadow(
+                      color: primaryColor.withOpacity(0.25),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : [],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                _getCategoryIcon(),
+                color: widget.isSelected ? Colors.white : unselectedContent,
+                size: 18,
               ),
-            ),
-          ], 
+              const SizedBox(width: 8),
+              Text(
+                widget.category,
+                style: TextStyle(
+                  color: widget.isSelected ? Colors.white : unselectedContent,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                  letterSpacing: -0.2,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -78,11 +78,14 @@ class _SplashScreenState extends State<SplashScreen> {
 
                     const SizedBox(height: 20),
 
-                    customText.titalText('Study Sync'),
+                    customText.titalText('Study Sync', context: context),
 
                     const SizedBox(height: 15),
 
-                    customText.opacityText('Study Smart, Stay Focused'),
+                    customText.opacityText(
+                      'Study Smart, Stay Focused',
+                      context: context,
+                    ),
                   ],
                 ),
               ),

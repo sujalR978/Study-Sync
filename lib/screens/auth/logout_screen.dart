@@ -5,6 +5,7 @@ import 'package:study_sync/providers/auth_provider.dart';
 
 import 'package:study_sync/screens/auth/login_screen.dart';
 import 'package:study_sync/screens/home/home_screen.dart';
+import 'package:study_sync/screens/profile/profileScreen.dart';
 
 import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/widgets/custom_button.dart';
@@ -26,14 +27,13 @@ class _LogoutScreenState extends State<LogoutScreen> {
     getData();
   }
 
-  void  getData() async {}
+  void getData() async {}
 
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Container(
         width: double.infinity,
@@ -141,7 +141,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w800,
-                                
+
                                 color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
@@ -202,7 +202,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          const HomeScreen(),
+                                          const Profilescreen(),
                                     ),
                                   );
                                 },
@@ -218,7 +218,6 @@ class _LogoutScreenState extends State<LogoutScreen> {
                                 child: Text(
                                   "Cancel",
                                   style: TextStyle(
-                                    
                                     color: isDark
                                         ? AppColors.darkTextBody
                                         : const Color(0xFF475569),
@@ -241,7 +240,6 @@ class _LogoutScreenState extends State<LogoutScreen> {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(50),
                           boxShadow: [
@@ -281,10 +279,8 @@ class _LogoutScreenState extends State<LogoutScreen> {
               ),
             ),
 
-           
             if (isLoading)
               Container(
-  
                 color: isDark ? Colors.black54 : Colors.white.withOpacity(0.6),
                 child: const Center(
                   child: CircularProgressIndicator(color: Color(0xFF0052FF)),
