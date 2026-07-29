@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:study_sync/screens/BottomNavigation.dart';
 import 'package:study_sync/screens/Notes/Notes.dart';
 import 'package:study_sync/services/Notes_service.dart';
 
@@ -95,7 +96,9 @@ class _CreatenotesState extends State<Createnotes>
                   child: GestureDetector(
                     onTap: () {
                       Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => const Notes()),
+                        MaterialPageRoute(
+                          builder: (context) => const Bottomnavigation(),
+                        ),
                       );
                     },
                     child: Container(
