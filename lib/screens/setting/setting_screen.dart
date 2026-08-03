@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'dart:math' as math; // Used for random movement calculations
+import 'dart:math' as math; // Used for organic movement calculations
 import 'package:provider/provider.dart';
 
 // --- REQUIRED IMPORTS (Update paths if necessary) ---
@@ -22,22 +22,22 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen>
     with TickerProviderStateMixin {
-  // Animation controller for the slow, dynamic movement of the background blobs
-  late AnimationController _backgroundMovementController;
+  // Controller for the faster, organic breathing movement of the background mesh
+  late AnimationController _meshMovementController;
 
   @override
   void initState() {
     super.initState();
-    // Initialize movement controller (slow, continuous loop)
-    _backgroundMovementController = AnimationController(
+    // Initialize mesh movement (moderate speed for hypnotic flow)
+    _meshMovementController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 20),
-    )..repeat(); // Keep repeating the movement
+      duration: const Duration(seconds: 12),
+    )..repeat(reverse: true); // organic breathing effect
   }
 
   @override
   void dispose() {
-    _backgroundMovementController.dispose();
+    _meshMovementController.dispose();
     super.dispose();
   }
 
@@ -50,7 +50,7 @@ class _SettingScreenState extends State<SettingScreen>
     final theme = Theme.of(context);
     final bool isDark = theme.brightness == Brightness.dark;
 
-    // Abstracting color tokens for the background movement
+    // Abstracting color tokens for the dynamic background
     final Color primaryColor = theme.colorScheme.primary;
     final Color secondaryColor = theme.colorScheme.secondary;
     final Color surfaceColor = theme.colorScheme.surface;
@@ -112,56 +112,59 @@ class _SettingScreenState extends State<SettingScreen>
       body: Stack(
         children: [
           // ===================================================================
-          // --- THE UNIQUE UNIQUE DYNAMIC MOVING BACKGROUND MESH ---
-          // This creates the layers needed to make glass effects visible
+          // --- THE UNIQUE ENHANCED HYPNOTIC ANIMATED MESH BACKGROUND ---
+          // Creates layers of drifting, organic gradients that attract users
           // ===================================================================
           AnimatedBuilder(
-            animation: _backgroundMovementController,
+            animation: _meshMovementController,
             builder: (context, child) {
-              final double value = _backgroundMovementController.value;
+              final double t = _meshMovementController.value;
               final size = MediaQuery.of(context).size;
 
               return Stack(
                 children: [
-                  // --- Blob 1 (Primary Color - Top Right) ---
-                  _buildAnimatedBlob(
-                    color: primaryColor.withOpacity(isDark ? 0.25 : 0.2),
-                    t: value,
-                    baseX: size.width * 0.7,
-                    baseY: size.height * 0.1,
+                  // --- Blob 1 (Primary Deep Drift - organically moving) ---
+                  _buildOrganicBlob(
+                    color: primaryColor.withOpacity(isDark ? 0.35 : 0.3),
+                    t: t,
+                    baseX: size.width * 0.75,
+                    baseY: size.height * 0.15,
+                    radius: 200,
+                    driftSpeed: 1.2,
+                    offsetSeed: 0.0,
+                  ),
+
+                  // --- Blob 2 (Secondary Wide Flow - different drift) ---
+                  _buildOrganicBlob(
+                    color: secondaryColor.withOpacity(isDark ? 0.25 : 0.2),
+                    t: t,
+                    baseX: size.width * 0.15,
+                    baseY: size.height * 0.7,
+                    radius: 250,
+                    driftSpeed: 1.0,
+                    offsetSeed: math.pi / 2, // 90 degree phase shift
+                  ),
+
+                  // --- Blob 3 (Alternative Pulse - center-focused) ---
+                  _buildOrganicBlob(
+                    color: (isDark ? primaryColor : secondaryColor).withOpacity(
+                      isDark ? 0.2 : 0.15,
+                    ),
+                    t: t,
+                    baseX: size.width * 0.5,
+                    baseY: size.height * 0.45,
                     radius: 180,
                     driftSpeed: 1.5,
-                  ),
-
-                  // --- Blob 2 (Secondary Color - Bottom Left) ---
-                  _buildAnimatedBlob(
-                    color: secondaryColor.withOpacity(isDark ? 0.2 : 0.15),
-                    t: value + 0.3, // Offset time for unique movement
-                    baseX: size.width * 0.1,
-                    baseY: size.height * 0.6,
-                    radius: 220,
-                    driftSpeed: 1.2,
-                  ),
-
-                  // --- Blob 3 (Alternative Color - Center) ---
-                  _buildAnimatedBlob(
-                    color: (isDark ? primaryColor : secondaryColor).withOpacity(
-                      isDark ? 0.15 : 0.1,
-                    ),
-                    t: value + 0.7, // Offset time
-                    baseX: size.width * 0.5,
-                    baseY: size.height * 0.4,
-                    radius: 150,
-                    driftSpeed: 1.8,
+                    offsetSeed: math.pi, // 180 degree phase shift
                   ),
                 ],
               );
             },
           ),
-          // A global heavy blur mask to turn the blobs into a mesh
+          // Intense Global Blur Mask to create the "Deep Mesh" look
           Positioned.fill(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 90, sigmaY: 90),
+              filter: ImageFilter.blur(sigmaX: 110, sigmaY: 110),
               child: Container(color: Colors.transparent),
             ),
           ),
@@ -180,30 +183,11 @@ class _SettingScreenState extends State<SettingScreen>
               // ========================================================
               // --- ACCOUNT SECTION ---
               // ========================================================
-              Padding(
-                padding: const EdgeInsets.only(left: 4, bottom: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "ACCOUNT",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w900,
-                        color: primaryColor,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Your personal student info",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: onSurfaceColor.withOpacity(0.6),
-                      ),
-                    ),
-                  ],
-                ),
+              _buildSectionHeader(
+                primaryColor,
+                onSurfaceColor,
+                "ACCOUNT",
+                "Your personal student info",
               ),
 
               // Glassmorphic Account Overview Card
@@ -264,34 +248,56 @@ class _SettingScreenState extends State<SettingScreen>
                           ),
                         ),
 
-                        // --- THE EDIT PROFILE ACTION BUTTON ---
-                        IconButton(
-                          onPressed: () {
+                        // --- THE UPDATED EDIT PROFILE ACTION BUTTON (NEW!) ---
+                        // Replaced icon with stadium button containing name 'Edit'
+                        GestureDetector(
+                          onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => const Editprofilescreen(),
                               ),
                             );
                           },
-                          style: IconButton.styleFrom(
-                            backgroundColor: theme.colorScheme.surface
-                                .withOpacity(0.6),
-                            padding: const EdgeInsets.all(10),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
                             ),
-                            side: BorderSide(
-                              color: theme.colorScheme.onSurface.withOpacity(
-                                0.05,
-                              ),
-                              width: 1,
+                            decoration: BoxDecoration(
+                              color: primaryColor, // solid prominent color
+                              borderRadius: BorderRadius.circular(
+                                100,
+                              ), // Stadium shape
+                              boxShadow: [
+                                BoxShadow(
+                                  color: primaryColor.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
                             ),
-                          ),
-                          icon: Icon(
-                            Icons
-                                .edit_note_rounded, // Premium looking edit icon
-                            color: primaryColor,
-                            size: 20,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons
+                                      .manage_accounts_rounded, // New professional edit icon
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Edit', // Add Name
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 13,
+                                    letterSpacing: 0.2,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -300,36 +306,96 @@ class _SettingScreenState extends State<SettingScreen>
                 ),
               ),
 
-              const SizedBox(
-                height: 32,
-              ), // Space between ACCOUNT and STUDY VIBES
+              const SizedBox(height: 32),
+
+              // ========================================================
+              // --- STUDENT ACHIEVEMENTS SECTION (ADDITION!) ---
+              // Gamification acts as attraction to keep students engaged
+              // ========================================================
+              _buildSectionHeader(
+                primaryColor,
+                onSurfaceColor,
+                "STUDY STREAK & AWARDS",
+                "You are killing it this week!",
+              ),
+
+              ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: surfaceColor.withOpacity(isDark ? 0.35 : 0.6),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: onSurfaceColor.withOpacity(0.06),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              height: 50,
+                              width: 50,
+                              decoration: BoxDecoration(
+                                color: secondaryColor.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.local_fire_department,
+                                color: secondaryColor,
+                                size: 28,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "12 Day Streak",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 16,
+                                    color: onSurfaceColor,
+                                  ),
+                                ),
+                                Text(
+                                  "Last studied: 2h ago",
+                                  style: TextStyle(
+                                    color: onSurfaceColor.withOpacity(0.6),
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        // Small award icon teaser
+                        Icon(
+                          Icons.emoji_events_rounded,
+                          color: primaryColor.withOpacity(0.7),
+                          size: 24,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
               // ========================================================
               // --- STUDY VIBES SECTION ---
               // ========================================================
-              Padding(
-                padding: const EdgeInsets.only(left: 4, bottom: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "STUDY VIBES",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w900,
-                        color: primaryColor,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Personalize your workspace",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: onSurfaceColor.withOpacity(0.6),
-                      ),
-                    ),
-                  ],
-                ),
+              _buildSectionHeader(
+                primaryColor,
+                onSurfaceColor,
+                "STUDY VIBES",
+                "Personalize your workspace",
               ),
 
               // Existing theme list view builder (unchanged)
@@ -373,7 +439,7 @@ class _SettingScreenState extends State<SettingScreen>
           ),
 
           // ===================================================================
-          // --- THE UNIQUE FLOATING PILL HEADER ---
+          // --- THE FIXED FLOATING PILL HEADER & APP BAR NAV ---
           // Includes Pulsing AI Icon
           // ===================================================================
           Positioned(
@@ -414,17 +480,21 @@ class _SettingScreenState extends State<SettingScreen>
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // Custom Back Button
-                          IconButton(
-                            onPressed: () => Navigator.pop(context),
-                            style: IconButton.styleFrom(
-                              backgroundColor: onSurfaceColor.withOpacity(0.05),
-                              shape: const CircleBorder(),
-                            ),
-                            icon: Icon(
-                              Icons.arrow_back_ios_new_rounded,
-                              color: onSurfaceColor,
-                              size: 18,
+                          // Custom Back Button styled to match premium look
+                          GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: Container(
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                color: onSurfaceColor.withOpacity(0.05),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.arrow_back_ios_new_rounded,
+                                color: onSurfaceColor,
+                                size: 16, // premium slightly smaller size
+                              ),
                             ),
                           ),
 
@@ -479,7 +549,41 @@ class _SettingScreenState extends State<SettingScreen>
     );
   }
 
-  // Redesigned Card for a horizontal row layout
+  // Reusable Section Header builder to maintain consistency
+  Widget _buildSectionHeader(
+    Color primaryColor,
+    Color onSurfaceColor,
+    String title,
+    String subtitle,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w900,
+              color: primaryColor,
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 14,
+              color: onSurfaceColor.withOpacity(0.6),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Redesigned Vibe Card for a horizontal row layout
   Widget _buildVibeCard(
     BuildContext context, {
     required String title,
@@ -638,31 +742,51 @@ class _SettingScreenState extends State<SettingScreen>
   }
 
   // ===================================================================
-  // --- BACKGROUND BLOB BUILDER WITH DYNAMIC DRIFT ---
-  // Calculates slow random movement based on Ticker T
+  // --- ORGANIC DYNAMIC BACKGROUND BLOB BUILDER ---
+  // Uses sine wave calculations on a reversed Repeat loop to simulate breathing/drift
   // ===================================================================
-  Widget _buildAnimatedBlob({
+  Widget _buildOrganicBlob({
     required Color color,
     required double t,
     required double baseX,
     required double baseY,
     required double radius,
     required double driftSpeed,
+    required double offsetSeed,
   }) {
-    // Math logic to calculate slow circular drift based on time
-    final xOffset =
-        math.sin(t * math.pi * 2 * driftSpeed) * 30; // 30 is drift range
-    final yOffset = math.cos(t * math.pi * 2 * driftSpeed) * 20;
+    // organic Breathing/pulsing effect via sine over time (ticker reverses for smoothness)
+    final breathingVal = math.sin(t * math.pi * 2 + offsetSeed);
+
+    // Slow organic drift calculation combining baseX/Y with breathing values
+    final xOffset = breathingVal * 35 * driftSpeed; // x drift range
+    final yOffset =
+        math.cos(t * math.pi * 1.5 + offsetSeed) *
+        25 *
+        driftSpeed; // y unique path
 
     return AnimatedPositioned(
-      // Animated Positioned for smooth updates
-      duration: const Duration(milliseconds: 100), // Smooth time updates
+      // Animated Positioned for silky smooth updates based on movement controller
+      duration: const Duration(
+        milliseconds: 200,
+      ), // Smooth time updates to prevent banding
+      curve: Curves.linear, // keep movement constant based on ticker
       top: baseY + yOffset,
       left: baseX + xOffset,
       child: Container(
         height: radius * 2,
         width: radius * 2,
-        decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color,
+          // Subtle glow effect
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.05),
+              blurRadius: 30,
+              spreadRadius: 10,
+            ),
+          ],
+        ),
       ),
     );
   }
