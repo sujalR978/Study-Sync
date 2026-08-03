@@ -49,7 +49,9 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
   void getdata() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     setState(() {
-      Category = sp.getStringList('category') ?? ["Study", "Work", "Personal", "Health", "Shopping"];
+      Category =
+          sp.getStringList('category') ??
+          ["Study", "Work", "Personal", "Health", "Shopping"];
     });
   }
 
@@ -99,7 +101,9 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: Theme.of(context).colorScheme.copyWith(primary: primaryColor),
+            colorScheme: Theme.of(
+              context,
+            ).colorScheme.copyWith(primary: primaryColor),
           ),
           child: child!,
         );
@@ -120,7 +124,9 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: Theme.of(context).colorScheme.copyWith(primary: primaryColor),
+            colorScheme: Theme.of(
+              context,
+            ).colorScheme.copyWith(primary: primaryColor),
           ),
           child: child!,
         );
@@ -148,7 +154,13 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
     }
   }
 
-  Widget _buildPriorityButton(BuildContext context, String level, Color primaryColor, Color inputFill, Color textBodyColor) {
+  Widget _buildPriorityButton(
+    BuildContext context,
+    String level,
+    Color primaryColor,
+    Color inputFill,
+    Color textBodyColor,
+  ) {
     bool isSelected = false;
     String currentPriorityLower = setpriority.toLowerCase().trim();
     String buttonLevelLower = level.toLowerCase().trim();
@@ -156,7 +168,8 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
     if (buttonLevelLower == currentPriorityLower) {
       isSelected = true;
     } else if (buttonLevelLower == 'miduim' || buttonLevelLower == 'medium') {
-      if (currentPriorityLower == 'miduim' || currentPriorityLower == 'medium') {
+      if (currentPriorityLower == 'miduim' ||
+          currentPriorityLower == 'medium') {
         isSelected = true;
       }
     }
@@ -219,7 +232,9 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: isDark ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.02),
+                color: isDark
+                    ? Colors.white.withOpacity(0.04)
+                    : Colors.black.withOpacity(0.02),
                 width: 1.0,
               ),
             ),
@@ -252,9 +267,7 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                   child: GestureDetector(
-                    onTap: () => Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (_) => const Bottomnavigation()),
-                    ),
+                    onTap: () => Navigator.of(context).pop(),
                     child: Container(
                       height: 40,
                       width: 40,
@@ -262,7 +275,9 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                         color: surfaceColor.withOpacity(isDark ? 0.35 : 0.45),
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
-                          color: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04),
+                          color: isDark
+                              ? Colors.white.withOpacity(0.08)
+                              : Colors.black.withOpacity(0.04),
                           width: 1.5,
                         ),
                       ),
@@ -319,10 +334,14 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                         child: Container(
                           padding: const EdgeInsets.all(22),
                           decoration: BoxDecoration(
-                            color: surfaceColor.withOpacity(isDark ? 0.30 : 0.45),
+                            color: surfaceColor.withOpacity(
+                              isDark ? 0.30 : 0.45,
+                            ),
                             borderRadius: BorderRadius.circular(28),
                             border: Border.all(
-                              color: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04),
+                              color: isDark
+                                  ? Colors.white.withOpacity(0.08)
+                                  : Colors.black.withOpacity(0.04),
                               width: 1.5,
                             ),
                           ),
@@ -344,8 +363,15 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                                 hintText: 'Enter Text',
                                 icon: Icons.edit_note_rounded,
                                 controller: taskName,
-                                regex: [FilteringTextInputFormatter.allow(RegExp('[a-zA-Z0-9 ]'))],
-                                valideter: (value) => (value == null || value.isEmpty) ? 'Enter task' : null,
+                                regex: [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp('[a-zA-Z0-9 ]'),
+                                  ),
+                                ],
+                                valideter: (value) =>
+                                    (value == null || value.isEmpty)
+                                    ? 'Enter task'
+                                    : null,
                               ),
                               const SizedBox(height: 24),
                               Text(
@@ -363,7 +389,10 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                                 hintText: 'Enter description',
                                 icon: Icons.description_outlined,
                                 controller: taskDescription,
-                                valideter: (value) => (value == null || value.isEmpty) ? 'Enter Description' : null,
+                                valideter: (value) =>
+                                    (value == null || value.isEmpty)
+                                    ? 'Enter Description'
+                                    : null,
                               ),
                             ],
                           ),
@@ -411,9 +440,27 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                     const SizedBox(height: 14),
                     Row(
                       children: [
-                        _buildPriorityButton(context, 'High', primaryColor, dynamicInputFill, dynamicTextBody),
-                        _buildPriorityButton(context, 'Miduim', primaryColor, dynamicInputFill, dynamicTextBody),
-                        _buildPriorityButton(context, 'Low', primaryColor, dynamicInputFill, dynamicTextBody),
+                        _buildPriorityButton(
+                          context,
+                          'High',
+                          primaryColor,
+                          dynamicInputFill,
+                          dynamicTextBody,
+                        ),
+                        _buildPriorityButton(
+                          context,
+                          'Miduim',
+                          primaryColor,
+                          dynamicInputFill,
+                          dynamicTextBody,
+                        ),
+                        _buildPriorityButton(
+                          context,
+                          'Low',
+                          primaryColor,
+                          dynamicInputFill,
+                          dynamicTextBody,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 28),
@@ -427,31 +474,48 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                             children: [
                               Text(
                                 'Due Date',
-                                style: TextStyle(color: onSurfaceColor, fontWeight: FontWeight.bold, fontSize: 14),
+                                style: TextStyle(
+                                  color: onSurfaceColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
                               ),
                               const SizedBox(height: 8),
                               GestureDetector(
                                 onTap: () => _showDatePicker(primaryColor),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 16,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: dynamicInputFill.withOpacity(0.6),
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
-                                      color: isDark ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.02),
+                                      color: isDark
+                                          ? Colors.white.withOpacity(0.04)
+                                          : Colors.black.withOpacity(0.02),
                                       width: 1.0,
                                     ),
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.calendar_today_rounded, color: primaryColor, size: 18),
+                                      Icon(
+                                        Icons.calendar_today_rounded,
+                                        color: primaryColor,
+                                        size: 18,
+                                      ),
                                       const SizedBox(width: 10),
                                       Expanded(
                                         child: Text(
                                           selectedDate != null
                                               ? "${selectedDate!.day.toString().padLeft(2, '0')}/${selectedDate!.month.toString().padLeft(2, '0')}/${selectedDate!.year}"
                                               : "Set Date",
-                                          style: TextStyle(color: onSurfaceColor, fontWeight: FontWeight.w700, fontSize: 13),
+                                          style: TextStyle(
+                                            color: onSurfaceColor,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 13,
+                                          ),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
@@ -469,29 +533,46 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                             children: [
                               Text(
                                 'Due Time',
-                                style: TextStyle(color: onSurfaceColor, fontWeight: FontWeight.bold, fontSize: 14),
+                                style: TextStyle(
+                                  color: onSurfaceColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
                               ),
                               const SizedBox(height: 8),
                               GestureDetector(
                                 onTap: () => _showTimePicker(primaryColor),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 16,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: dynamicInputFill.withOpacity(0.6),
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
-                                      color: isDark ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.02),
+                                      color: isDark
+                                          ? Colors.white.withOpacity(0.04)
+                                          : Colors.black.withOpacity(0.02),
                                       width: 1.0,
                                     ),
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.access_time_rounded, color: primaryColor, size: 18),
+                                      Icon(
+                                        Icons.access_time_rounded,
+                                        color: primaryColor,
+                                        size: 18,
+                                      ),
                                       const SizedBox(width: 10),
                                       Expanded(
                                         child: Text(
                                           selectedTime ?? "Set Time",
-                                          style: TextStyle(color: onSurfaceColor, fontWeight: FontWeight.w700, fontSize: 13),
+                                          style: TextStyle(
+                                            color: onSurfaceColor,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 13,
+                                          ),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
@@ -510,22 +591,33 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                     GestureDetector(
                       onTapDown: (_) => setState(() => _isUpdatePressed = true),
                       onTapUp: (_) => setState(() => _isUpdatePressed = false),
-                      onTapCancel: () => setState(() => _isUpdatePressed = false),
+                      onTapCancel: () =>
+                          setState(() => _isUpdatePressed = false),
                       onTap: () {
                         if (!_formKey.currentState!.validate()) return;
                         if (selectedDate != null && selectedTime != null) {
                           DateTime now = DateTime.now();
 
-                          if (selectedDate!.day == now.day && selectedDate!.month == now.month && selectedDate!.year == now.year) {
+                          if (selectedDate!.day == now.day &&
+                              selectedDate!.month == now.month &&
+                              selectedDate!.year == now.year) {
                             int currentMinutes = now.hour * 60 + now.minute;
                             int targetMinutes = 0;
 
                             try {
                               String cleanTime = selectedTime!.trim();
-                              bool isPM = cleanTime.toLowerCase().contains('pm');
-                              bool isAM = cleanTime.toLowerCase().contains('am');
+                              bool isPM = cleanTime.toLowerCase().contains(
+                                'pm',
+                              );
+                              bool isAM = cleanTime.toLowerCase().contains(
+                                'am',
+                              );
 
-                              cleanTime = cleanTime.toLowerCase().replaceAll('am', '').replaceAll('pm', '').trim();
+                              cleanTime = cleanTime
+                                  .toLowerCase()
+                                  .replaceAll('am', '')
+                                  .replaceAll('pm', '')
+                                  .trim();
                               List<String> timeParts = cleanTime.split(':');
 
                               if (timeParts.length == 2) {
@@ -537,13 +629,17 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                                 targetMinutes = hour * 60 + minute;
                               }
                             } catch (e) {
-                              targetMinutes = TimeOfDay.now().hour * 60 + TimeOfDay.now().minute;
+                              targetMinutes =
+                                  TimeOfDay.now().hour * 60 +
+                                  TimeOfDay.now().minute;
                             }
 
                             if (targetMinutes <= currentMinutes) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Validation Failure: Please pick a future time window for today.'),
+                                  content: Text(
+                                    'Validation Failure: Please pick a future time window for today.',
+                                  ),
                                   backgroundColor: Color(0xFFEF4444),
                                 ),
                               );
@@ -552,7 +648,15 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                           }
                         }
 
-                        _openApplyChangesDialog(context, isDark, primaryColor, secondaryColor, surfaceColor, onSurfaceColor, dynamicTextBody);
+                        _openApplyChangesDialog(
+                          context,
+                          isDark,
+                          primaryColor,
+                          secondaryColor,
+                          surfaceColor,
+                          onSurfaceColor,
+                          dynamicTextBody,
+                        );
                       },
                       child: AnimatedScale(
                         scale: _isUpdatePressed ? 0.96 : 1.0,
@@ -602,8 +706,13 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
 
   // --- UPGRADED GLASSMORPHIC CONFIRMATION DIALOG LAYER ---
   void _openApplyChangesDialog(
-    BuildContext context, bool isDark, Color primaryColor, Color secondaryColor,
-    Color surfaceColor, Color onSurfaceColor, Color textBodyColor
+    BuildContext context,
+    bool isDark,
+    Color primaryColor,
+    Color secondaryColor,
+    Color surfaceColor,
+    Color onSurfaceColor,
+    Color textBodyColor,
   ) {
     showDialog(
       context: context,
@@ -620,7 +729,9 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(28),
                 side: BorderSide(
-                  color: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04),
+                  color: isDark
+                      ? Colors.white.withOpacity(0.08)
+                      : Colors.black.withOpacity(0.04),
                   width: 1.5,
                 ),
               ),
@@ -668,14 +779,19 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                           height: 48,
                           child: TextButton(
                             onPressed: () {
-                              Navigator.pop(context);
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(builder: (context) => const HomeScreen()),
-                              );
+                              // Pop the dialog, then pop the EditTaskScreen
+                              Navigator.pop(context); // Closes the dialog
+                              Navigator.pop(
+                                context,
+                              ); // Closes the EditTaskScreen
                             },
                             style: TextButton.styleFrom(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                              backgroundColor: isDark ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.03),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              backgroundColor: isDark
+                                  ? Colors.white.withOpacity(0.04)
+                                  : Colors.black.withOpacity(0.03),
                             ),
                             child: Text(
                               'Cancel',
@@ -694,8 +810,8 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                           height: 48,
                           child: ElevatedButton(
                             onPressed: () {
+                              // Pop the dialog first
                               Navigator.pop(context);
-
                               TaskService().updateTask(
                                 title: taskName.text,
                                 description: taskDescription.text,
@@ -707,14 +823,15 @@ class _EdittaskscreenState extends State<Edittaskscreen> {
                                 taskid: widget.taskId.toString(),
                               );
 
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(builder: (context) => const Bottomnavigation()),
-                              );
+                              // Then pop the EditTaskScreen
+                              Navigator.pop(context);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: primaryColor,
                               elevation: 0,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
                             ),
                             child: const Text(
                               'Confirm',
