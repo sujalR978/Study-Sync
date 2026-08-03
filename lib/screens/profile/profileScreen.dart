@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'dart:math' as math;
 import 'package:provider/provider.dart';
 import 'package:study_sync/providers/auth_provider.dart';
 import 'package:study_sync/screens/auth/logout_screen.dart';
-
 import 'package:study_sync/screens/profile/editProfileScreen.dart';
 import 'package:study_sync/widgets/profile_avatar.dart';
 
@@ -14,9 +14,28 @@ class Profilescreen extends StatefulWidget {
   State<Profilescreen> createState() => _ProfilescreenState();
 }
 
-class _ProfilescreenState extends State<Profilescreen> {
+class _ProfilescreenState extends State<Profilescreen>
+    with TickerProviderStateMixin {
   bool _isEditPressed = false;
   bool _isLogoutPressed = false;
+
+  // Animation controller for the ambient background breathing effect
+  late AnimationController _bgController;
+
+  @override
+  void initState() {
+    super.initState();
+    _bgController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 10),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _bgController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,56 +63,82 @@ class _ProfilescreenState extends State<Profilescreen> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      // --- TRANSITIONAL BACKDROP OVERLAYS ---
+      extendBodyBehindAppBar:
+          true, // Allows the background to flow under the app bar
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
         child: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
           scrolledUnderElevation: 0,
-          title: ShaderMask(
-            shaderCallback: (bounds) => LinearGradient(
-              colors: [primaryColor, secondaryColor],
-            ).createShader(bounds),
-            child: const Text(
-              'Account Hub',
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                color: Colors.white,
-                fontSize: 22,
-                letterSpacing: -0.6,
-              ),
+          title: Text(
+            'Account Hub',
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              color: onSurfaceColor,
+              fontSize: 22,
+              letterSpacing: -0.6,
             ),
           ),
           centerTitle: true,
           leadingWidth: 72,
-    
         ),
       ),
       body: Stack(
         children: [
-          // Background Light Emitters
-          Positioned(
-            top: -40,
-            left: -40,
-            child: Container(
-              height: 300,
-              width: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: primaryColor.withOpacity(0.08),
-              ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 60, sigmaY: 60),
-                child: Container(),
-              ),
+          // ==========================================
+          // --- AMBIENT BREATHING BACKGROUND ---
+          // ==========================================
+          AnimatedBuilder(
+            animation: _bgController,
+            builder: (context, child) {
+              final double t = _bgController.value;
+              final size = MediaQuery.of(context).size;
+
+              return Stack(
+                children: [
+                  Positioned(
+                    top: size.height * 0.1 + (math.sin(t * math.pi) * 30),
+                    left: size.width * 0.1 - (math.cos(t * math.pi) * 20),
+                    child: Container(
+                      height: 250,
+                      width: 250,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: primaryColor.withOpacity(0.08),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: size.height * 0.4 - (math.sin(t * math.pi) * 40),
+                    right: size.width * 0.05 + (math.cos(t * math.pi) * 20),
+                    child: Container(
+                      height: 200,
+                      width: 200,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: secondaryColor.withOpacity(0.06),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 60, sigmaY: 60),
+              child: Container(color: Colors.transparent),
             ),
           ),
 
+          // ==========================================
+          // --- MAIN SCROLLABLE CONTENT ---
+          // ==========================================
           SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               child: TweenAnimationBuilder<double>(
                 tween: Tween<double>(begin: 0.0, end: 1.0),
                 duration: const Duration(milliseconds: 650),
@@ -110,17 +155,24 @@ class _ProfilescreenState extends State<Profilescreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // --- 1. THE GLASS IDENTITY HEADER SCREEN ---
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(32),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(24),
+                    const SizedBox(height: 40), // Space for overlapping avatar
+                    // --- 1. OVERLAPPING GLASS IDENTITY HEADER ---
+                    Stack(
+                      clipBehavior: Clip.none,
+                      alignment: Alignment.topCenter,
+                      children: [
+                        // The Glass Card
+                        Container(
+                          margin: const EdgeInsets.only(50), // Push card down
+                          padding: const EdgeInsets.fromLTRB(
+                            24,
+                            70,
+                            24,
+                            24,
+                          ), // Extra top padding for avatar
                           decoration: BoxDecoration(
                             color: surfaceColor.withOpacity(
-                              isDark ? 0.30 : 0.45,
+                              isDark ? 0.35 : 0.6,
                             ),
                             borderRadius: BorderRadius.circular(32),
                             border: Border.all(
@@ -129,14 +181,16 @@ class _ProfilescreenState extends State<Profilescreen> {
                                   : Colors.black.withOpacity(0.04),
                               width: 1.5,
                             ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.03),
+                                blurRadius: 20,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
                           ),
                           child: Column(
                             children: [
-                              ProfileAvatar(
-                                photoUrl: user.photoUrl,
-                                radius: 56,
-                              ),
-                              const SizedBox(height: 16),
                               Text(
                                 user.fullname,
                                 textAlign: TextAlign.center,
@@ -148,21 +202,33 @@ class _ProfilescreenState extends State<Profilescreen> {
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              Text(
-                                '@${user.username}',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: secondaryColor,
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: primaryColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                                child: Text(
+                                  '@${user.username}',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: primaryColor,
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 24),
 
-                              // Inline Mini Actions Strip
+                              // Action Buttons Row
                               Row(
                                 children: [
+                                  // Edit Button
                                   Expanded(
+                                    flex: 2,
                                     child: GestureDetector(
                                       onTapDown: (_) =>
                                           setState(() => _isEditPressed = true),
@@ -179,12 +245,12 @@ class _ProfilescreenState extends State<Profilescreen> {
                                         ),
                                       ),
                                       child: AnimatedScale(
-                                        scale: _isEditPressed ? 0.96 : 1.0,
+                                        scale: _isEditPressed ? 0.95 : 1.0,
                                         duration: const Duration(
                                           milliseconds: 100,
                                         ),
                                         child: Container(
-                                          height: 46,
+                                          height: 50,
                                           decoration: BoxDecoration(
                                             gradient: LinearGradient(
                                               colors: [
@@ -193,17 +259,26 @@ class _ProfilescreenState extends State<Profilescreen> {
                                               ],
                                             ),
                                             borderRadius: BorderRadius.circular(
-                                              16,
+                                              20,
                                             ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: primaryColor.withOpacity(
+                                                  0.3,
+                                                ),
+                                                blurRadius: 12,
+                                                offset: const Offset(0, 4),
+                                              ),
+                                            ],
                                           ),
                                           child: const Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
                                               Icon(
-                                                Icons.edit_rounded,
+                                                Icons.manage_accounts_rounded,
                                                 color: Colors.white,
-                                                size: 16,
+                                                size: 18,
                                               ),
                                               SizedBox(width: 8),
                                               Text(
@@ -211,7 +286,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                   fontWeight: FontWeight.bold,
-                                                  fontSize: 13,
+                                                  fontSize: 14,
                                                 ),
                                               ),
                                             ],
@@ -221,41 +296,49 @@ class _ProfilescreenState extends State<Profilescreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 12),
-                                  GestureDetector(
-                                    onTapDown: (_) =>
-                                        setState(() => _isLogoutPressed = true),
-                                    onTapUp: (_) => setState(
-                                      () => _isLogoutPressed = false,
-                                    ),
-                                    onTapCancel: () => setState(
-                                      () => _isLogoutPressed = false,
-                                    ),
-                                    onTap: () => Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const LogoutScreen(),
+                                  // Logout Button
+                                  Expanded(
+                                    flex: 1,
+                                    child: GestureDetector(
+                                      onTapDown: (_) => setState(
+                                        () => _isLogoutPressed = true,
                                       ),
-                                    ),
-                                    child: AnimatedScale(
-                                      scale: _isLogoutPressed ? 0.94 : 1.0,
-                                      duration: const Duration(
-                                        milliseconds: 100,
+                                      onTapUp: (_) => setState(
+                                        () => _isLogoutPressed = false,
                                       ),
-                                      child: Container(
-                                        height: 46,
-                                        width: 50,
-                                        decoration: BoxDecoration(
-                                          color: isDark
-                                              ? Colors.white.withOpacity(0.05)
-                                              : Colors.black.withOpacity(0.04),
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
+                                      onTapCancel: () => setState(
+                                        () => _isLogoutPressed = false,
+                                      ),
+                                      onTap: () => Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const LogoutScreen(),
                                         ),
-                                        child: Icon(
-                                          Icons.power_settings_new_rounded,
-                                          color: primaryColor,
-                                          size: 20,
+                                      ),
+                                      child: AnimatedScale(
+                                        scale: _isLogoutPressed ? 0.95 : 1.0,
+                                        duration: const Duration(
+                                          milliseconds: 100,
+                                        ),
+                                        child: Container(
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                            color: theme.colorScheme.error
+                                                .withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                            border: Border.all(
+                                              color: theme.colorScheme.error
+                                                  .withOpacity(0.2),
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Icon(
+                                            Icons.logout_rounded,
+                                            color: theme.colorScheme.error,
+                                            size: 22,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -265,10 +348,77 @@ class _ProfilescreenState extends State<Profilescreen> {
                             ],
                           ),
                         ),
-                      ),
+                        // The Overlapping Avatar
+                        Positioned(
+                          top: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: theme.scaffoldBackgroundColor,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: ProfileAvatar(
+                              photoUrl: user.photoUrl,
+                              radius: 56,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 32),
 
+                    // ==========================================
+                    // --- 2. NEW: STUDY GAMIFICATION STATS ---
+                    // ==========================================
+                    Text(
+                      "STUDY PROGRESS",
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        _buildStatCard(
+                          context,
+                          icon: Icons.local_fire_department_rounded,
+                          value: "12",
+                          label: "Day Streak",
+                          color: Colors.orange,
+                        ),
+                        const SizedBox(width: 12),
+                        _buildStatCard(
+                          context,
+                          icon: Icons.timer_rounded,
+                          value: "48",
+                          label: "Hours",
+                          color: Colors.blue,
+                        ),
+                        const SizedBox(width: 12),
+                        _buildStatCard(
+                          context,
+                          icon: Icons.task_alt_rounded,
+                          value: "105",
+                          label: "Tasks",
+                          color: Colors.green,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+
+                    // ==========================================
+                    // --- 3. CONTACT INFO MESH ---
+                    // ==========================================
                     Text(
                       "SECURE DATA METRICS",
                       style: TextStyle(
@@ -279,8 +429,6 @@ class _ProfilescreenState extends State<Profilescreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-
-                    // --- 2. ASYMMETRIC METRIC BLOCK LAYOUT MESH ---
                     _buildAsymmetricTile(
                       context,
                       icon: Icons.alternate_email_rounded,
@@ -298,6 +446,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                       fillColor: dynamicInputFill,
                       textColor: dynamicTextBody,
                     ),
+                    const SizedBox(height: 40), // Bottom padding
                   ],
                 ),
               ),
@@ -308,6 +457,65 @@ class _ProfilescreenState extends State<Profilescreen> {
     );
   }
 
+  // --- NEW: Gamification Stat Card Builder ---
+  Widget _buildStatCard(
+    BuildContext context, {
+    required IconData icon,
+    required String value,
+    required String label,
+    required Color color,
+  }) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Expanded(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface.withOpacity(
+                isDark ? 0.25 : 0.45,
+              ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withOpacity(0.05)
+                    : Colors.black.withOpacity(0.03),
+                width: 1.5,
+              ),
+            ),
+            child: Column(
+              children: [
+                Icon(icon, color: color, size: 24),
+                const SizedBox(height: 8),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.onSurface.withOpacity(0.5),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // --- UPDATED: Contact Info Tile Builder ---
   Widget _buildAsymmetricTile(
     BuildContext context, {
     required IconData icon,
