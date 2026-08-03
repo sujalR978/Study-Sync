@@ -9,11 +9,6 @@ import 'package:study_sync/screens/setting/setting_screen.dart';
 class Bottomnavigation extends StatefulWidget {
   const Bottomnavigation({super.key});
 
-  // --- MAGIC TRICK: This allows any screen to access the bottom nav and change tabs! ---
-  static _BottomnavigationState? of(BuildContext context) {
-    return context.findAncestorStateOfType<_BottomnavigationState>();
-  }
-
   @override
   State<Bottomnavigation> createState() => _BottomnavigationState();
 }
@@ -21,22 +16,8 @@ class Bottomnavigation extends StatefulWidget {
 class _BottomnavigationState extends State<Bottomnavigation> {
   int _currentIndex = 0;
 
-  // --- NEW METHOD: Changes the tab from anywhere ---
-  void changeTab(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
-
-  // --- NEW METHOD: Creates a Nested Navigator for each tab ---
-  // This is what keeps the bottom navigation bar visible when pushing new pages!
-  Widget _buildTabNavigator(Widget rootPage) {
-    return Navigator(
-      onGenerateRoute: (settings) {
-        return MaterialPageRoute(builder: (context) => rootPage);
-      },
-    );
-  }
+  // REMOVED: Global Navigator keys are no longer needed since
+  // sub-pages will now pop over the top of the entire shell layout structure.
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +29,10 @@ class _BottomnavigationState extends State<Bottomnavigation> {
     final Color onSurfaceColor = theme.colorScheme.onSurface;
 
     return Scaffold(
-      extendBody: true,
+      extendBody:
+          true, // Forces child layout canvases to sit behind the translucent glass container docks
       backgroundColor: theme.scaffoldBackgroundColor,
+
       body: Stack(
         children: [
           // Ambient Glass Distorter Orb
@@ -74,16 +57,36 @@ class _BottomnavigationState extends State<Bottomnavigation> {
             ),
           ),
 
-          // IndexedStack maintains state, and our nested Navigators keep the bottom bar alive
-          IndexedStack(
-            index: _currentIndex,
-            children: [
-              _buildTabNavigator(const HomeScreen()),
-              _buildTabNavigator(const Notes()),
-              _buildTabNavigator(const Notes()),
-              _buildTabNavigator(const Profilescreen()),
-              _buildTabNavigator(const SettingScreen()),
-            ],
+          // Core Tab Switch Transition Engine Layer
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            switchInCurve: Curves.easeInOutCubic,
+            switchOutCurve: Curves.easeInOutCubic,
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              return FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0.0, 0.01),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: child,
+                ),
+              );
+            },
+            child: IndexedStack(
+              key: ValueKey<int>(_currentIndex),
+              index: _currentIndex,
+              children: const [
+                // UPGRADED: Removed local _buildNavigator scopes.
+                // Tabs are now loaded directly as clear plain panels.
+                HomeScreen(),
+                Notes(),
+                Notes(), // Secondary placeholder notes pointer slot matching your tracking system
+                Profilescreen(),
+                SettingScreen(),
+              ],
+            ),
           ),
         ],
       ),
@@ -176,7 +179,7 @@ class _BottomnavigationState extends State<Bottomnavigation> {
     final bool isSelected = _currentIndex == index;
 
     return GestureDetector(
-      onTap: () => changeTab(index),
+      onTap: () => setState(() => _currentIndex = index),
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
