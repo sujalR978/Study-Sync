@@ -163,7 +163,7 @@ class _ProfilescreenState extends State<Profilescreen>
                       children: [
                         // The Glass Card
                         Container(
-                          margin: const EdgeInsets.only(50), // Push card down
+                          margin: const EdgeInsets.all(50), // Push card down
                           padding: const EdgeInsets.fromLTRB(
                             24,
                             70,
