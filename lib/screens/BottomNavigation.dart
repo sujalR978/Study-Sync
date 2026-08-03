@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/screens/Notes/Notes.dart';
 import 'package:study_sync/screens/profile/profileScreen.dart';
-import 'package:study_sync/screens/setting/setting_screen.dart';
+
 
 class Bottomnavigation extends StatefulWidget {
   const Bottomnavigation({super.key});
