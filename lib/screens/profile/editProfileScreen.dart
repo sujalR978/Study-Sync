@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:provider/provider.dart';
 import 'package:study_sync/models/user_model.dart';
 import 'package:study_sync/providers/auth_provider.dart';
+import 'package:study_sync/screens/BottomNavigation.dart';
 import 'package:study_sync/screens/profile/profileScreen.dart';
 import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/services/update_auth_data.dart';
@@ -465,10 +466,30 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                                         }
 
                                         if (context.mounted) {
-                                          Navigator.of(context).pushReplacement(
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const Profilescreen(),
+                                          // 1. Close the Edit Profile Screen
+                                          Navigator.of(context).pop();
+
+                                          // 2. Switch bottom nav to Settings tab (Index 4)
+                                          Bottomnavigation.of(
+                                            context,
+                                          )?.changeTab(4);
+
+                                          // 3. Show Success SnackBar
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: const Text(
+                                                'Changes completed successfully! ✨',
+                                              ),
+                                              backgroundColor:
+                                                  Colors.green.shade600,
+                                              behavior:
+                                                  SnackBarBehavior.floating,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
                                             ),
                                           );
                                         }
@@ -530,12 +551,29 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                                       () => _isCancelPressed = false,
                                     ),
                                     onTap: () {
+                                      // 1. Close the Edit Profile Screen
                                       Navigator.of(context).pop();
+
+                                      // 2. Switch bottom nav to Settings tab (Index 4)
+                                      Bottomnavigation.of(
+                                        context,
+                                      )?.changeTab(4);
+
+                                      // 3. Show Cancelled SnackBar
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Edit cancelled.'),
+                                        SnackBar(
+                                          content: const Text(
+                                            'Edit Cancelled.',
+                                          ),
+                                          backgroundColor: Colors.redAccent,
+                                          behavior: SnackBarBehavior.floating,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
                                         ),
                                       );
                                     },
