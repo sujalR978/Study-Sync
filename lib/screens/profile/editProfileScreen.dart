@@ -84,7 +84,9 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final primaryColor = theme.colorScheme.primary;
-    final fillColor = isDark ? Colors.white.withOpacity(0.05) : Colors.grey.withOpacity(0.08);
+    final fillColor = isDark
+        ? Colors.white.withOpacity(0.05)
+        : Colors.grey.withOpacity(0.08);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,7 +124,10 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
             ),
             filled: true,
             fillColor: fillColor,
-            contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 20,
+              horizontal: 20,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide.none,
@@ -197,13 +202,18 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
               children: [
                 // CUSTOM APP BAR (Transparent)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GestureDetector(
                         onTap: () => Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context) => const Profilescreen()),
+                          MaterialPageRoute(
+                            builder: (context) => const Profilescreen(),
+                          ),
                         ),
                         child: Container(
                           height: 44,
@@ -211,9 +221,16 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                           decoration: BoxDecoration(
                             color: Colors.black.withOpacity(0.2),
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.2),
+                              width: 1,
+                            ),
                           ),
-                          child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 18),
+                          child: const Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            color: Colors.white,
+                            size: 18,
+                          ),
                         ),
                       ),
                       const Text(
@@ -237,7 +254,9 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: scaffoldColor,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(40),
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(isDark ? 0.4 : 0.05),
@@ -261,7 +280,10 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                               duration: const Duration(milliseconds: 700),
                               curve: Curves.elasticOut,
                               builder: (context, val, child) {
-                                return Transform.scale(scale: val, child: child);
+                                return Transform.scale(
+                                  scale: val,
+                                  child: child,
+                                );
                               },
                               child: Stack(
                                 alignment: Alignment.bottomRight,
@@ -281,28 +303,42 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                                     ),
                                     child: ProfileAvatar(
                                       photoUrl: photoUrl ?? '',
-                                      localImagePath: Imagepath.isNotEmpty ? Imagepath : null,
+                                      localImagePath: Imagepath.isNotEmpty
+                                          ? Imagepath
+                                          : null,
                                       radius: 65, // slightly larger
                                     ),
                                   ),
                                   GestureDetector(
                                     onTap: pickImage,
                                     child: Container(
-                                      margin: const EdgeInsets.only(right: 4, bottom: 4),
+                                      margin: const EdgeInsets.only(
+                                        right: 4,
+                                        bottom: 4,
+                                      ),
                                       padding: const EdgeInsets.all(12),
                                       decoration: BoxDecoration(
                                         color: primaryColor,
                                         shape: BoxShape.circle,
-                                        border: Border.all(color: scaffoldColor, width: 3),
+                                        border: Border.all(
+                                          color: scaffoldColor,
+                                          width: 3,
+                                        ),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: primaryColor.withOpacity(0.4),
+                                            color: primaryColor.withOpacity(
+                                              0.4,
+                                            ),
                                             blurRadius: 8,
                                             offset: const Offset(0, 4),
-                                          )
+                                          ),
                                         ],
                                       ),
-                                      child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 18),
+                                      child: const Icon(
+                                        Icons.camera_alt_rounded,
+                                        color: Colors.white,
+                                        size: 18,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -324,7 +360,8 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                                       "Update your details",
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: theme.colorScheme.onSurface.withOpacity(0.5),
+                                        color: theme.colorScheme.onSurface
+                                            .withOpacity(0.5),
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -338,8 +375,15 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                                     hint: 'Enter your full name',
                                     icon: Icons.person_rounded,
                                     controller: fullname,
-                                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z ]'))],
-                                    validator: (value) => (value == null || value.isEmpty) ? 'Full name is required' : null,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                        RegExp(r'[a-zA-Z ]'),
+                                      ),
+                                    ],
+                                    validator: (value) =>
+                                        (value == null || value.isEmpty)
+                                        ? 'Full name is required'
+                                        : null,
                                   ),
                                   const SizedBox(height: 24),
 
@@ -349,7 +393,10 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                                     hint: 'Choose a unique username',
                                     icon: Icons.alternate_email_rounded,
                                     controller: username,
-                                    validator: (value) => (value == null || value.isEmpty) ? 'Username is required' : null,
+                                    validator: (value) =>
+                                        (value == null || value.isEmpty)
+                                        ? 'Username is required'
+                                        : null,
                                   ),
                                   const SizedBox(height: 24),
 
@@ -360,10 +407,14 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                                     icon: Icons.phone_iphone_rounded,
                                     controller: phone,
                                     keyboardType: TextInputType.phone,
-                                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly,
+                                    ],
                                     validator: (value) {
-                                      if (value == null || value.isEmpty) return 'Phone number is required';
-                                      if (value.length != 10) return 'Must be exactly 10 digits';
+                                      if (value == null || value.isEmpty)
+                                        return 'Phone number is required';
+                                      if (value.length != 10)
+                                        return 'Must be exactly 10 digits';
                                       return null;
                                     },
                                   ),
@@ -371,16 +422,26 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
 
                                   // --- SAVE BUTTON ---
                                   GestureDetector(
-                                    onTapDown: (_) => setState(() => _isSavePressed = true),
-                                    onTapUp: (_) => setState(() => _isSavePressed = false),
-                                    onTapCancel: () => setState(() => _isSavePressed = false),
+                                    onTapDown: (_) =>
+                                        setState(() => _isSavePressed = true),
+                                    onTapUp: (_) =>
+                                        setState(() => _isSavePressed = false),
+                                    onTapCancel: () =>
+                                        setState(() => _isSavePressed = false),
                                     onTap: () async {
                                       if (keyForm.currentState!.validate()) {
-                                        final uid = FirebaseAuth.instance.currentUser!.uid;
+                                        final uid = FirebaseAuth
+                                            .instance
+                                            .currentUser!
+                                            .uid;
                                         String finalImageUrl = photoUrl ?? '';
 
                                         if (Imagepath.isNotEmpty) {
-                                          finalImageUrl = await ProfileImageUtils.persistLocalImage(Imagepath, uid);
+                                          finalImageUrl =
+                                              await ProfileImageUtils.persistLocalImage(
+                                                Imagepath,
+                                                uid,
+                                              );
                                         }
 
                                         await UpdateAuthData().updateAuthData(
@@ -390,36 +451,54 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                                           photoUrl: finalImageUrl,
                                         );
 
-                                        if (FirebaseAuth.instance.currentUser != null) {
-                                          UserModel? userData = await AuthService().getCurrentUserData();
-                                          if (userData != null && context.mounted) {
-                                            context.read<Authprovider>().setUser(userData);
+                                        if (FirebaseAuth.instance.currentUser !=
+                                            null) {
+                                          UserModel? userData =
+                                              await AuthService()
+                                                  .getCurrentUserData();
+                                          if (userData != null &&
+                                              context.mounted) {
+                                            context
+                                                .read<Authprovider>()
+                                                .setUser(userData);
                                           }
                                         }
 
                                         if (context.mounted) {
                                           Navigator.of(context).pushReplacement(
-                                            MaterialPageRoute(builder: (context) => const Profilescreen()),
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const Profilescreen(),
+                                            ),
                                           );
                                         }
                                       }
                                     },
                                     child: AnimatedScale(
                                       scale: _isSavePressed ? 0.95 : 1.0,
-                                      duration: const Duration(milliseconds: 150),
+                                      duration: const Duration(
+                                        milliseconds: 150,
+                                      ),
                                       child: Container(
                                         width: double.infinity,
                                         height: 60,
                                         decoration: BoxDecoration(
                                           gradient: LinearGradient(
-                                            colors: [primaryColor, secondaryColor],
+                                            colors: [
+                                              primaryColor,
+                                              secondaryColor,
+                                            ],
                                             begin: Alignment.centerLeft,
                                             end: Alignment.centerRight,
                                           ),
-                                          borderRadius: BorderRadius.circular(30),
+                                          borderRadius: BorderRadius.circular(
+                                            30,
+                                          ),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: primaryColor.withOpacity(0.4),
+                                              color: primaryColor.withOpacity(
+                                                0.4,
+                                              ),
                                               blurRadius: 20,
                                               offset: const Offset(0, 8),
                                             ),
@@ -442,23 +521,39 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
 
                                   // --- CANCEL BUTTON ---
                                   GestureDetector(
-                                    onTapDown: (_) => setState(() => _isCancelPressed = true),
-                                    onTapUp: (_) => setState(() => _isCancelPressed = false),
-                                    onTapCancel: () => setState(() => _isCancelPressed = false),
+                                    onTapDown: (_) =>
+                                        setState(() => _isCancelPressed = true),
+                                    onTapUp: (_) => setState(
+                                      () => _isCancelPressed = false,
+                                    ),
+                                    onTapCancel: () => setState(
+                                      () => _isCancelPressed = false,
+                                    ),
                                     onTap: () {
-                                      Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(builder: (context) => const Profilescreen()),
+                                      Navigator.of(context).pop();
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Edit cancelled.'),
+                                        ),
                                       );
                                     },
                                     child: AnimatedScale(
                                       scale: _isCancelPressed ? 0.95 : 1.0,
-                                      duration: const Duration(milliseconds: 150),
+                                      duration: const Duration(
+                                        milliseconds: 150,
+                                      ),
                                       child: Container(
                                         width: double.infinity,
                                         height: 60,
                                         decoration: BoxDecoration(
-                                          color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(30),
+                                          color: isDark
+                                              ? Colors.white.withOpacity(0.05)
+                                              : Colors.grey.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(
+                                            30,
+                                          ),
                                         ),
                                         alignment: Alignment.center,
                                         child: Text(
