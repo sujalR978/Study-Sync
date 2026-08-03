@@ -3,16 +3,10 @@ import 'package:provider/provider.dart';
 import 'dart:ui';
 import 'dart:math' as math;
 
-// --- REQUIRED IMPORTS (Ensure these paths match your project structure) ---
-// import 'package:study_sync/providers/auth_provider.dart';
-// import 'package:study_sync/screens/auth/login_screen.dart';
-// import 'package:study_sync/services/auth_service.dart';
-// import 'package:study_sync/constants/app_colors.dart';
 
-// Placeholder paths used for context. Replace with your actual file paths.
 import '../../providers/auth_provider.dart';
 import '../../services/auth_service.dart';
-import '../../constants/app_colors.dart';
+
 import 'login_screen.dart';
 
 class LogoutScreen extends StatefulWidget {
