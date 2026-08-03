@@ -84,7 +84,7 @@ class _BottomnavigationState extends State<Bottomnavigation> {
                 Notes(),
                 Notes(), // Secondary placeholder notes pointer slot matching your tracking system
                 Profilescreen(),
-                SettingScreen(),
+             
               ],
             ),
           ),
@@ -151,13 +151,7 @@ class _BottomnavigationState extends State<Bottomnavigation> {
                         primaryColor,
                         onSurfaceColor,
                       ),
-                      _buildNavItem(
-                        4,
-                        Icons.settings_rounded,
-                        "Setting",
-                        primaryColor,
-                        onSurfaceColor,
-                      ),
+                     
                     ],
                   ),
                 ),
