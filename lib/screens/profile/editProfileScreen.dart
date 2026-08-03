@@ -8,7 +8,6 @@ import 'package:study_sync/models/user_model.dart';
 import 'package:study_sync/providers/auth_provider.dart';
 import 'package:study_sync/screens/BottomNavigation.dart';
 import 'package:study_sync/screens/profile/profileScreen.dart';
-import 'package:study_sync/screens/setting/setting_screen.dart';
 import 'package:study_sync/services/auth_service.dart';
 import 'package:study_sync/services/update_auth_data.dart';
 import 'package:study_sync/utils/profile_image_utils.dart';
@@ -212,11 +211,7 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GestureDetector(
-                        onTap: () => Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => const SettingScreen(),
-                          ),
-                        ),
+                        onTap: () => Navigator.of(context).pop(),
                         child: Container(
                           height: 44,
                           width: 44,
@@ -467,15 +462,8 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                                         }
 
                                         if (context.mounted) {
-                                          // 1. Close the Edit Profile Screen
                                           Navigator.of(context).pop();
 
-                                          // 2. Switch bottom nav to Settings tab (Index 4)
-                                          Bottomnavigation.of(
-                                            context,
-                                          )?.changeTab(4);
-
-                                          // 3. Show Success SnackBar
                                           ScaffoldMessenger.of(
                                             context,
                                           ).showSnackBar(
@@ -552,15 +540,7 @@ class _EditprofilescreenState extends State<Editprofilescreen> {
                                       () => _isCancelPressed = false,
                                     ),
                                     onTap: () {
-                                      // 1. Close the Edit Profile Screen
                                       Navigator.of(context).pop();
-
-                                      // 2. Switch bottom nav to Settings tab (Index 4)
-                                      Bottomnavigation.of(
-                                        context,
-                                      )?.changeTab(4);
-
-                                      // 3. Show Cancelled SnackBar
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
