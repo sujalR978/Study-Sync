@@ -1,9 +1,8 @@
+import 'dart:math';
+import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui';
-import 'dart:math' as math;
 
-// --- REQUIRED IMPORTS (Paths assumed based on project structure) ---
 import 'package:study_sync/screens/Notes/EditNotes.dart';
 import 'package:study_sync/screens/Notes/createNotes.dart';
 import 'package:study_sync/screens/Notes/showNotes.dart';
@@ -16,7 +15,7 @@ class Notes extends StatefulWidget {
   State<Notes> createState() => _NotesState();
 }
 
-class _NotesState extends State<Notes> with TickerProviderStateMixin {
+class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
   late final AnimationController _bgController;
   bool _isNewNotePressed = false;
 
@@ -36,14 +35,7 @@ class _NotesState extends State<Notes> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void showOptionsDialog(
-    String noteId,
-    String noteTitle,
-    bool isDark,
-    Color primaryColor,
-    Color surfaceColor,
-    Color onSurfaceColor,
-  ) {
+  void showOptionsDialog(String noteId, String noteTitle, bool isDark, Color primaryColor, Color surfaceColor, Color onSurfaceColor) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -54,17 +46,12 @@ class _NotesState extends State<Notes> with TickerProviderStateMixin {
             child: AlertDialog(
               scrollable: true,
               insetPadding: const EdgeInsets.symmetric(horizontal: 60),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 20,
-              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
               backgroundColor: surfaceColor.withOpacity(isDark ? 0.45 : 0.65),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
                 side: BorderSide(
-                  color: isDark
-                      ? Colors.white.withOpacity(0.08)
-                      : Colors.black.withOpacity(0.04),
+                  color: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04),
                   width: 1.5,
                 ),
               ),
@@ -90,122 +77,73 @@ class _NotesState extends State<Notes> with TickerProviderStateMixin {
                       color: onSurfaceColor.withOpacity(0.5),
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Divider(
-                      color: isDark
-                          ? Colors.white.withOpacity(0.06)
-                          : Colors.black.withOpacity(0.03),
-                      thickness: 1.2,
-                    ),
-                  ),
-
-                  // --- SHOW ACTION ---
-                  SizedBox(
-                    width: double.infinity,
-                    height: 44,
-                    child: TextButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        // FIXED: Navigate to actual ShowNotes screen
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => Notes()),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.visibility_rounded,
-                        color: primaryColor,
-                        size: 18,
-                      ),
-                      label: Text(
-                        'Open Note',
-                        style: TextStyle(
-                          color: primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // --- EDIT ACTION ---
-                  SizedBox(
-                    width: double.infinity,
-                    height: 44,
-                    child: TextButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => Editnotes(noteId: noteId),
-                          ),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.edit_note_rounded,
-                        color: primaryColor,
-                        size: 20,
-                      ),
-                      label: Text(
-                        'Edit Content',
-                        style: TextStyle(
-                          color: primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-
-                  // --- WARNING DELETE ACTION SYSTEM ---
-                  SizedBox(
-                    width: double.infinity,
-                    height: 44,
-                    child: TextButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        showDeleteConfirmation(
-                          noteId,
-                          noteTitle,
-                          isDark,
-                          onSurfaceColor,
-                          surfaceColor,
-                        );
-                      },
-                      icon: const Icon(
-                        Icons.delete_outline_rounded,
-                        color: Color(0xFFEF4444),
-                        size: 18,
-                      ),
-                      label: const Text(
-                        'Delete Note',
-                        style: TextStyle(
-                          color: Color(0xFFEF4444),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      style: TextButton.styleFrom(
-                        overlayColor: const Color(0xFFEF4444).withOpacity(0.1),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Divider(
+                  color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.03),
+                  thickness: 1.2,
+                ),
+              ),
+
+              // --- SHOW ACTION ---
+              SizedBox(
+                width: double.infinity,
+                height: 44,
+                child: TextButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => Shownotes(noteId: noteId)),
+                    );
+                  },
+                  icon: Icon(Icons.visibility_rounded, color: primaryColor, size: 18),
+                  label: Text('Open Note', style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
+                ),
+              ),
+
+              // --- EDIT ACTION ---
+              SizedBox(
+                width: double.infinity,
+                height: 44,
+                child: TextButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => Editnotes(noteId: noteId)),
+                    );
+                  },
+                  icon: Icon(Icons.edit_note_rounded, color: primaryColor, size: 20),
+                  label: Text('Edit Content', style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(height: 4),
+
+              // --- WARNING DELETE ACTION SYSTEM ---
+              SizedBox(
+                width: double.infinity,
+                height: 44,
+                child: TextButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    showDeleteConfirmation(noteId, noteTitle, isDark, onSurfaceColor, surfaceColor);
+                  },
+                  icon: const Icon(Icons.delete_outline_rounded, color: Color(0xFFEF4444), size: 18),
+                  label: const Text('Delete Note', style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold)),
+                  style: TextButton.styleFrom(overlayColor: const Color(0xFFEF4444).withOpacity(0.1)),
+                ),
+              ),
+            ],
           ),
-        );
+        ),
+      ),
+    );
       },
     );
   }
 
-  void showDeleteConfirmation(
-    String noteId,
-    String noteTitle,
-    bool isDark,
-    Color onSurfaceColor,
-    Color surfaceColor,
-  ) {
+  void showDeleteConfirmation(String noteId, String noteTitle, bool isDark, Color onSurfaceColor, Color surfaceColor) {
     bool isDeleting = false;
     showDialog(
       context: context,
@@ -220,15 +158,11 @@ class _NotesState extends State<Notes> with TickerProviderStateMixin {
                 child: AlertDialog(
                   insetPadding: const EdgeInsets.symmetric(horizontal: 40),
                   contentPadding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
-                  backgroundColor: surfaceColor.withOpacity(
-                    isDark ? 0.35 : 0.55,
-                  ),
+                  backgroundColor: surfaceColor.withOpacity(isDark ? 0.35 : 0.55),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(28),
                     side: BorderSide(
-                      color: isDark
-                          ? Colors.white.withOpacity(0.08)
-                          : Colors.black.withOpacity(0.04),
+                      color: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04),
                       width: 1.5,
                     ),
                   ),
@@ -243,61 +177,32 @@ class _NotesState extends State<Notes> with TickerProviderStateMixin {
                                 child: const SizedBox(
                                   height: 36,
                                   width: 36,
-                                  child: CircularProgressIndicator(
-                                    color: Color(0xFFEF4444),
-                                    strokeWidth: 3.5,
-                                  ),
+                                  child: CircularProgressIndicator(color: Color(0xFFEF4444), strokeWidth: 3.5),
                                 ),
                               )
                             : Container(
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: const Color(
-                                    0xFFEF4444,
-                                  ).withOpacity(0.12),
+                                  color: const Color(0xFFEF4444).withOpacity(0.12),
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(
-                                  Icons.delete_sweep_rounded,
-                                  color: Color(0xFFEF4444),
-                                  size: 32,
-                                ),
+                                child: const Icon(Icons.delete_sweep_rounded, color: Color(0xFFEF4444), size: 32),
                               ),
                       ),
                       const SizedBox(height: 20),
                       Text(
                         isDeleting ? 'Purging Note...' : 'Discard Note?',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w900,
-                          color: onSurfaceColor,
-                          letterSpacing: -0.5,
-                        ),
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: onSurfaceColor, letterSpacing: -0.5),
                       ),
                       const SizedBox(height: 10),
                       RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
-                          style: TextStyle(
-                            color: onSurfaceColor.withOpacity(0.55),
-                            fontSize: 14,
-                            height: 1.45,
-                          ),
+                          style: TextStyle(color: onSurfaceColor.withOpacity(0.55), fontSize: 14, height: 1.45),
                           children: [
-                            const TextSpan(
-                              text:
-                                  'Are you sure you want to permanently purge ',
-                            ),
-                            TextSpan(
-                              text: '"$noteTitle"',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w800,
-                                color: onSurfaceColor,
-                              ),
-                            ),
-                            const TextSpan(
-                              text: '? This action cannot be reversed.',
-                            ),
+                            const TextSpan(text: 'Are you sure you want to permanently purge '),
+                            TextSpan(text: '"$noteTitle"', style: TextStyle(fontWeight: FontWeight.w800, color: onSurfaceColor)),
+                            const TextSpan(text: '? This action cannot be reversed.'),
                           ],
                         ),
                       ),
@@ -308,25 +213,12 @@ class _NotesState extends State<Notes> with TickerProviderStateMixin {
                             child: SizedBox(
                               height: 48,
                               child: TextButton(
-                                onPressed: isDeleting
-                                    ? null
-                                    : () => Navigator.pop(context),
+                                onPressed: isDeleting ? null : () => Navigator.pop(context),
                                 style: TextButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  backgroundColor: isDark
-                                      ? Colors.white.withOpacity(0.04)
-                                      : Colors.black.withOpacity(0.03),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                  backgroundColor: isDark ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.03),
                                 ),
-                                child: Text(
-                                  'Cancel',
-                                  style: TextStyle(
-                                    color: onSurfaceColor.withOpacity(0.8),
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 15,
-                                  ),
-                                ),
+                                child: Text('Cancel', style: TextStyle(color: onSurfaceColor.withOpacity(0.8), fontWeight: FontWeight.w800, fontSize: 15)),
                               ),
                             ),
                           ),
@@ -339,34 +231,17 @@ class _NotesState extends State<Notes> with TickerProviderStateMixin {
                                     ? null
                                     : () async {
                                         setDialogState(() => isDeleting = true);
-                                        await Future.delayed(
-                                          const Duration(milliseconds: 600),
-                                        );
-                                        await NotesService().DeleteNotes(
-                                          noteId,
-                                        );
-                                        if (context.mounted) {
-                                          Navigator.pop(context);
-                                        }
+                                        await Future.delayed(const Duration(milliseconds: 600));
+                                        await NotesService().DeleteNotes(noteId);
+                                        if (context.mounted) Navigator.pop(context);
                                       },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFFEF4444),
-                                  disabledBackgroundColor: const Color(
-                                    0xFFEF4444,
-                                  ).withOpacity(0.4),
+                                  disabledBackgroundColor: const Color(0xFFEF4444).withOpacity(0.4),
                                   elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                 ),
-                                child: Text(
-                                  isDeleting ? 'Deleting' : 'Delete',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 15,
-                                  ),
-                                ),
+                                child: Text(isDeleting ? 'Deleting' : 'Delete', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 15)),
                               ),
                             ),
                           ),
@@ -392,10 +267,46 @@ class _NotesState extends State<Notes> with TickerProviderStateMixin {
     final Color secondaryColor = theme.colorScheme.secondary;
     final Color onSurfaceColor = theme.colorScheme.onSurface;
     final Color surfaceColor = theme.colorScheme.surface;
-    final Color scaffoldColor = theme.scaffoldBackgroundColor;
 
     return Scaffold(
-      backgroundColor: scaffoldColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
+      // --- UPGRADED ATTRACTIVE APP BAR ---
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(70),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: isDark ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.02),
+                width: 1.0,
+              ),
+            ),
+          ),
+          child: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            surfaceTintColor: Colors.transparent,
+            toolbarHeight: 70,
+            centerTitle: true,
+            title: ShaderMask(
+              shaderCallback: (bounds) => LinearGradient(
+                colors: [primaryColor, secondaryColor],
+              ).createShader(bounds),
+              child: const Text(
+                'Notes Directory',
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  fontSize: 22,
+                  letterSpacing: -0.6,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      
       // --- UPGRADED FLOATING ACTION BUTTON (SAFELY ESCAPED FROM BOTTOM NAVIGATION ZONE) ---
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 95, right: 4),
@@ -415,9 +326,7 @@ class _NotesState extends State<Notes> with TickerProviderStateMixin {
               height: 54,
               padding: const EdgeInsets.symmetric(horizontal: 22),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [primaryColor, secondaryColor],
-                ),
+                gradient: LinearGradient(colors: [primaryColor, secondaryColor]),
                 borderRadius: BorderRadius.circular(27),
                 boxShadow: [
                   BoxShadow(
@@ -430,11 +339,7 @@ class _NotesState extends State<Notes> with TickerProviderStateMixin {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.add_rounded,
-                    color: theme.colorScheme.onPrimary,
-                    size: 22,
-                  ),
+                  Icon(Icons.add_rounded, color: theme.colorScheme.onPrimary, size: 22),
                   const SizedBox(width: 8),
                   Text(
                     "New Note",
@@ -453,44 +358,7 @@ class _NotesState extends State<Notes> with TickerProviderStateMixin {
       ),
       body: Stack(
         children: [
-          // 1. DYNAMIC HEADER COVER BACKGROUND (Matching Profile)
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 260,
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    primaryColor.withOpacity(isDark ? 0.4 : 0.8),
-                    secondaryColor.withOpacity(isDark ? 0.2 : 0.6),
-                  ],
-                ),
-              ),
-              child: Stack(
-                children: [
-                  // Decorative mesh circle
-                  Positioned(
-                    top: -50,
-                    right: -50,
-                    child: Container(
-                      height: 200,
-                      width: 200,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.1),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // 2. CYCLIC LOOP BACKGROUND TASK THEME EMITTERS (Moved behind body, adjusted opacity)
+          // --- CYCLIC LOOP BACKGROUND TASK THEME EMITTERS ---
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _bgController,
@@ -506,242 +374,126 @@ class _NotesState extends State<Notes> with TickerProviderStateMixin {
             ),
           ),
 
-          // 3. MAIN CONTENT WITH SAFE AREA APP BAR
           SafeArea(
-            bottom: false,
             child: Column(
               children: [
-                // MATCHING CUSTOM APP BAR HEADER (Same as Profile)
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Balances layout, potentially back button slot in sub-pages
-                      const SizedBox(width: 44),
-                      const Text(
-                        'Notes Directory',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          fontSize: 20,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                      // Balances layout, potentially action slot
-                      const SizedBox(width: 44),
-                    ],
-                  ),
-                ),
-
-                // OVERLAPPING BODY CONTAINER
                 Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.all(
-                      30,
-                    ), // Lifts it up into the gradient header
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: scaffoldColor,
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(40),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(isDark ? 0.4 : 0.05),
-                          blurRadius: 20,
-                          offset: const Offset(0, -5),
-                        ),
-                      ],
-                    ),
-                    child: StreamBuilder<QuerySnapshot>(
-                      stream: NotesService().getNotes(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(
-                            child: CircularProgressIndicator(
-                              color: primaryColor,
-                            ),
-                          );
-                        }
-                        if (snapshot.hasError) {
-                          return Center(child: Text(snapshot.error.toString()));
-                        }
-                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.note_alt_rounded,
-                                  size: 80,
-                                  color: onSurfaceColor.withOpacity(0.1),
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  "No Notes Found",
-                                  style: TextStyle(
-                                    color: onSurfaceColor.withOpacity(0.4),
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-
-                        final notes = snapshot.data!.docs;
-
-                        return GridView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          padding: const EdgeInsets.fromLTRB(
-                            16,
-                            24,
-                            16,
-                            150,
-                          ), // Increased top padding inside body
-                          itemCount: notes.length,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                mainAxisSpacing: 14,
-                                crossAxisSpacing: 14,
-                                childAspectRatio: 0.88,
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: NotesService().getNotes(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator(color: primaryColor));
+                      }
+                      if (snapshot.hasError) {
+                        return Center(child: Text(snapshot.error.toString()));
+                      }
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.note_alt_rounded, size: 80, color: onSurfaceColor.withOpacity(0.1)),
+                              const SizedBox(height: 16),
+                              Text(
+                                "No Notes Found",
+                                style: TextStyle(color: onSurfaceColor.withOpacity(0.4), fontSize: 18, fontWeight: FontWeight.w600),
                               ),
-                          itemBuilder: (context, index) {
-                            final Map<String, dynamic>? data =
-                                notes[index].data() as Map<String, dynamic>?;
-                            String noteId = notes[index].id;
-                            String title =
-                                data?['title']?.toString() ?? 'Untitled';
-                            String body = data?['body']?.toString() ?? '';
-
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(24),
-                              child: BackdropFilter(
-                                filter: ImageFilter.blur(
-                                  sigmaX: 10,
-                                  sigmaY: 10,
-                                ),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: surfaceColor.withOpacity(
-                                      isDark ? 0.25 : 0.45,
-                                    ),
-                                    borderRadius: BorderRadius.circular(24),
-                                    border: Border.all(
-                                      color: isDark
-                                          ? Colors.white.withOpacity(0.06)
-                                          : Colors.black.withOpacity(0.03),
-                                      width: 1.5,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: isDark
-                                            ? Colors.black26
-                                            : Colors.black.withOpacity(0.01),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 4),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      // 1. --- APP BAR HEADER PANEL ---
-                                      Container(
-                                        padding: const EdgeInsets.only(
-                                          left: 14,
-                                          right: 2,
-                                          top: 4,
-                                          bottom: 4,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: isDark
-                                              ? Colors.white.withOpacity(0.03)
-                                              : Colors.black.withOpacity(0.02),
-                                          border: Border(
-                                            bottom: BorderSide(
-                                              color: isDark
-                                                  ? Colors.white.withOpacity(
-                                                      0.04,
-                                                    )
-                                                  : Colors.black.withOpacity(
-                                                      0.02,
-                                                    ),
-                                              width: 1,
-                                            ),
-                                          ),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                title,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w800,
-                                                  fontSize: 14,
-                                                  color: onSurfaceColor,
-                                                ),
-                                              ),
-                                            ),
-                                            IconButton(
-                                              icon: Icon(
-                                                Icons.more_vert_rounded,
-                                                size: 18,
-                                                color: onSurfaceColor
-                                                    .withOpacity(0.5),
-                                              ),
-                                              onPressed: () =>
-                                                  showOptionsDialog(
-                                                    noteId,
-                                                    title,
-                                                    isDark,
-                                                    primaryColor,
-                                                    surfaceColor,
-                                                    onSurfaceColor,
-                                                  ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-
-                                      // 2. --- NOTEPAD PREVIEW RENDER PANEL ---
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(14.0),
-                                          child: Text(
-                                            body,
-                                            maxLines: 4,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontSize: 12.5,
-                                              height: 1.45,
-                                              color: onSurfaceColor.withOpacity(
-                                                0.6,
-                                              ),
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
+                            ],
+                          ),
                         );
-                      },
-                    ),
+                      }
+
+                      final notes = snapshot.data!.docs;
+
+                      return GridView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.fromLTRB(16, 14, 16, 150), // Kept high bottom parameter padding bounds to clear FAB
+                        itemCount: notes.length,
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 14,
+                          crossAxisSpacing: 14,
+                          childAspectRatio: 0.88,
+                        ),
+                        itemBuilder: (context, index) {
+                          final Map<String, dynamic>? data = notes[index].data() as Map<String, dynamic>?;
+                          String noteId = notes[index].id;
+                          String title = data?['title']?.toString() ?? 'Untitled';
+                          String body = data?['body']?.toString() ?? '';
+
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(24),
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: surfaceColor.withOpacity(isDark ? 0.25 : 0.45),
+                                  borderRadius: BorderRadius.circular(24),
+                                  border: Border.all(
+                                    color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.03),
+                                    width: 1.5,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: isDark ? Colors.black26 : Colors.black.withOpacity(0.01),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // 1. --- APP BAR HEADER PANEL ---
+                                    Container(
+                                      padding: const EdgeInsets.only(left: 14, right: 2, top: 4, bottom: 4),
+                                      decoration: BoxDecoration(
+                                        color: isDark ? Colors.white.withOpacity(0.03) : Colors.black.withOpacity(0.02),
+                                        border: Border(
+                                          bottom: BorderSide(
+                                            color: isDark ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.02),
+                                            width: 1,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              title,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: onSurfaceColor),
+                                            ),
+                                          ),
+                                          IconButton(
+                                            icon: Icon(Icons.more_vert_rounded, size: 18, color: onSurfaceColor.withOpacity(0.5)),
+                                            onPressed: () => showOptionsDialog(noteId, title, isDark, primaryColor, surfaceColor, onSurfaceColor),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    // 2. --- NOTEPAD PREVIEW RENDER PANEL ---
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(14.0),
+                                        child: Text(
+                                          body,
+                                          maxLines: 4,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(fontSize: 12.5, height: 1.45, color: onSurfaceColor.withOpacity(0.6), fontWeight: FontWeight.w500),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
                   ),
                 ),
               ],
@@ -775,40 +527,34 @@ class _NotesBackgroundPainter extends CustomPainter {
       ..shader = LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: colors
-            .map(
-              (c) => c.withOpacity(isDark ? 0.10 : 0.03),
-            ) // Reduced opacity slightly
-            .toList(),
+        colors: colors.map((c) => c.withOpacity(isDark ? 0.12 : 0.05)).toList(),
       ).createShader(rect);
     canvas.drawRect(rect, basePaint);
 
-    final double angle1 = t * 2 * math.pi;
-    final double angle2 = t * 2 * math.pi + math.pi;
+    final double angle1 = t * 2 * pi;
+    final double angle2 = t * 2 * pi + pi;
 
     final Offset c1 = Offset(
-      size.width * 0.22 + math.sin(angle1) * size.width * 0.20,
-      size.height * 0.26 + math.cos(angle1) * size.height * 0.10,
+      size.width * 0.22 + sin(angle1) * size.width * 0.20,
+      size.height * 0.26 + cos(angle1) * size.height * 0.10,
     );
     final Offset c2 = Offset(
-      size.width * 0.76 + math.cos(angle2) * size.width * 0.16,
-      size.height * 0.70 + math.sin(angle2) * size.height * 0.14,
+      size.width * 0.76 + cos(angle2) * size.width * 0.16,
+      size.height * 0.70 + sin(angle2) * size.height * 0.14,
     );
 
     canvas.drawCircle(
       c1,
       size.width * 0.35,
       Paint()
-        ..color = colors[0]
-            .withOpacity(0.12) // Reduced opacity
+        ..color = colors[0].withOpacity(0.18)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 65),
     );
     canvas.drawCircle(
       c2,
       size.width * 0.4,
       Paint()
-        ..color = colors.last
-            .withOpacity(0.09) // Reduced opacity
+        ..color = colors.last.withOpacity(0.14)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 70),
     );
 
@@ -826,7 +572,7 @@ class _NotesBackgroundPainter extends CustomPainter {
       final double progress = (t + i / icons.length) % 1.0;
       final double dx = size.width * (0.12 + 0.75 * ((i * 59) % 100) / 100);
       final double dy = size.height * (1.15 - progress * 1.35);
-      final double fade = math.sin(progress * math.pi).clamp(0.0, 1.0);
+      final double fade = sin(progress * pi).clamp(0.0, 1.0);
 
       final TextPainter tp = TextPainter(textDirection: TextDirection.ltr);
       tp.text = TextSpan(
@@ -835,9 +581,7 @@ class _NotesBackgroundPainter extends CustomPainter {
           fontSize: 22,
           fontFamily: icons[i].fontFamily,
           package: icons[i].fontPackage,
-          color: colors[i % colors.length].withOpacity(
-            (isDark ? 0.12 : 0.08) * fade,
-          ), // Reduced opacity
+          color: colors[i % colors.length].withOpacity(0.16 * fade),
         ),
       );
       tp.layout();
