@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:study_sync/screens/Notes/Notes.dart';
+import 'package:study_sync/screens/Notes/EditNotes.dart';
 
 class Shownotes extends StatefulWidget {
   final String noteId;
@@ -26,7 +26,7 @@ class _ShownotesState extends State<Shownotes>
     // Continuous loop background tracking controller setup
     _loopController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 10), // Smoother, slightly slower loop
+      duration: const Duration(seconds: 10),
     )..repeat(reverse: true);
   }
 
@@ -46,15 +46,15 @@ class _ShownotesState extends State<Shownotes>
         .get();
   }
 
-  // --- NEW LOGIC: Calculate Word Count & Read Time ---
+  // Calculate Word Count & Read Time
   Map<String, dynamic> _getNoteStats(String text) {
     if (text.trim().isEmpty) return {'words': 0, 'time': 1};
     int wordCount = text.trim().split(RegExp(r'\s+')).length;
-    int readTime = (wordCount / 200).ceil(); // Avg reading speed 200 WPM
+    int readTime = (wordCount / 200).ceil();
     return {'words': wordCount, 'time': readTime == 0 ? 1 : readTime};
   }
 
-  // --- NEW LOGIC: Safely Parse Date ---
+  // Safely Parse Date
   String _formatDate(dynamic timestamp) {
     if (timestamp == null) return "Unknown date";
     DateTime date;
@@ -99,95 +99,14 @@ class _ShownotesState extends State<Shownotes>
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      extendBodyBehindAppBar: true, // Allows background to flow under appbar
-      // --- UPGRADED ATTRACTIVE GRADIENT APP BAR ---
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70),
-        child: ClipRRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(
-              decoration: BoxDecoration(
-                color: theme.scaffoldBackgroundColor.withOpacity(0.5),
-                border: Border(
-                  bottom: BorderSide(
-                    color: isDark
-                        ? Colors.white.withOpacity(0.04)
-                        : Colors.black.withOpacity(0.02),
-                    width: 1.0,
-                  ),
-                ),
-              ),
-              child: SafeArea(
-                bottom: false,
-                child: AppBar(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  centerTitle: true,
-                  title: ShaderMask(
-                    shaderCallback: (bounds) => LinearGradient(
-                      colors: [primaryColor, secondaryColor],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ).createShader(bounds),
-                    child: const Text(
-                      'Note Details',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                        fontSize: 22,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                  ),
-                  leadingWidth: 72,
-                  leading: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => const Notes(),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        height: 42,
-                        width: 42,
-                        decoration: BoxDecoration(
-                          color: surfaceColor.withOpacity(isDark ? 0.35 : 0.7),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: isDark
-                                ? Colors.white.withOpacity(0.1)
-                                : Colors.black.withOpacity(0.05),
-                            width: 1.5,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          Icons
-                              .arrow_back_rounded, // Changed to back arrow for better UX
-                          color: onSurfaceColor.withOpacity(0.8),
-                          size: 22,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+      extendBodyBehindAppBar: true,
+
+      // Scaffold AppBar removed to use Stack-based Floating Pill App Bar
       body: Stack(
         children: [
-          // --- CYCLIC LOOP BACKGROUND ENGINE DESIGN ---
+          // ===================================================================
+          // --- 1. CYCLIC LOOP BACKGROUND ENGINE DESIGN ---
+          // ===================================================================
           AnimatedBuilder(
             animation: _loopController,
             builder: (context, child) {
@@ -221,7 +140,11 @@ class _ShownotesState extends State<Shownotes>
             },
           ),
 
+          // ===================================================================
+          // --- 2. MAIN CONTENT (NOTE RENDERER) ---
+          // ===================================================================
           SafeArea(
+            bottom: false,
             child: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
               future: _notesFuture,
               builder: (context, snapshot) {
@@ -266,7 +189,13 @@ class _ShownotesState extends State<Shownotes>
                   data['timestamp'] ?? data['createdAt'] ?? data['date'],
                 );
 
-                // --- NEW LOGIC: Entrance Animation ---
+                // EXTRACTING THE TAG
+                final subjectTag =
+                    data['subject']?.toString().isNotEmpty == true
+                    ? data['subject'].toString().trim()
+                    : 'General';
+
+                // --- Entrance Animation ---
                 return TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0.0, end: 1.0),
                   duration: const Duration(milliseconds: 700),
@@ -280,7 +209,12 @@ class _ShownotesState extends State<Shownotes>
                   child: Container(
                     width: double.infinity,
                     height: double.infinity,
-                    margin: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                    margin: const EdgeInsets.fromLTRB(
+                      16,
+                      85,
+                      16,
+                      24,
+                    ), // Increased top margin to clear Pill App Bar
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(32),
                       child: BackdropFilter(
@@ -327,16 +261,26 @@ class _ShownotesState extends State<Shownotes>
 
                                 const SizedBox(height: 16),
 
-                                // --- NEW METADATA ROW ---
-                                Row(
+                                // --- METADATA ROW WITH TAG ---
+                                Wrap(
+                                  spacing: 12,
+                                  runSpacing: 12,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
                                   children: [
+                                    // Highlighted Tag Chip
+                                    _buildMetaChip(
+                                      Icons.local_offer_rounded,
+                                      subjectTag,
+                                      isDark,
+                                      primaryColor,
+                                      isHighlighted: true,
+                                    ),
                                     _buildMetaChip(
                                       Icons.calendar_month_rounded,
                                       dateStr,
                                       isDark,
                                       onSurfaceColor,
                                     ),
-                                    const SizedBox(width: 12),
                                     _buildMetaChip(
                                       Icons.access_time_rounded,
                                       '${stats['time']} min read',
@@ -385,6 +329,110 @@ class _ShownotesState extends State<Shownotes>
               },
             ),
           ),
+
+          // ===================================================================
+          // --- 3. FLOATING PILL APP BAR ---
+          // ===================================================================
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+                    child: Container(
+                      height: 64,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: surfaceColor.withOpacity(isDark ? 0.35 : 0.65),
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(
+                          color: onSurfaceColor.withOpacity(0.08),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Left Icon (Back Button)
+                          GestureDetector(
+                            onTap: () {
+                              // Proper Navigation: Native Pop
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              height: 44,
+                              width: 44,
+                              decoration: BoxDecoration(
+                                color: onSurfaceColor.withOpacity(
+                                  isDark ? 0.08 : 0.05,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.arrow_back_rounded,
+                                color: onSurfaceColor.withOpacity(0.8),
+                                size: 20,
+                              ),
+                            ),
+                          ),
+
+                          // Centered Title
+                          Text(
+                            'View Note',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: onSurfaceColor,
+                              fontSize: 18,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+
+                          // Right Icon (Quick Edit Button)
+                          GestureDetector(
+                            onTap: () {
+                              // Push replacement directly to edit mode
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      Editnotes(noteId: widget.noteId),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              height: 44,
+                              width: 44,
+                              decoration: BoxDecoration(
+                                color: primaryColor.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.edit_rounded,
+                                color: primaryColor,
+                                size: 18,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -416,30 +464,38 @@ class _ShownotesState extends State<Shownotes>
     );
   }
 
-  // Helper widget for note metadata tags (Date, Read Time)
+  // Helper widget for note metadata tags (Date, Read Time, Subject Tag)
   Widget _buildMetaChip(
     IconData icon,
     String label,
     bool isDark,
-    Color onSurface,
-  ) {
+    Color color, {
+    bool isHighlighted = false,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: onSurface.withOpacity(isDark ? 0.1 : 0.05),
+        color: color.withOpacity(isHighlighted ? 0.15 : (isDark ? 0.1 : 0.05)),
         borderRadius: BorderRadius.circular(8),
+        border: isHighlighted
+            ? Border.all(color: color.withOpacity(0.3), width: 1)
+            : null,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: onSurface.withOpacity(0.7)),
+          Icon(
+            icon,
+            size: 14,
+            color: color.withOpacity(isHighlighted ? 1.0 : 0.7),
+          ),
           const SizedBox(width: 6),
           Text(
             label,
             style: TextStyle(
               fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: onSurface.withOpacity(0.7),
+              fontWeight: isHighlighted ? FontWeight.bold : FontWeight.w600,
+              color: color.withOpacity(isHighlighted ? 1.0 : 0.7),
             ),
           ),
         ],
