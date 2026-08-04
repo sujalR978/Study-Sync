@@ -19,6 +19,9 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
   late final AnimationController _bgController;
   bool _isNewNotePressed = false;
 
+  // --- NEW LOGIC: Tracking selected subject for filtering ---
+  String _selectedSubject = 'All';
+
   @override
   void initState() {
     super.initState();
@@ -35,7 +38,15 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-  void showOptionsDialog(String noteId, String noteTitle, bool isDark, Color primaryColor, Color surfaceColor, Color onSurfaceColor) {
+  // --- REFINED OPTIONS DIALOG (Removed "View" since card is clickable now) ---
+  void showOptionsDialog(
+    String noteId,
+    String noteTitle,
+    bool isDark,
+    Color primaryColor,
+    Color surfaceColor,
+    Color onSurfaceColor,
+  ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -46,12 +57,17 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
             child: AlertDialog(
               scrollable: true,
               insetPadding: const EdgeInsets.symmetric(horizontal: 60),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 20,
+              ),
               backgroundColor: surfaceColor.withOpacity(isDark ? 0.45 : 0.65),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
                 side: BorderSide(
-                  color: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04),
+                  color: isDark
+                      ? Colors.white.withOpacity(0.08)
+                      : Colors.black.withOpacity(0.04),
                   width: 1.5,
                 ),
               ),
@@ -77,73 +93,93 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
                       color: onSurfaceColor.withOpacity(0.5),
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Divider(
+                      color: isDark
+                          ? Colors.white.withOpacity(0.06)
+                          : Colors.black.withOpacity(0.03),
+                      thickness: 1.2,
+                    ),
+                  ),
+                  // --- EDIT ACTION ---
+                  SizedBox(
+                    width: double.infinity,
+                    height: 44,
+                    child: TextButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => Editnotes(noteId: noteId),
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.edit_note_rounded,
+                        color: primaryColor,
+                        size: 20,
+                      ),
+                      label: Text(
+                        'Edit Content',
+                        style: TextStyle(
+                          color: primaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  // --- WARNING DELETE ACTION SYSTEM ---
+                  SizedBox(
+                    width: double.infinity,
+                    height: 44,
+                    child: TextButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        showDeleteConfirmation(
+                          noteId,
+                          noteTitle,
+                          isDark,
+                          onSurfaceColor,
+                          surfaceColor,
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.delete_outline_rounded,
+                        color: Color(0xFFEF4444),
+                        size: 18,
+                      ),
+                      label: const Text(
+                        'Delete Note',
+                        style: TextStyle(
+                          color: Color(0xFFEF4444),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      style: TextButton.styleFrom(
+                        overlayColor: const Color(0xFFEF4444).withOpacity(0.1),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Divider(
-                  color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.03),
-                  thickness: 1.2,
-                ),
-              ),
-
-              // --- SHOW ACTION ---
-              SizedBox(
-                width: double.infinity,
-                height: 44,
-                child: TextButton.icon(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => Shownotes(noteId: noteId)),
-                    );
-                  },
-                  icon: Icon(Icons.visibility_rounded, color: primaryColor, size: 18),
-                  label: Text('Open Note', style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
-                ),
-              ),
-
-              // --- EDIT ACTION ---
-              SizedBox(
-                width: double.infinity,
-                height: 44,
-                child: TextButton.icon(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => Editnotes(noteId: noteId)),
-                    );
-                  },
-                  icon: Icon(Icons.edit_note_rounded, color: primaryColor, size: 20),
-                  label: Text('Edit Content', style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
-                ),
-              ),
-              const SizedBox(height: 4),
-
-              // --- WARNING DELETE ACTION SYSTEM ---
-              SizedBox(
-                width: double.infinity,
-                height: 44,
-                child: TextButton.icon(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    showDeleteConfirmation(noteId, noteTitle, isDark, onSurfaceColor, surfaceColor);
-                  },
-                  icon: const Icon(Icons.delete_outline_rounded, color: Color(0xFFEF4444), size: 18),
-                  label: const Text('Delete Note', style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold)),
-                  style: TextButton.styleFrom(overlayColor: const Color(0xFFEF4444).withOpacity(0.1)),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        );
       },
     );
   }
 
-  void showDeleteConfirmation(String noteId, String noteTitle, bool isDark, Color onSurfaceColor, Color surfaceColor) {
+  void showDeleteConfirmation(
+    String noteId,
+    String noteTitle,
+    bool isDark,
+    Color onSurfaceColor,
+    Color surfaceColor,
+  ) {
     bool isDeleting = false;
     showDialog(
       context: context,
@@ -158,11 +194,15 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
                 child: AlertDialog(
                   insetPadding: const EdgeInsets.symmetric(horizontal: 40),
                   contentPadding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
-                  backgroundColor: surfaceColor.withOpacity(isDark ? 0.35 : 0.55),
+                  backgroundColor: surfaceColor.withOpacity(
+                    isDark ? 0.35 : 0.55,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(28),
                     side: BorderSide(
-                      color: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04),
+                      color: isDark
+                          ? Colors.white.withOpacity(0.08)
+                          : Colors.black.withOpacity(0.04),
                       width: 1.5,
                     ),
                   ),
@@ -177,32 +217,61 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
                                 child: const SizedBox(
                                   height: 36,
                                   width: 36,
-                                  child: CircularProgressIndicator(color: Color(0xFFEF4444), strokeWidth: 3.5),
+                                  child: CircularProgressIndicator(
+                                    color: Color(0xFFEF4444),
+                                    strokeWidth: 3.5,
+                                  ),
                                 ),
                               )
                             : Container(
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFEF4444).withOpacity(0.12),
+                                  color: const Color(
+                                    0xFFEF4444,
+                                  ).withOpacity(0.12),
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(Icons.delete_sweep_rounded, color: Color(0xFFEF4444), size: 32),
+                                child: const Icon(
+                                  Icons.delete_sweep_rounded,
+                                  color: Color(0xFFEF4444),
+                                  size: 32,
+                                ),
                               ),
                       ),
                       const SizedBox(height: 20),
                       Text(
                         isDeleting ? 'Purging Note...' : 'Discard Note?',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: onSurfaceColor, letterSpacing: -0.5),
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          color: onSurfaceColor,
+                          letterSpacing: -0.5,
+                        ),
                       ),
                       const SizedBox(height: 10),
                       RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
-                          style: TextStyle(color: onSurfaceColor.withOpacity(0.55), fontSize: 14, height: 1.45),
+                          style: TextStyle(
+                            color: onSurfaceColor.withOpacity(0.55),
+                            fontSize: 14,
+                            height: 1.45,
+                          ),
                           children: [
-                            const TextSpan(text: 'Are you sure you want to permanently purge '),
-                            TextSpan(text: '"$noteTitle"', style: TextStyle(fontWeight: FontWeight.w800, color: onSurfaceColor)),
-                            const TextSpan(text: '? This action cannot be reversed.'),
+                            const TextSpan(
+                              text:
+                                  'Are you sure you want to permanently purge ',
+                            ),
+                            TextSpan(
+                              text: '"$noteTitle"',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w800,
+                                color: onSurfaceColor,
+                              ),
+                            ),
+                            const TextSpan(
+                              text: '? This action cannot be reversed.',
+                            ),
                           ],
                         ),
                       ),
@@ -213,12 +282,25 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
                             child: SizedBox(
                               height: 48,
                               child: TextButton(
-                                onPressed: isDeleting ? null : () => Navigator.pop(context),
+                                onPressed: isDeleting
+                                    ? null
+                                    : () => Navigator.pop(context),
                                 style: TextButton.styleFrom(
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                  backgroundColor: isDark ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.03),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  backgroundColor: isDark
+                                      ? Colors.white.withOpacity(0.04)
+                                      : Colors.black.withOpacity(0.03),
                                 ),
-                                child: Text('Cancel', style: TextStyle(color: onSurfaceColor.withOpacity(0.8), fontWeight: FontWeight.w800, fontSize: 15)),
+                                child: Text(
+                                  'Cancel',
+                                  style: TextStyle(
+                                    color: onSurfaceColor.withOpacity(0.8),
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 15,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -231,17 +313,33 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
                                     ? null
                                     : () async {
                                         setDialogState(() => isDeleting = true);
-                                        await Future.delayed(const Duration(milliseconds: 600));
-                                        await NotesService().DeleteNotes(noteId);
-                                        if (context.mounted) Navigator.pop(context);
+                                        await Future.delayed(
+                                          const Duration(milliseconds: 600),
+                                        );
+                                        await NotesService().DeleteNotes(
+                                          noteId,
+                                        );
+                                        if (context.mounted)
+                                          Navigator.pop(context);
                                       },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFFEF4444),
-                                  disabledBackgroundColor: const Color(0xFFEF4444).withOpacity(0.4),
+                                  disabledBackgroundColor: const Color(
+                                    0xFFEF4444,
+                                  ).withOpacity(0.4),
                                   elevation: 0,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
                                 ),
-                                child: Text(isDeleting ? 'Deleting' : 'Delete', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 15)),
+                                child: Text(
+                                  isDeleting ? 'Deleting' : 'Delete',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 15,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -270,44 +368,57 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      // --- UPGRADED ATTRACTIVE APP BAR ---
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: isDark ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.02),
-                width: 1.0,
-              ),
-            ),
-          ),
-          child: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            surfaceTintColor: Colors.transparent,
-            toolbarHeight: 70,
-            centerTitle: true,
-            title: ShaderMask(
-              shaderCallback: (bounds) => LinearGradient(
-                colors: [primaryColor, secondaryColor],
-              ).createShader(bounds),
-              child: const Text(
-                'Notes Directory',
+
+      // --- CLEAN & MODERN PROFILE-STYLE APP BAR ---
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        toolbarHeight: 80,
+        centerTitle: false,
+        title: Padding(
+          padding: const EdgeInsets.only(left: 8.0, top: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'My Workspace',
                 style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  fontSize: 22,
-                  letterSpacing: -0.6,
+                  color: onSurfaceColor.withOpacity(0.5),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
                 ),
               ),
-            ),
+              ShaderMask(
+                shaderCallback: (bounds) => LinearGradient(
+                  colors: [primaryColor, secondaryColor],
+                ).createShader(bounds),
+                child: const Text(
+                  'Notes Directory',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    fontSize: 26,
+                    letterSpacing: -0.8,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0, top: 10),
+            child: CircleAvatar(
+              radius: 20,
+              backgroundColor: primaryColor.withOpacity(0.1),
+              child: Icon(Icons.book_rounded, color: primaryColor, size: 20),
+            ),
+          ),
+        ],
       ),
-      
-      // --- UPGRADED FLOATING ACTION BUTTON (SAFELY ESCAPED FROM BOTTOM NAVIGATION ZONE) ---
+
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 95, right: 4),
         child: GestureDetector(
@@ -326,7 +437,9 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
               height: 54,
               padding: const EdgeInsets.symmetric(horizontal: 22),
               decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [primaryColor, secondaryColor]),
+                gradient: LinearGradient(
+                  colors: [primaryColor, secondaryColor],
+                ),
                 borderRadius: BorderRadius.circular(27),
                 boxShadow: [
                   BoxShadow(
@@ -339,12 +452,12 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.add_rounded, color: theme.colorScheme.onPrimary, size: 22),
+                  Icon(Icons.add_rounded, color: Colors.white, size: 22),
                   const SizedBox(width: 8),
-                  Text(
+                  const Text(
                     "New Note",
                     style: TextStyle(
-                      color: theme.colorScheme.onPrimary,
+                      color: Colors.white,
                       fontWeight: FontWeight.w800,
                       fontSize: 14,
                       letterSpacing: -0.1,
@@ -356,9 +469,10 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
           ),
         ),
       ),
+
       body: Stack(
         children: [
-          // --- CYCLIC LOOP BACKGROUND TASK THEME EMITTERS ---
+          // --- CYCLIC LOOP BACKGROUND TASK ---
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _bgController,
@@ -375,128 +489,342 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
           ),
 
           SafeArea(
-            child: Column(
-              children: [
-                Expanded(
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: NotesService().getNotes(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator(color: primaryColor));
-                      }
-                      if (snapshot.hasError) {
-                        return Center(child: Text(snapshot.error.toString()));
-                      }
-                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.note_alt_rounded, size: 80, color: onSurfaceColor.withOpacity(0.1)),
-                              const SizedBox(height: 16),
-                              Text(
-                                "No Notes Found",
-                                style: TextStyle(color: onSurfaceColor.withOpacity(0.4), fontSize: 18, fontWeight: FontWeight.w600),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-
-                      final notes = snapshot.data!.docs;
-
-                      return GridView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(16, 14, 16, 150), // Kept high bottom parameter padding bounds to clear FAB
-                        itemCount: notes.length,
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 14,
-                          crossAxisSpacing: 14,
-                          childAspectRatio: 0.88,
+            child: StreamBuilder<QuerySnapshot>(
+              stream: NotesService().getNotes(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(color: primaryColor),
+                  );
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text(snapshot.error.toString()));
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.note_alt_rounded,
+                          size: 80,
+                          color: onSurfaceColor.withOpacity(0.1),
                         ),
+                        const SizedBox(height: 16),
+                        Text(
+                          "No Notes Found",
+                          style: TextStyle(
+                            color: onSurfaceColor.withOpacity(0.4),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                final notes = snapshot.data!.docs;
+
+                // --- NEW LOGIC: EXTRACT UNIQUE SUBJECTS DYNAMICALLY ---
+                Set<String> subjectSet = {'All'};
+                for (var doc in notes) {
+                  final data = doc.data() as Map<String, dynamic>?;
+                  // Look for a 'subject' field. If it doesn't exist, default to 'General'
+                  String subj =
+                      data != null &&
+                          data.containsKey('subject') &&
+                          data['subject'].toString().isNotEmpty
+                      ? data['subject'].toString().trim()
+                      : 'General';
+                  subjectSet.add(subj);
+                }
+                List<String> subjectsList = subjectSet.toList();
+
+                // --- NEW LOGIC: FILTER THE NOTES BASED ON SELECTION ---
+                List<QueryDocumentSnapshot> filteredNotes = notes;
+                if (_selectedSubject != 'All') {
+                  filteredNotes = notes.where((doc) {
+                    final data = doc.data() as Map<String, dynamic>?;
+                    String subj =
+                        data != null &&
+                            data.containsKey('subject') &&
+                            data['subject'].toString().isNotEmpty
+                        ? data['subject'].toString().trim()
+                        : 'General';
+                    return subj == _selectedSubject;
+                  }).toList();
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // --- SUBJECT FILTER CHIP LIST ROW ---
+                    SizedBox(
+                      height: 50,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: subjectsList.length,
                         itemBuilder: (context, index) {
-                          final Map<String, dynamic>? data = notes[index].data() as Map<String, dynamic>?;
-                          String noteId = notes[index].id;
-                          String title = data?['title']?.toString() ?? 'Untitled';
-                          String body = data?['body']?.toString() ?? '';
+                          String subject = subjectsList[index];
+                          bool isSelected = _selectedSubject == subject;
 
-                          return ClipRRect(
-                            borderRadius: BorderRadius.circular(24),
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: surfaceColor.withOpacity(isDark ? 0.25 : 0.45),
-                                  borderRadius: BorderRadius.circular(24),
-                                  border: Border.all(
-                                    color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.03),
-                                    width: 1.5,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: isDark ? Colors.black26 : Colors.black.withOpacity(0.01),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedSubject = subject;
+                              });
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 250),
+                              margin: const EdgeInsets.only(
+                                right: 10,
+                                top: 4,
+                                bottom: 8,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                              ),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                gradient: isSelected
+                                    ? LinearGradient(
+                                        colors: [primaryColor, secondaryColor],
+                                      )
+                                    : null,
+                                color: isSelected
+                                    ? null
+                                    : surfaceColor.withOpacity(
+                                        isDark ? 0.3 : 0.6,
+                                      ),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? Colors.transparent
+                                      : (isDark
+                                            ? Colors.white12
+                                            : Colors.black12),
+                                  width: 1,
                                 ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // 1. --- APP BAR HEADER PANEL ---
-                                    Container(
-                                      padding: const EdgeInsets.only(left: 14, right: 2, top: 4, bottom: 4),
-                                      decoration: BoxDecoration(
-                                        color: isDark ? Colors.white.withOpacity(0.03) : Colors.black.withOpacity(0.02),
-                                        border: Border(
-                                          bottom: BorderSide(
-                                            color: isDark ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.02),
-                                            width: 1,
-                                          ),
+                                boxShadow: isSelected
+                                    ? [
+                                        BoxShadow(
+                                          color: primaryColor.withOpacity(0.3),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 4),
                                         ),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              title,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: onSurfaceColor),
-                                            ),
-                                          ),
-                                          IconButton(
-                                            icon: Icon(Icons.more_vert_rounded, size: 18, color: onSurfaceColor.withOpacity(0.5)),
-                                            onPressed: () => showOptionsDialog(noteId, title, isDark, primaryColor, surfaceColor, onSurfaceColor),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
-                                    // 2. --- NOTEPAD PREVIEW RENDER PANEL ---
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(14.0),
-                                        child: Text(
-                                          body,
-                                          maxLines: 4,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(fontSize: 12.5, height: 1.45, color: onSurfaceColor.withOpacity(0.6), fontWeight: FontWeight.w500),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                      ]
+                                    : [],
+                              ),
+                              child: Text(
+                                subject,
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? Colors.white
+                                      : onSurfaceColor.withOpacity(0.7),
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.w600,
+                                  fontSize: 13,
                                 ),
                               ),
                             ),
                           );
                         },
-                      );
-                    },
-                  ),
-                ),
-              ],
+                      ),
+                    ),
+
+                    // --- NOTES GRID RENDER ---
+                    Expanded(
+                      child: filteredNotes.isEmpty
+                          ? Center(
+                              child: Text(
+                                "No notes in '$_selectedSubject'",
+                                style: TextStyle(
+                                  color: onSurfaceColor.withOpacity(0.4),
+                                  fontSize: 16,
+                                ),
+                              ),
+                            )
+                          : GridView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              padding: const EdgeInsets.fromLTRB(
+                                16,
+                                10,
+                                16,
+                                150,
+                              ),
+                              itemCount: filteredNotes.length,
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    mainAxisSpacing: 14,
+                                    crossAxisSpacing: 14,
+                                    childAspectRatio: 0.85,
+                                  ),
+                              itemBuilder: (context, index) {
+                                final Map<String, dynamic>? data =
+                                    filteredNotes[index].data()
+                                        as Map<String, dynamic>?;
+                                String noteId = filteredNotes[index].id;
+                                String title =
+                                    data?['title']?.toString() ?? 'Untitled';
+                                String body = data?['body']?.toString() ?? '';
+                                String subjectTag =
+                                    data != null &&
+                                        data.containsKey('subject') &&
+                                        data['subject'].toString().isNotEmpty
+                                    ? data['subject'].toString().trim()
+                                    : 'General';
+
+                                return GestureDetector(
+                                  // --- DIRECT OPEN FEATURE IMPLEMENTED HERE ---
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            Shownotes(noteId: noteId),
+                                      ),
+                                    );
+                                  },
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(24),
+                                    child: BackdropFilter(
+                                      filter: ImageFilter.blur(
+                                        sigmaX: 10,
+                                        sigmaY: 10,
+                                      ),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: surfaceColor.withOpacity(
+                                            isDark ? 0.25 : 0.45,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            24,
+                                          ),
+                                          border: Border.all(
+                                            color: isDark
+                                                ? Colors.white.withOpacity(0.06)
+                                                : Colors.black.withOpacity(
+                                                    0.03,
+                                                  ),
+                                            width: 1.5,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: isDark
+                                                  ? Colors.black26
+                                                  : Colors.black.withOpacity(
+                                                      0.02,
+                                                    ),
+                                              blurRadius: 10,
+                                              offset: const Offset(0, 4),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(14.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              // Top Row: Subject Tag + Options Menu
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 4,
+                                                        ),
+                                                    decoration: BoxDecoration(
+                                                      color: primaryColor
+                                                          .withOpacity(0.15),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            8,
+                                                          ),
+                                                    ),
+                                                    child: Text(
+                                                      subjectTag,
+                                                      style: TextStyle(
+                                                        color: primaryColor,
+                                                        fontSize: 10,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () =>
+                                                        showOptionsDialog(
+                                                          noteId,
+                                                          title,
+                                                          isDark,
+                                                          primaryColor,
+                                                          surfaceColor,
+                                                          onSurfaceColor,
+                                                        ),
+                                                    child: Icon(
+                                                      Icons.more_vert_rounded,
+                                                      size: 20,
+                                                      color: onSurfaceColor
+                                                          .withOpacity(0.5),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 12),
+
+                                              // Title Section
+                                              Text(
+                                                title,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w800,
+                                                  fontSize: 16,
+                                                  height: 1.2,
+                                                  color: onSurfaceColor,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+
+                                              // Body Preview Section
+                                              Expanded(
+                                                child: Text(
+                                                  body,
+                                                  maxLines: 4,
+                                                  overflow: TextOverflow.fade,
+                                                  style: TextStyle(
+                                                    fontSize: 12.5,
+                                                    height: 1.5,
+                                                    color: onSurfaceColor
+                                                        .withOpacity(0.55),
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ],
@@ -506,7 +834,7 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
 }
 
 // =====================================================================
-// LOOPING NOTE-THEMED VECTOR BACKGROUND PAINTER CORE
+// LOOPING NOTE-THEMED VECTOR BACKGROUND PAINTER CORE (Remains Unchanged)
 // =====================================================================
 class _NotesBackgroundPainter extends CustomPainter {
   final double t;
