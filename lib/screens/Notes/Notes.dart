@@ -19,7 +19,7 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
   late final AnimationController _bgController;
   bool _isNewNotePressed = false;
 
-  // --- NEW LOGIC: Tracking selected subject for filtering ---
+  // Tracking selected subject for filtering
   String _selectedSubject = 'All';
 
   @override
@@ -38,7 +38,7 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-  // --- REFINED OPTIONS DIALOG (Removed "View" since card is clickable now) ---
+  // --- REFINED OPTIONS DIALOG ---
   void showOptionsDialog(
     String noteId,
     String noteTitle,
@@ -369,56 +369,7 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
 
-      // --- CLEAN & MODERN PROFILE-STYLE APP BAR ---
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        toolbarHeight: 80,
-        centerTitle: false,
-        title: Padding(
-          padding: const EdgeInsets.only(left: 8.0, top: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'My Workspace',
-                style: TextStyle(
-                  color: onSurfaceColor.withOpacity(0.5),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              ShaderMask(
-                shaderCallback: (bounds) => LinearGradient(
-                  colors: [primaryColor, secondaryColor],
-                ).createShader(bounds),
-                child: const Text(
-                  'Notes Directory',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    fontSize: 26,
-                    letterSpacing: -0.8,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0, top: 10),
-            child: CircleAvatar(
-              radius: 20,
-              backgroundColor: primaryColor.withOpacity(0.1),
-              child: Icon(Icons.book_rounded, color: primaryColor, size: 20),
-            ),
-          ),
-        ],
-      ),
-
+      // Removed the standard AppBar to use the Stack-based floating pill instead
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 95, right: 4),
         child: GestureDetector(
@@ -472,7 +423,9 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
 
       body: Stack(
         children: [
-          // --- CYCLIC LOOP BACKGROUND TASK ---
+          // ===================================================================
+          // --- 1. CYCLIC LOOP BACKGROUND TASK ---
+          // ===================================================================
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _bgController,
@@ -488,63 +441,52 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
             ),
           ),
 
-          SafeArea(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: NotesService().getNotes(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: CircularProgressIndicator(color: primaryColor),
-                  );
-                }
-                if (snapshot.hasError) {
-                  return Center(child: Text(snapshot.error.toString()));
-                }
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.note_alt_rounded,
-                          size: 80,
-                          color: onSurfaceColor.withOpacity(0.1),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          "No Notes Found",
-                          style: TextStyle(
-                            color: onSurfaceColor.withOpacity(0.4),
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
+          // ===================================================================
+          // --- 2. MAIN SCROLLING CONTENT ---
+          // ===================================================================
+          Positioned.fill(
+            child: SafeArea(
+              bottom: false,
+              child: StreamBuilder<QuerySnapshot>(
+                stream: NotesService().getNotes(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(color: primaryColor),
+                    );
+                  }
+                  if (snapshot.hasError) {
+                    return Center(child: Text(snapshot.error.toString()));
+                  }
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.note_alt_rounded,
+                            size: 80,
+                            color: onSurfaceColor.withOpacity(0.1),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
+                          const SizedBox(height: 16),
+                          Text(
+                            "No Notes Found",
+                            style: TextStyle(
+                              color: onSurfaceColor.withOpacity(0.4),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
 
-                final notes = snapshot.data!.docs;
+                  final notes = snapshot.data!.docs;
 
-                // --- NEW LOGIC: EXTRACT UNIQUE SUBJECTS DYNAMICALLY ---
-                Set<String> subjectSet = {'All'};
-                for (var doc in notes) {
-                  final data = doc.data() as Map<String, dynamic>?;
-                  // Look for a 'subject' field. If it doesn't exist, default to 'General'
-                  String subj =
-                      data != null &&
-                          data.containsKey('subject') &&
-                          data['subject'].toString().isNotEmpty
-                      ? data['subject'].toString().trim()
-                      : 'General';
-                  subjectSet.add(subj);
-                }
-                List<String> subjectsList = subjectSet.toList();
-
-                // --- NEW LOGIC: FILTER THE NOTES BASED ON SELECTION ---
-                List<QueryDocumentSnapshot> filteredNotes = notes;
-                if (_selectedSubject != 'All') {
-                  filteredNotes = notes.where((doc) {
+                  // Extract unique subjects dynamically
+                  Set<String> subjectSet = {'All'};
+                  for (var doc in notes) {
                     final data = doc.data() as Map<String, dynamic>?;
                     String subj =
                         data != null &&
@@ -552,279 +494,396 @@ class _NotesState extends State<Notes> with SingleTickerProviderStateMixin {
                             data['subject'].toString().isNotEmpty
                         ? data['subject'].toString().trim()
                         : 'General';
-                    return subj == _selectedSubject;
-                  }).toList();
-                }
+                    subjectSet.add(subj);
+                  }
+                  List<String> subjectsList = subjectSet.toList();
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // --- SUBJECT FILTER CHIP LIST ROW ---
-                    SizedBox(
-                      height: 50,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        itemCount: subjectsList.length,
-                        itemBuilder: (context, index) {
-                          String subject = subjectsList[index];
-                          bool isSelected = _selectedSubject == subject;
+                  // Filter the notes based on selection
+                  List<QueryDocumentSnapshot> filteredNotes = notes;
+                  if (_selectedSubject != 'All') {
+                    filteredNotes = notes.where((doc) {
+                      final data = doc.data() as Map<String, dynamic>?;
+                      String subj =
+                          data != null &&
+                              data.containsKey('subject') &&
+                              data['subject'].toString().isNotEmpty
+                          ? data['subject'].toString().trim()
+                          : 'General';
+                      return subj == _selectedSubject;
+                    }).toList();
+                  }
 
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedSubject = subject;
-                              });
-                            },
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 250),
-                              margin: const EdgeInsets.only(
-                                right: 10,
-                                top: 4,
-                                bottom: 8,
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 18,
-                              ),
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                gradient: isSelected
-                                    ? LinearGradient(
-                                        colors: [primaryColor, secondaryColor],
-                                      )
-                                    : null,
-                                color: isSelected
-                                    ? null
-                                    : surfaceColor.withOpacity(
-                                        isDark ? 0.3 : 0.6,
-                                      ),
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: isSelected
-                                      ? Colors.transparent
-                                      : (isDark
-                                            ? Colors.white12
-                                            : Colors.black12),
-                                  width: 1,
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: 85,
+                      ), // Added padding to clear the Floating App Bar
+                      // --- SUBJECT FILTER CHIP LIST ROW ---
+                      SizedBox(
+                        height: 50,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          physics: const BouncingScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: subjectsList.length,
+                          itemBuilder: (context, index) {
+                            String subject = subjectsList[index];
+                            bool isSelected = _selectedSubject == subject;
+
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedSubject = subject;
+                                });
+                              },
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 250),
+                                margin: const EdgeInsets.only(
+                                  right: 10,
+                                  top: 4,
+                                  bottom: 8,
                                 ),
-                                boxShadow: isSelected
-                                    ? [
-                                        BoxShadow(
-                                          color: primaryColor.withOpacity(0.3),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ]
-                                    : [],
-                              ),
-                              child: Text(
-                                subject,
-                                style: TextStyle(
-                                  color: isSelected
-                                      ? Colors.white
-                                      : onSurfaceColor.withOpacity(0.7),
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.w600,
-                                  fontSize: 13,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 18,
                                 ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-
-                    // --- NOTES GRID RENDER ---
-                    Expanded(
-                      child: filteredNotes.isEmpty
-                          ? Center(
-                              child: Text(
-                                "No notes in '$_selectedSubject'",
-                                style: TextStyle(
-                                  color: onSurfaceColor.withOpacity(0.4),
-                                  fontSize: 16,
-                                ),
-                              ),
-                            )
-                          : GridView.builder(
-                              physics: const BouncingScrollPhysics(),
-                              padding: const EdgeInsets.fromLTRB(
-                                16,
-                                10,
-                                16,
-                                150,
-                              ),
-                              itemCount: filteredNotes.length,
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    mainAxisSpacing: 14,
-                                    crossAxisSpacing: 14,
-                                    childAspectRatio: 0.85,
-                                  ),
-                              itemBuilder: (context, index) {
-                                final Map<String, dynamic>? data =
-                                    filteredNotes[index].data()
-                                        as Map<String, dynamic>?;
-                                String noteId = filteredNotes[index].id;
-                                String title =
-                                    data?['title']?.toString() ?? 'Untitled';
-                                String body = data?['body']?.toString() ?? '';
-                                String subjectTag =
-                                    data != null &&
-                                        data.containsKey('subject') &&
-                                        data['subject'].toString().isNotEmpty
-                                    ? data['subject'].toString().trim()
-                                    : 'General';
-
-                                return GestureDetector(
-                                  // --- DIRECT OPEN FEATURE IMPLEMENTED HERE ---
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            Shownotes(noteId: noteId),
-                                      ),
-                                    );
-                                  },
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(24),
-                                    child: BackdropFilter(
-                                      filter: ImageFilter.blur(
-                                        sigmaX: 10,
-                                        sigmaY: 10,
-                                      ),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: surfaceColor.withOpacity(
-                                            isDark ? 0.25 : 0.45,
-                                          ),
-                                          borderRadius: BorderRadius.circular(
-                                            24,
-                                          ),
-                                          border: Border.all(
-                                            color: isDark
-                                                ? Colors.white.withOpacity(0.06)
-                                                : Colors.black.withOpacity(
-                                                    0.03,
-                                                  ),
-                                            width: 1.5,
-                                          ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: isDark
-                                                  ? Colors.black26
-                                                  : Colors.black.withOpacity(
-                                                      0.02,
-                                                    ),
-                                              blurRadius: 10,
-                                              offset: const Offset(0, 4),
-                                            ),
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  gradient: isSelected
+                                      ? LinearGradient(
+                                          colors: [
+                                            primaryColor,
+                                            secondaryColor,
                                           ],
+                                        )
+                                      : null,
+                                  color: isSelected
+                                      ? null
+                                      : surfaceColor.withOpacity(
+                                          isDark ? 0.3 : 0.6,
                                         ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(14.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              // Top Row: Subject Tag + Options Menu
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                    padding:
-                                                        const EdgeInsets.symmetric(
-                                                          horizontal: 8,
-                                                          vertical: 4,
-                                                        ),
-                                                    decoration: BoxDecoration(
-                                                      color: primaryColor
-                                                          .withOpacity(0.15),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            8,
-                                                          ),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? Colors.transparent
+                                        : (isDark
+                                              ? Colors.white12
+                                              : Colors.black12),
+                                    width: 1,
+                                  ),
+                                  boxShadow: isSelected
+                                      ? [
+                                          BoxShadow(
+                                            color: primaryColor.withOpacity(
+                                              0.3,
+                                            ),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ]
+                                      : [],
+                                ),
+                                child: Text(
+                                  subject,
+                                  style: TextStyle(
+                                    color: isSelected
+                                        ? Colors.white
+                                        : onSurfaceColor.withOpacity(0.7),
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.w600,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+
+                      // --- NOTES GRID RENDER ---
+                      Expanded(
+                        child: filteredNotes.isEmpty
+                            ? Center(
+                                child: Text(
+                                  "No notes in '$_selectedSubject'",
+                                  style: TextStyle(
+                                    color: onSurfaceColor.withOpacity(0.4),
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              )
+                            : GridView.builder(
+                                physics: const BouncingScrollPhysics(),
+                                padding: const EdgeInsets.fromLTRB(
+                                  16,
+                                  10,
+                                  16,
+                                  150,
+                                ),
+                                itemCount: filteredNotes.length,
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      mainAxisSpacing: 14,
+                                      crossAxisSpacing: 14,
+                                      childAspectRatio: 0.85,
+                                    ),
+                                itemBuilder: (context, index) {
+                                  final Map<String, dynamic>? data =
+                                      filteredNotes[index].data()
+                                          as Map<String, dynamic>?;
+                                  String noteId = filteredNotes[index].id;
+                                  String title =
+                                      data?['title']?.toString() ?? 'Untitled';
+                                  String body = data?['body']?.toString() ?? '';
+                                  String subjectTag =
+                                      data != null &&
+                                          data.containsKey('subject') &&
+                                          data['subject'].toString().isNotEmpty
+                                      ? data['subject'].toString().trim()
+                                      : 'General';
+
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              Shownotes(noteId: noteId),
+                                        ),
+                                      );
+                                    },
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(24),
+                                      child: BackdropFilter(
+                                        filter: ImageFilter.blur(
+                                          sigmaX: 10,
+                                          sigmaY: 10,
+                                        ),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: surfaceColor.withOpacity(
+                                              isDark ? 0.25 : 0.45,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              24,
+                                            ),
+                                            border: Border.all(
+                                              color: isDark
+                                                  ? Colors.white.withOpacity(
+                                                      0.06,
+                                                    )
+                                                  : Colors.black.withOpacity(
+                                                      0.03,
                                                     ),
-                                                    child: Text(
-                                                      subjectTag,
-                                                      style: TextStyle(
-                                                        color: primaryColor,
-                                                        fontSize: 10,
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                              width: 1.5,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: isDark
+                                                    ? Colors.black26
+                                                    : Colors.black.withOpacity(
+                                                        0.02,
                                                       ),
-                                                    ),
-                                                  ),
-                                                  GestureDetector(
-                                                    onTap: () =>
-                                                        showOptionsDialog(
-                                                          noteId,
-                                                          title,
-                                                          isDark,
-                                                          primaryColor,
-                                                          surfaceColor,
-                                                          onSurfaceColor,
-                                                        ),
-                                                    child: Icon(
-                                                      Icons.more_vert_rounded,
-                                                      size: 20,
-                                                      color: onSurfaceColor
-                                                          .withOpacity(0.5),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 12),
-
-                                              // Title Section
-                                              Text(
-                                                title,
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w800,
-                                                  fontSize: 16,
-                                                  height: 1.2,
-                                                  color: onSurfaceColor,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 8),
-
-                                              // Body Preview Section
-                                              Expanded(
-                                                child: Text(
-                                                  body,
-                                                  maxLines: 4,
-                                                  overflow: TextOverflow.fade,
-                                                  style: TextStyle(
-                                                    fontSize: 12.5,
-                                                    height: 1.5,
-                                                    color: onSurfaceColor
-                                                        .withOpacity(0.55),
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
+                                                blurRadius: 10,
+                                                offset: const Offset(0, 4),
                                               ),
                                             ],
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(14.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Container(
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 8,
+                                                            vertical: 4,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        color: primaryColor
+                                                            .withOpacity(0.15),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              8,
+                                                            ),
+                                                      ),
+                                                      child: Text(
+                                                        subjectTag,
+                                                        style: TextStyle(
+                                                          color: primaryColor,
+                                                          fontSize: 10,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    GestureDetector(
+                                                      onTap: () =>
+                                                          showOptionsDialog(
+                                                            noteId,
+                                                            title,
+                                                            isDark,
+                                                            primaryColor,
+                                                            surfaceColor,
+                                                            onSurfaceColor,
+                                                          ),
+                                                      child: Icon(
+                                                        Icons.more_vert_rounded,
+                                                        size: 20,
+                                                        color: onSurfaceColor
+                                                            .withOpacity(0.5),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 12),
+                                                Text(
+                                                  title,
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w800,
+                                                    fontSize: 16,
+                                                    height: 1.2,
+                                                    color: onSurfaceColor,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 8),
+                                                Expanded(
+                                                  child: Text(
+                                                    body,
+                                                    maxLines: 4,
+                                                    overflow: TextOverflow.fade,
+                                                    style: TextStyle(
+                                                      fontSize: 12.5,
+                                                      height: 1.5,
+                                                      color: onSurfaceColor
+                                                          .withOpacity(0.55),
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
+                                  );
+                                },
+                              ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+
+          // ===================================================================
+          // --- 3. FLOATING PILL APP BAR (Based on ProfileScreen) ---
+          // ===================================================================
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+                    child: Container(
+                      height: 64,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: surfaceColor.withOpacity(isDark ? 0.35 : 0.65),
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(
+                          color: onSurfaceColor.withOpacity(0.08),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Left Icon (Book icon to represent Notes)
+                          Container(
+                            height: 44,
+                            width: 44,
+                            decoration: BoxDecoration(
+                              color: primaryColor.withOpacity(0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.book_rounded,
+                              color: primaryColor,
+                              size: 20,
+                            ),
+                          ),
+
+                          // Centered Title
+                          Text(
+                            'Notes Directory',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: onSurfaceColor,
+                              fontSize: 18,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+
+                          // Right Icon (Matches the Profile sparkle style)
+                          Container(
+                            height: 44,
+                            width: 44,
+                            decoration: BoxDecoration(
+                              color: primaryColor.withOpacity(0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: TweenAnimationBuilder<double>(
+                              tween: Tween<double>(begin: 0.8, end: 1.2),
+                              duration: const Duration(seconds: 2),
+                              curve: Curves.easeInOut,
+                              builder: (context, scale, child) {
+                                return Transform.scale(
+                                  scale: scale,
+                                  child: Icon(
+                                    Icons.auto_awesome,
+                                    color: primaryColor,
+                                    size: 18,
                                   ),
                                 );
                               },
+                              onEnd: () {},
                             ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                );
-              },
+                  ),
+                ),
+              ),
             ),
           ),
         ],
