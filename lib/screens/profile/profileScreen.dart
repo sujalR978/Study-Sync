@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:study_sync/providers/them_provider.dart';
 import 'package:study_sync/providers/auth_provider.dart';
 import 'package:study_sync/screens/auth/logout_screen.dart';
+import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/screens/profile/editProfileScreen.dart';
 import 'package:study_sync/widgets/profile_avatar.dart';
 
@@ -506,25 +507,7 @@ class _ProfilescreenState extends State<Profilescreen>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           // Conditional Back Button (Only shows if pushed)
-                          if (Navigator.canPop(context))
-                            GestureDetector(
-                              onTap: () => Navigator.pop(context),
-                              child: Container(
-                                height: 40,
-                                width: 40,
-                                decoration: BoxDecoration(
-                                  color: onSurfaceColor.withOpacity(0.05),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.arrow_back_ios_new_rounded,
-                                  color: onSurfaceColor,
-                                  size: 16,
-                                ),
-                              ),
-                            )
-                          else
-                            const SizedBox(width: 40), // Balance
+                          const SizedBox(width: 40), // Balance
                           // Centered Title
                           Text(
                             'Account Hub',
