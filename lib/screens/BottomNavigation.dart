@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:study_sync/screens/chat%20screen/chat_list_screen.dart';
+import 'package:study_sync/screens/chat%20screen/active_chats_screen.dart';
 import 'dart:ui';
 
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/screens/Notes/Notes.dart';
 import 'package:study_sync/screens/profile/profileScreen.dart';
+// Changed this import to the new ActiveChatsScreen
 
 class Bottomnavigation extends StatefulWidget {
   final int initialIndex;
@@ -79,7 +80,7 @@ class _BottomnavigationState extends State<Bottomnavigation> {
               children: const [
                 HomeScreen(), // Index 0
                 Notes(), // Index 1
-                ChatListScreen(), // Index 2 (Messages Tab)
+                ActiveChatsScreen(), // Index 2 (Now points to your Inbox!)
                 Profilescreen(), // Index 3
               ],
             ),
