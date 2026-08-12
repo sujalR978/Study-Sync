@@ -93,4 +93,26 @@ class MessageService {
         .orderBy('lastMessageTime', descending: true)
         .snapshots();
   }
+  // ==========================================
+  // 5. CREATE A GROUP CHAT ROOM
+  // ==========================================
+  Future<String> createGroupChat(String groupName, List<String> selectedUserIds) async {
+    final String currentUserId = _auth.currentUser!.uid;
+
+    // Include the creator in the group members array
+    List<String> allMembers = [...selectedUserIds, currentUserId];
+
+    // Create a new document in chat_rooms collection
+    DocumentReference roomRef = await _firestore.collection('chat_rooms').add({
+      'isGroup': true,
+      'groupName': groupName,
+      'groupAdmin': currentUserId,
+      'users': allMembers,
+      'createdAt': FieldValue.serverTimestamp(),
+      'lastMessage': 'Group created by you',
+      'lastMessageTime': FieldValue.serverTimestamp(),
+    });
+
+    return roomRef.id;
+  }
 }
