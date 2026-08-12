@@ -92,9 +92,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen>
           .update({
             'lastMessage': text,
             'lastMessageTime': FieldValue.serverTimestamp(),
-            'unreadCount.$otherUserId': FieldValue.increment(
-              1,
-            ), // Increments unread count for the offline user!
+            'unreadCount.$otherUserId': FieldValue.increment(1),
           });
     } catch (e) {
       debugPrint("Error sending message: $e");
@@ -246,17 +244,40 @@ class _PrivateChatScreenState extends State<PrivateChatScreen>
                           bool isMe = msgData['senderId'] == currentUserId;
                           String text = msgData['text'] ?? '';
                           String? imageBase64 = msgData['imageBase64'];
+                          String senderId = msgData['senderId'] ?? '';
 
-                          // Pass msgDoc.id to use as a unique Hero Tag for full-screen animation
-                          return _buildChatBubble(
-                            msgDoc.id,
-                            text,
-                            imageBase64,
-                            isMe,
-                            primaryColor,
-                            surfaceColor,
-                            onSurfaceColor,
-                            isDark,
+                          // Fetch sender name dynamically if it's a group chat message from someone else
+                          return FutureBuilder<DocumentSnapshot>(
+                            future: !isMe
+                                ? FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(senderId)
+                                      .get()
+                                : null,
+                            builder: (context, userSnapshot) {
+                              String senderName = '';
+                              if (!isMe &&
+                                  userSnapshot.hasData &&
+                                  userSnapshot.data != null) {
+                                final userData =
+                                    userSnapshot.data!.data()
+                                        as Map<String, dynamic>? ??
+                                    {};
+                                senderName = userData['fullname'] ?? 'Member';
+                              }
+
+                              return _buildChatBubble(
+                                msgDoc.id,
+                                text,
+                                imageBase64,
+                                isMe,
+                                senderName,
+                                primaryColor,
+                                surfaceColor,
+                                onSurfaceColor,
+                                isDark,
+                              );
+                            },
                           );
                         },
                       );
@@ -469,12 +490,13 @@ class _PrivateChatScreenState extends State<PrivateChatScreen>
     );
   }
 
-  // --- DYNAMIC CHAT BUBBLE (HANDLES TEXT & BASE64 IMAGES) ---
+  // --- DYNAMIC CHAT BUBBLE WITH SENDER NAME IDENTIFICATION ---
   Widget _buildChatBubble(
     String messageId,
     String text,
     String? imageBase64,
     bool isMe,
+    String senderName,
     Color primaryColor,
     Color surfaceColor,
     Color onSurfaceColor,
@@ -489,71 +511,93 @@ class _PrivateChatScreenState extends State<PrivateChatScreen>
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.75,
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(24),
-            topRight: const Radius.circular(24),
-            bottomLeft: Radius.circular(isMe ? 24 : 6),
-            bottomRight: Radius.circular(isMe ? 6 : 24),
-          ),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(
-              padding: isImageMessage
-                  ? const EdgeInsets.all(4)
-                  : const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-              decoration: BoxDecoration(
-                color: isMe
-                    ? primaryColor.withOpacity(0.85)
-                    : surfaceColor.withOpacity(isDark ? 0.3 : 0.6),
-                border: Border.all(
-                  color: isMe
-                      ? Colors.transparent
-                      : (isDark
-                            ? Colors.white.withOpacity(0.08)
-                            : Colors.black.withOpacity(0.05)),
-                  width: 1.2,
+        child: Column(
+          crossAxisAlignment: isMe
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
+          children: [
+            // SHOW SENDER NAME FOR GROUP MESSAGES
+            if (!isMe && senderName.isNotEmpty) ...[
+              Padding(
+                padding: const EdgeInsets.only(left: 12, bottom: 4),
+                child: Text(
+                  senderName,
+                  style: TextStyle(
+                    color: primaryColor,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 12,
+                  ),
                 ),
               ),
-              child: isImageMessage
-                  // Render Base64 Image with tap-to-expand
-                  ? GestureDetector(
-                      onTap: () {
-                        // Open Full Screen Viewer
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => FullScreenImageViewer(
-                              base64String: imageBase64,
-                              heroTag: messageId,
+            ],
+
+            // BUBBLE CONTENT
+            ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(24),
+                topRight: const Radius.circular(24),
+                bottomLeft: Radius.circular(isMe ? 24 : 6),
+                bottomRight: Radius.circular(isMe ? 6 : 24),
+              ),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  padding: isImageMessage
+                      ? const EdgeInsets.all(4)
+                      : const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 14,
+                        ),
+                  decoration: BoxDecoration(
+                    color: isMe
+                        ? primaryColor.withOpacity(0.85)
+                        : surfaceColor.withOpacity(isDark ? 0.3 : 0.6),
+                    border: Border.all(
+                      color: isMe
+                          ? Colors.transparent
+                          : (isDark
+                                ? Colors.white.withOpacity(0.08)
+                                : Colors.black.withOpacity(0.05)),
+                      width: 1.2,
+                    ),
+                  ),
+                  child: isImageMessage
+                      ? GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => FullScreenImageViewer(
+                                  base64String: imageBase64,
+                                  heroTag: messageId,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Hero(
+                            tag: messageId,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Image.memory(
+                                base64Decode(imageBase64),
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                        );
-                      },
-                      child: Hero(
-                        tag:
-                            messageId, // Hero animation links the thumbnail to the full screen
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.memory(
-                            base64Decode(imageBase64),
-                            fit: BoxFit.cover,
+                        )
+                      : Text(
+                          text,
+                          style: TextStyle(
+                            color: isMe ? Colors.white : onSurfaceColor,
+                            fontSize: 15,
+                            height: 1.4,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ),
-                    )
-                  // Render Text
-                  : Text(
-                      text,
-                      style: TextStyle(
-                        color: isMe ? Colors.white : onSurfaceColor,
-                        fontSize: 15,
-                        height: 1.4,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -579,7 +623,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen>
 }
 
 // =====================================================================
-// NEW: FULL-SCREEN IMAGE VIEWER
+// FULL-SCREEN IMAGE VIEWER
 // =====================================================================
 class FullScreenImageViewer extends StatelessWidget {
   final String base64String;
@@ -594,7 +638,7 @@ class FullScreenImageViewer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Dark background for viewing images
+      backgroundColor: Colors.black,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -616,10 +660,9 @@ class FullScreenImageViewer extends StatelessWidget {
         ),
       ),
       body: Center(
-        // InteractiveViewer adds pinch-to-zoom and panning capabilities!
         child: InteractiveViewer(
           minScale: 1.0,
-          maxScale: 4.0, // Allow user to zoom in 4x
+          maxScale: 4.0,
           child: Hero(
             tag: heroTag,
             child: Image.memory(
