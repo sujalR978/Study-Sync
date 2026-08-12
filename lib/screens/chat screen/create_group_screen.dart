@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:study_sync/services/message_service.dart';
+// Make sure this path is correct for your project
+import 'package:study_sync/widgets/profile_avatar.dart';
 
 class CreateGroupScreen extends StatefulWidget {
   const CreateGroupScreen({super.key});
@@ -12,10 +14,11 @@ class CreateGroupScreen extends StatefulWidget {
   State<CreateGroupScreen> createState() => _CreateGroupScreenState();
 }
 
-class _CreateGroupScreenState extends State<CreateGroupScreen> with SingleTickerProviderStateMixin {
+class _CreateGroupScreenState extends State<CreateGroupScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _loopController;
   final TextEditingController _groupNameController = TextEditingController();
-  
+
   final String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
   final Set<String> _selectedMemberIds = {};
   bool _isLoading = false;
@@ -40,14 +43,20 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> with SingleTicker
     final groupName = _groupNameController.text.trim();
     if (groupName.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter a group name"), backgroundColor: Colors.redAccent),
+        const SnackBar(
+          content: Text("Please enter a group name"),
+          backgroundColor: Colors.redAccent,
+        ),
       );
       return;
     }
 
     if (_selectedMemberIds.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select at least one member"), backgroundColor: Colors.redAccent),
+        const SnackBar(
+          content: Text("Please select at least one member"),
+          backgroundColor: Colors.redAccent,
+        ),
       );
       return;
     }
@@ -55,11 +64,17 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> with SingleTicker
     setState(() => _isLoading = true);
 
     try {
-      await MessageService().createGroupChat(groupName, _selectedMemberIds.toList());
+      await MessageService().createGroupChat(
+        groupName,
+        _selectedMemberIds.toList(),
+      );
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Group created successfully!"), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text("Group created successfully!"),
+            backgroundColor: Colors.green,
+          ),
         );
       }
     } catch (e) {
@@ -83,14 +98,21 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> with SingleTicker
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          // Background Animation
           AnimatedBuilder(
             animation: _loopController,
             builder: (context, child) {
               return Stack(
                 children: [
-                  Positioned(top: 100 + (35 * sin(_loopController.value * 2 * pi)), left: -40 + (30 * cos(_loopController.value * 2 * pi)), child: _buildAmbientGlow(primaryColor, isDark)),
-                  Positioned(bottom: 80 - (35 * sin(_loopController.value * 2 * pi)), right: -50 + (30 * cos(_loopController.value * 2 * pi)), child: _buildAmbientGlow(secondaryColor, isDark)),
+                  Positioned(
+                    top: 100 + (35 * sin(_loopController.value * 2 * pi)),
+                    left: -40 + (30 * cos(_loopController.value * 2 * pi)),
+                    child: _buildAmbientGlow(primaryColor, isDark),
+                  ),
+                  Positioned(
+                    bottom: 80 - (35 * sin(_loopController.value * 2 * pi)),
+                    right: -50 + (30 * cos(_loopController.value * 2 * pi)),
+                    child: _buildAmbientGlow(secondaryColor, isDark),
+                  ),
                 ],
               );
             },
@@ -103,7 +125,6 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> with SingleTicker
               children: [
                 const SizedBox(height: 85),
 
-                // Group Name Input Pill
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: ClipRRect(
@@ -116,14 +137,25 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> with SingleTicker
                         decoration: BoxDecoration(
                           color: surfaceColor.withOpacity(isDark ? 0.35 : 0.55),
                           borderRadius: BorderRadius.circular(100),
-                          border: Border.all(color: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04), width: 1.5),
+                          border: Border.all(
+                            color: isDark
+                                ? Colors.white.withOpacity(0.08)
+                                : Colors.black.withOpacity(0.04),
+                            width: 1.5,
+                          ),
                         ),
                         child: TextField(
                           controller: _groupNameController,
-                          style: TextStyle(color: onSurfaceColor, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            color: onSurfaceColor,
+                            fontWeight: FontWeight.bold,
+                          ),
                           decoration: InputDecoration(
                             hintText: 'Enter Group Name...',
-                            hintStyle: TextStyle(color: onSurfaceColor.withOpacity(0.4), fontSize: 14),
+                            hintStyle: TextStyle(
+                              color: onSurfaceColor.withOpacity(0.4),
+                              fontSize: 14,
+                            ),
                             border: InputBorder.none,
                           ),
                         ),
@@ -131,56 +163,66 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> with SingleTicker
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Text(
                     "SELECT ACCEPTED FRIENDS (${_selectedMemberIds.length})",
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: onSurfaceColor.withOpacity(0.5), letterSpacing: 1.2),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: onSurfaceColor.withOpacity(0.5),
+                      letterSpacing: 1.2,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
 
-                // FETCH ONLY ACCEPTED FRIENDS FROM REQUESTS
                 Expanded(
                   child: StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection('requests')
                         .where('status', isEqualTo: 'accepted')
-                        .where(Filter.or(
-                          Filter('senderId', isEqualTo: currentUserId),
-                          Filter('receiverId', isEqualTo: currentUserId),
-                        ))
+                        .where(
+                          Filter.or(
+                            Filter('senderId', isEqualTo: currentUserId),
+                            Filter('receiverId', isEqualTo: currentUserId),
+                          ),
+                        )
                         .snapshots(),
                     builder: (context, requestSnapshot) {
-                      if (requestSnapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator(color: primaryColor));
+                      if (requestSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(color: primaryColor),
+                        );
                       }
 
-                      if (!requestSnapshot.hasData || requestSnapshot.data!.docs.isEmpty) {
+                      if (!requestSnapshot.hasData ||
+                          requestSnapshot.data!.docs.isEmpty) {
                         return Center(
-                          child: Text("No accepted friends yet.\nConnect with users first!", 
+                          child: Text(
+                            "No accepted friends yet.\nConnect with users first!",
                             textAlign: TextAlign.center,
-                            style: TextStyle(color: onSurfaceColor.withOpacity(0.5), fontWeight: FontWeight.w600)
+                            style: TextStyle(
+                              color: onSurfaceColor.withOpacity(0.5),
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         );
                       }
 
-                      // Extract IDs of accepted friends
                       List<String> friendIds = [];
                       for (var doc in requestSnapshot.data!.docs) {
                         String senderId = doc['senderId'];
                         String receiverId = doc['receiverId'];
-                        String friendId = (senderId == currentUserId) ? receiverId : senderId;
+                        String friendId = (senderId == currentUserId)
+                            ? receiverId
+                            : senderId;
                         friendIds.add(friendId);
                       }
 
-                      if (friendIds.isEmpty) {
-                        return Center(child: Text("No friends available for a group.", style: TextStyle(color: onSurfaceColor.withOpacity(0.5))));
-                      }
-
-                      // Now fetch user details for these specific friend IDs
                       return StreamBuilder<QuerySnapshot>(
                         stream: FirebaseFirestore.instance
                             .collection('users')
@@ -188,7 +230,11 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> with SingleTicker
                             .snapshots(),
                         builder: (context, userSnapshot) {
                           if (!userSnapshot.hasData) {
-                            return Center(child: CircularProgressIndicator(color: primaryColor));
+                            return Center(
+                              child: CircularProgressIndicator(
+                                color: primaryColor,
+                              ),
+                            );
                           }
 
                           final users = userSnapshot.data!.docs;
@@ -197,34 +243,72 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> with SingleTicker
                             padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
                             itemCount: users.length,
                             itemBuilder: (context, index) {
-                              final userDoc = users[index];
-                              final userData = userDoc.data() as Map<String, dynamic>;
-                              final userId = userDoc.id;
+                              final userData =
+                                  users[index].data() as Map<String, dynamic>;
+                              final userId = users[index].id;
                               final name = userData['fullname'] ?? 'Unknown';
                               final username = userData['username'] ?? 'user';
-                              final isSelected = _selectedMemberIds.contains(userId);
+                              final photoUrl =
+                                  userData['photoUrl'] ?? ''; // Access photoUrl
+                              final isSelected = _selectedMemberIds.contains(
+                                userId,
+                              );
 
                               return Container(
                                 margin: const EdgeInsets.only(bottom: 10),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(20),
                                   child: BackdropFilter(
-                                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                                    filter: ImageFilter.blur(
+                                      sigmaX: 12,
+                                      sigmaY: 12,
+                                    ),
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 10,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: surfaceColor.withOpacity(isDark ? 0.25 : 0.4),
+                                        color: surfaceColor.withOpacity(
+                                          isDark ? 0.25 : 0.4,
+                                        ),
                                         borderRadius: BorderRadius.circular(20),
-                                        border: Border.all(color: isSelected ? primaryColor : (isDark ? Colors.white10 : Colors.black12), width: 1.5),
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? primaryColor
+                                              : (isDark
+                                                    ? Colors.white10
+                                                    : Colors.black12),
+                                          width: 1.5,
+                                        ),
                                       ),
                                       child: CheckboxListTile(
                                         activeColor: primaryColor,
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                                        title: Text(name, style: TextStyle(color: onSurfaceColor, fontWeight: FontWeight.w800, fontSize: 15)),
-                                        subtitle: Text("@$username", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w600, fontSize: 12)),
-                                        secondary: CircleAvatar(
-                                          backgroundColor: primaryColor.withOpacity(0.2),
-                                          child: Text(name[0].toUpperCase(), style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
+                                        ),
+                                        title: Text(
+                                          name,
+                                          style: TextStyle(
+                                            color: onSurfaceColor,
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                        subtitle: Text(
+                                          "@$username",
+                                          style: TextStyle(
+                                            color: primaryColor,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                        // --- UPDATED TO USE PROFILE AVATAR ---
+                                        secondary: ProfileAvatar(
+                                          photoUrl: photoUrl,
+                                          radius: 20,
                                         ),
                                         value: isSelected,
                                         onChanged: (bool? value) {
@@ -252,13 +336,17 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> with SingleTicker
             ),
           ),
 
-          // App Bar
           Positioned(
-            top: 0, left: 0, right: 0,
+            top: 0,
+            left: 0,
+            right: 0,
             child: SafeArea(
               bottom: false,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(100),
                   child: BackdropFilter(
@@ -269,7 +357,10 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> with SingleTicker
                       decoration: BoxDecoration(
                         color: surfaceColor.withOpacity(isDark ? 0.35 : 0.65),
                         borderRadius: BorderRadius.circular(100),
-                        border: Border.all(color: onSurfaceColor.withOpacity(0.08), width: 1),
+                        border: Border.all(
+                          color: onSurfaceColor.withOpacity(0.08),
+                          width: 1,
+                        ),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -277,27 +368,61 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> with SingleTicker
                           GestureDetector(
                             onTap: () => Navigator.pop(context),
                             child: Container(
-                              height: 44, width: 44,
-                              decoration: BoxDecoration(color: onSurfaceColor.withOpacity(isDark ? 0.08 : 0.05), shape: BoxShape.circle),
-                              child: Icon(Icons.close_rounded, color: onSurfaceColor.withOpacity(0.8), size: 20),
+                              height: 44,
+                              width: 44,
+                              decoration: BoxDecoration(
+                                color: onSurfaceColor.withOpacity(
+                                  isDark ? 0.08 : 0.05,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.close_rounded,
+                                color: onSurfaceColor.withOpacity(0.8),
+                                size: 20,
+                              ),
                             ),
                           ),
-                          Text('Create Group', style: TextStyle(fontWeight: FontWeight.w800, color: onSurfaceColor, fontSize: 18, letterSpacing: -0.5)),
-                          
-                          // Create Button Pill
+                          Text(
+                            'Create Group',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: onSurfaceColor,
+                              fontSize: 18,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
                           GestureDetector(
                             onTap: _isLoading ? null : _createGroup,
                             child: Container(
                               height: 40,
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(colors: [primaryColor, secondaryColor]),
+                                gradient: LinearGradient(
+                                  colors: [primaryColor, secondaryColor],
+                                ),
                                 borderRadius: BorderRadius.circular(100),
                               ),
                               child: Center(
-                                child: _isLoading 
-                                    ? const SizedBox(height: 16, width: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                                    : const Text("Create", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                                child: _isLoading
+                                    ? const SizedBox(
+                                        height: 16,
+                                        width: 16,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Text(
+                                        "Create",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                        ),
+                                      ),
                               ),
                             ),
                           ),
@@ -315,6 +440,20 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> with SingleTicker
   }
 
   Widget _buildAmbientGlow(Color color, bool isDark) {
-    return Container(height: 280, width: 280, decoration: BoxDecoration(shape: BoxShape.circle, color: color.withOpacity(isDark ? 0.08 : 0.04), boxShadow: [BoxShadow(color: color.withOpacity(isDark ? 0.06 : 0.03), blurRadius: 70, spreadRadius: 20)]));
+    return Container(
+      height: 280,
+      width: 280,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: color.withOpacity(isDark ? 0.08 : 0.04),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(isDark ? 0.06 : 0.03),
+            blurRadius: 70,
+            spreadRadius: 20,
+          ),
+        ],
+      ),
+    );
   }
 }

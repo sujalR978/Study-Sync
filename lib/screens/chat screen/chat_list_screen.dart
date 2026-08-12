@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:study_sync/screens/chat%20screen/requests_screen.dart';
 
 import 'package:study_sync/services/message_service.dart';
+// Import your custom avatar widget
+import 'package:study_sync/widgets/profile_avatar.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({super.key});
@@ -18,7 +20,6 @@ class _ChatListScreenState extends State<ChatListScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _loopController;
   final TextEditingController _searchController = TextEditingController();
-
   String _searchQuery = '';
 
   @override
@@ -53,9 +54,7 @@ class _ChatListScreenState extends State<ChatListScreen>
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          // ===================================================================
-          // --- 1. AMBIENT BACKGROUND ANIMATION ---
-          // ===================================================================
+          // 1. BACKGROUND ANIMATION
           AnimatedBuilder(
             animation: _loopController,
             builder: (context, child) {
@@ -76,9 +75,7 @@ class _ChatListScreenState extends State<ChatListScreen>
             },
           ),
 
-          // ===================================================================
-          // --- 2. MAIN SCROLLING CONTENT ---
-          // ===================================================================
+          // 2. MAIN SCROLLING CONTENT
           SafeArea(
             bottom: false,
             child: Column(
@@ -86,7 +83,7 @@ class _ChatListScreenState extends State<ChatListScreen>
               children: [
                 const SizedBox(height: 85),
 
-                // --- SEARCH BAR ---
+                // SEARCH BAR
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: ClipRRect(
@@ -142,39 +139,24 @@ class _ChatListScreenState extends State<ChatListScreen>
                 ),
                 const SizedBox(height: 24),
 
-                // --- USERS LIST (NESTED STREAM FOR REQUEST STATUS) ---
+                // USERS LIST
                 Expanded(
                   child: StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection('users')
                         .snapshots(),
                     builder: (context, userSnapshot) {
-                      if (userSnapshot.connectionState ==
-                          ConnectionState.waiting) {
+                      if (!userSnapshot.hasData)
                         return Center(
                           child: CircularProgressIndicator(color: primaryColor),
                         );
-                      }
-                      if (!userSnapshot.hasData ||
-                          userSnapshot.data!.docs.isEmpty) {
-                        return Center(
-                          child: Text(
-                            "No users found.",
-                            style: TextStyle(
-                              color: onSurfaceColor.withOpacity(0.5),
-                            ),
-                          ),
-                        );
-                      }
 
-                      // Stream for Requests sent BY the current user
                       return StreamBuilder<QuerySnapshot>(
                         stream: FirebaseFirestore.instance
                             .collection('requests')
                             .where('senderId', isEqualTo: currentUserId)
                             .snapshots(),
                         builder: (context, requestSnapshot) {
-                          // Build a map of receiverId -> status
                           Map<String, String> requestStatuses = {};
                           if (requestSnapshot.hasData) {
                             for (var doc in requestSnapshot.data!.docs) {
@@ -183,10 +165,8 @@ class _ChatListScreenState extends State<ChatListScreen>
                             }
                           }
 
-                          // Filter Users
                           var users = userSnapshot.data!.docs.where((doc) {
-                            if (doc.id == currentUserId)
-                              return false; // Hide self
+                            if (doc.id == currentUserId) return false;
                             final data = doc.data() as Map<String, dynamic>;
                             final name = (data['fullname'] ?? '')
                                 .toString()
@@ -199,17 +179,6 @@ class _ChatListScreenState extends State<ChatListScreen>
                                 username.contains(_searchQuery);
                           }).toList();
 
-                          if (users.isEmpty) {
-                            return Center(
-                              child: Text(
-                                "No user matches '$_searchQuery'",
-                                style: TextStyle(
-                                  color: onSurfaceColor.withOpacity(0.5),
-                                ),
-                              ),
-                            );
-                          }
-
                           return ListView.builder(
                             physics: const BouncingScrollPhysics(),
                             padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
@@ -219,15 +188,14 @@ class _ChatListScreenState extends State<ChatListScreen>
                                   users[index].data() as Map<String, dynamic>;
                               final userId = users[index].id;
 
-                              // Get real-time status from Firebase map
-                              final status = requestStatuses[userId] ?? 'none';
-
                               return _buildUserCard(
                                 userId: userId,
-                                name: userData['fullname'] ?? 'Unknown User',
-                                username: userData['username'] ?? 'no_username',
+                                name: userData['fullname'] ?? 'Unknown',
+                                username: userData['username'] ?? 'user',
+                                photoUrl: userData['photoUrl'] ?? '',
                                 isOnline: userData['isOnline'] ?? false,
-                                requestStatus: status, // Pass the status here
+                                requestStatus:
+                                    requestStatuses[userId] ?? 'none',
                                 primaryColor: primaryColor,
                                 surfaceColor: surfaceColor,
                                 onSurfaceColor: onSurfaceColor,
@@ -244,9 +212,7 @@ class _ChatListScreenState extends State<ChatListScreen>
             ),
           ),
 
-          // ===================================================================
-          // --- 3. INSTAGRAM-STYLE APP BAR ---
-          // ===================================================================
+          // 3. APP BAR
           Positioned(
             top: 0,
             left: 0,
@@ -285,23 +251,19 @@ class _ChatListScreenState extends State<ChatListScreen>
                               letterSpacing: -0.5,
                             ),
                           ),
-                          // Notification Badge
                           StreamBuilder<QuerySnapshot>(
                             stream: MessageService().getIncomingRequests(),
                             builder: (context, snapshot) {
                               bool hasPendingRequests =
                                   snapshot.hasData &&
                                   snapshot.data!.docs.isNotEmpty;
-
                               return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const RequestsScreen(),
-                                    ),
-                                  );
-                                },
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const RequestsScreen(),
+                                  ),
+                                ),
                                 child: Container(
                                   height: 44,
                                   width: 44,
@@ -326,13 +288,9 @@ class _ChatListScreenState extends State<ChatListScreen>
                                           child: Container(
                                             height: 10,
                                             width: 10,
-                                            decoration: BoxDecoration(
+                                            decoration: const BoxDecoration(
                                               color: Colors.redAccent,
                                               shape: BoxShape.circle,
-                                              border: Border.all(
-                                                color: surfaceColor,
-                                                width: 2,
-                                              ),
                                             ),
                                           ),
                                         ),
@@ -355,11 +313,11 @@ class _ChatListScreenState extends State<ChatListScreen>
     );
   }
 
-  // --- DYNAMIC USER CARD BASED ON FIREBASE STATUS ---
   Widget _buildUserCard({
     required String userId,
     required String name,
     required String username,
+    required String photoUrl,
     required bool isOnline,
     required String requestStatus,
     required Color primaryColor,
@@ -367,7 +325,6 @@ class _ChatListScreenState extends State<ChatListScreen>
     required Color onSurfaceColor,
     required bool isDark,
   }) {
-    // UI logic based on Real-Time Firebase Status
     String buttonText = "Connect";
     Color buttonColor = primaryColor;
     Color textColor = Colors.white;
@@ -382,13 +339,7 @@ class _ChatListScreenState extends State<ChatListScreen>
       buttonText = "Connected";
       buttonColor = Colors.green;
       textColor = Colors.white;
-      isClickable =
-          false; // They should click the actual card to go to chat, not this button
-    } else if (requestStatus == 'declined') {
-      buttonText = "Declined";
-      buttonColor = Colors.redAccent.withOpacity(0.2);
-      textColor = Colors.redAccent;
-      isClickable = false; // Prevent spamming requests if declined
+      isClickable = false;
     }
 
     return Container(
@@ -411,35 +362,10 @@ class _ChatListScreenState extends State<ChatListScreen>
             ),
             child: Row(
               children: [
-                Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 26,
-                      backgroundColor: primaryColor.withOpacity(0.2),
-                      child: Text(
-                        name.isNotEmpty ? name[0].toUpperCase() : '?',
-                        style: TextStyle(
-                          color: primaryColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ),
-                    if (isOnline)
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          height: 14,
-                          width: 14,
-                          decoration: BoxDecoration(
-                            color: Colors.greenAccent,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: surfaceColor, width: 2.5),
-                          ),
-                        ),
-                      ),
-                  ],
+                ProfileAvatar(
+                  photoUrl: photoUrl,
+                  radius: 26,
+                  isOnline: isOnline,
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -454,7 +380,6 @@ class _ChatListScreenState extends State<ChatListScreen>
                           fontSize: 16,
                         ),
                       ),
-                      const SizedBox(height: 2),
                       Text(
                         "@$username",
                         style: TextStyle(
@@ -466,20 +391,12 @@ class _ChatListScreenState extends State<ChatListScreen>
                     ],
                   ),
                 ),
-
-                // CONNECT BUTTON
                 GestureDetector(
                   onTap: () async {
-                    if (isClickable) {
-                      try {
-                        await MessageService().sendConnectionRequest(userId);
-                      } catch (e) {
-                        debugPrint("Error sending request: $e");
-                      }
-                    }
+                    if (isClickable)
+                      await MessageService().sendConnectionRequest(userId);
                   },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
+                  child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 8,

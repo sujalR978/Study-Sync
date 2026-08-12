@@ -7,6 +7,7 @@ class ProfileAvatar extends StatefulWidget {
   final String? localImagePath;
   final double radius;
   final VoidCallback? onTap;
+  final bool isOnline; // New parameter to control status dot
 
   const ProfileAvatar({
     super.key,
@@ -14,13 +15,13 @@ class ProfileAvatar extends StatefulWidget {
     this.localImagePath,
     this.radius = 60,
     this.onTap,
+    this.isOnline = false, // Default to offline
   });
 
   @override
   State<ProfileAvatar> createState() => _ProfileAvatarState();
 }
 
-// SingleTickerProviderStateMixin handles the native loop for the rotation halo
 class _ProfileAvatarState extends State<ProfileAvatar>
     with SingleTickerProviderStateMixin {
   late AnimationController _rotationController;
@@ -29,7 +30,6 @@ class _ProfileAvatarState extends State<ProfileAvatar>
   @override
   void initState() {
     super.initState();
-    // Continuous infinite layout spin calculation loops for background halo
     _rotationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 12),
@@ -60,7 +60,6 @@ class _ProfileAvatarState extends State<ProfileAvatar>
     );
     final Color dynamicTextBody = onSurfaceColor.withOpacity(0.45);
 
-    // Self-contained pressable scaling interactive framework replacing missing custom wrappers
     return GestureDetector(
       onTapDown: (_) => setState(() => _isPressed = true),
       onTapUp: (_) => setState(() => _isPressed = false),
@@ -76,7 +75,7 @@ class _ProfileAvatarState extends State<ProfileAvatar>
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // Rotation controller matrix replacing missing SlowRotate wrapper element
+              // Rotation halo
               RotationTransition(
                 turns: _rotationController,
                 child: Container(
@@ -97,7 +96,7 @@ class _ProfileAvatarState extends State<ProfileAvatar>
                 ),
               ),
 
-              // Tween breathing matrix replacing missing Breathing structure block
+              // Main Avatar content
               TweenAnimationBuilder<double>(
                 tween: Tween<double>(begin: 0.99, end: 1.01),
                 duration: const Duration(milliseconds: 1800),
@@ -141,6 +140,22 @@ class _ProfileAvatarState extends State<ProfileAvatar>
                   ),
                 ),
               ),
+
+              // Status Indicator Dot
+              if (widget.isOnline)
+                Positioned(
+                  bottom: 2,
+                  right: 2,
+                  child: Container(
+                    height: 16,
+                    width: 16,
+                    decoration: BoxDecoration(
+                      color: Colors.greenAccent,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: surfaceColor, width: 3),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -180,21 +195,16 @@ class _ProfileAvatarState extends State<ProfileAvatar>
     Color placeholderColor,
   ) {
     final placeholder = _placeholder(size, placeholderColor);
-
     if (ProfileImageUtils.isNetworkUrl(path)) {
       return Image.network(
         path,
         width: size,
         height: size,
         fit: BoxFit.cover,
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return placeholder;
-        },
+        loadingBuilder: (_, child, prog) => prog == null ? child : placeholder,
         errorBuilder: (_, __, ___) => placeholder,
       );
     }
-
     if (ProfileImageUtils.isAssetPath(path)) {
       return Image.asset(
         path,
@@ -204,7 +214,6 @@ class _ProfileAvatarState extends State<ProfileAvatar>
         errorBuilder: (_, __, ___) => placeholder,
       );
     }
-
     if (ProfileImageUtils.isLocalFile(path)) {
       return Image.file(
         File(path),
@@ -214,7 +223,6 @@ class _ProfileAvatarState extends State<ProfileAvatar>
         errorBuilder: (_, __, ___) => placeholder,
       );
     }
-
     return placeholder;
   }
 

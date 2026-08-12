@@ -6,6 +6,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart'
+    as http; // Add 'http: ^1.2.0' to pubspec.yaml if not already present
+import 'dart:convert';
 
 class PrivateChatScreen extends StatefulWidget {
   final String roomId;
@@ -85,7 +88,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen>
         orElse: () => '',
       );
 
-      // 3. Update last message AND increment the other user's unread badge count
+      // 3. Update last message and unread count
       await FirebaseFirestore.instance
           .collection('chat_rooms')
           .doc(widget.roomId)
@@ -94,8 +97,56 @@ class _PrivateChatScreenState extends State<PrivateChatScreen>
             'lastMessageTime': FieldValue.serverTimestamp(),
             'unreadCount.$otherUserId': FieldValue.increment(1),
           });
+
+      // 4. CHECK IF OTHER USER IS OFFLINE AND SEND NOTIFICATION
+      final otherUserDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(otherUserId)
+          .get();
+      bool isOnline = otherUserDoc.data()?['isOnline'] ?? false;
+      String? receiverFcmToken = otherUserDoc.data()?['fcmToken'];
+
+      // If the user is offline and has a valid token, send them a notification push
+      if (!isOnline &&
+          receiverFcmToken != null &&
+          receiverFcmToken.isNotEmpty) {
+        _sendPushNotification(receiverFcmToken, widget.otherUserName, text);
+      }
     } catch (e) {
       debugPrint("Error sending message: $e");
+    }
+  }
+
+  // Helper function to send the FCM HTTP push request
+  Future<void> _sendPushNotification(
+    String fcmToken,
+    String senderName,
+    String messageBody,
+  ) async {
+    // Note: In production apps, this request should be handled securely by a Cloud Function
+    // to hide your server key, but this client-side snippet works for testing.
+    try {
+      const String serverKey =
+          'YOUR_FIREBASE_CLOUD_MESSAGING_SERVER_KEY'; // Found in Firebase Project Settings > Cloud Messaging
+
+      await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'key=$serverKey',
+        },
+        body: jsonEncode({
+          'to': fcmToken,
+          'notification': {
+            'title': senderName,
+            'body': messageBody,
+            'sound': 'default',
+          },
+          'priority': 'high',
+        }),
+      );
+    } catch (e) {
+      debugPrint("Error pushing notification: $e");
     }
   }
 
