@@ -7,17 +7,21 @@ import 'package:study_sync/screens/Notes/Notes.dart';
 import 'package:study_sync/screens/profile/profileScreen.dart';
 
 class Bottomnavigation extends StatefulWidget {
-  const Bottomnavigation({super.key});
+  final int initialIndex;
+  const Bottomnavigation({super.key, this.initialIndex = 0});
 
   @override
   State<Bottomnavigation> createState() => _BottomnavigationState();
 }
 
 class _BottomnavigationState extends State<Bottomnavigation> {
-  int _currentIndex = 0;
+  late int _currentIndex;
 
-  // REMOVED: Global Navigator keys are no longer needed since
-  // sub-pages will now pop over the top of the entire shell layout structure.
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +33,10 @@ class _BottomnavigationState extends State<Bottomnavigation> {
     final Color onSurfaceColor = theme.colorScheme.onSurface;
 
     return Scaffold(
-      extendBody:
-          true, // Forces child layout canvases to sit behind the translucent glass container docks
+      extendBody: true,
       backgroundColor: theme.scaffoldBackgroundColor,
-
       body: Stack(
         children: [
-          // Ambient Glass Distorter Orb
           Positioned(
             bottom: 40,
             left: 50,
@@ -50,14 +51,12 @@ class _BottomnavigationState extends State<Bottomnavigation> {
                     color: primaryColor.withOpacity(0.06),
                     blurRadius: 40,
                     spreadRadius: 20,
-                    offset: Offset.zero,
                   ),
                 ],
               ),
             ),
           ),
 
-          // Core Tab Switch Transition Engine Layer
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
             switchInCurve: Curves.easeInOutCubic,
@@ -78,19 +77,16 @@ class _BottomnavigationState extends State<Bottomnavigation> {
               key: ValueKey<int>(_currentIndex),
               index: _currentIndex,
               children: const [
-                // UPGRADED: Removed local _buildNavigator scopes.
-                // Tabs are now loaded directly as clear plain panels.
-                HomeScreen(),
-                Notes(),
-                ChatListScreen(),
-                Profilescreen(),
+                HomeScreen(), // Index 0
+                Notes(), // Index 1
+                ChatListScreen(), // Index 2 (Messages Tab)
+                Profilescreen(), // Index 3
               ],
             ),
           ),
         ],
       ),
 
-      // Refactored Translucent Floating Glass Dock Layout
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
@@ -131,15 +127,15 @@ class _BottomnavigationState extends State<Bottomnavigation> {
                       ),
                       _buildNavItem(
                         1,
-                        Icons.notes_rounded,
+                        Icons.book_rounded,
                         "Notes",
                         primaryColor,
                         onSurfaceColor,
                       ),
                       _buildNavItem(
                         2,
-                        Icons.folder_copy_rounded,
-                        "chat",
+                        Icons.chat_bubble_rounded,
+                        "Chats",
                         primaryColor,
                         onSurfaceColor,
                       ),
