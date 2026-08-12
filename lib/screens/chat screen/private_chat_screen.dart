@@ -39,6 +39,12 @@ class _PrivateChatScreenState extends State<PrivateChatScreen>
       vsync: this,
       duration: const Duration(seconds: 15),
     )..repeat(reverse: true);
+
+    // Clear unread count for the current user when they open the chat
+    FirebaseFirestore.instance
+        .collection('chat_rooms')
+        .doc(widget.roomId)
+        .update({'unreadCount.$currentUserId': 0});
   }
 
   @override
@@ -56,6 +62,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen>
     _messageController.clear();
 
     try {
+      // 1. Add message to subcollection
       await FirebaseFirestore.instance
           .collection('chat_rooms')
           .doc(widget.roomId)
@@ -63,16 +70,31 @@ class _PrivateChatScreenState extends State<PrivateChatScreen>
           .add({
             'senderId': currentUserId,
             'text': text,
-            'imageBase64': null, // No image
+            'imageBase64': null,
             'timestamp': FieldValue.serverTimestamp(),
           });
 
+      // 2. Fetch the chat room to find the other user's ID
+      final roomDoc = await FirebaseFirestore.instance
+          .collection('chat_rooms')
+          .doc(widget.roomId)
+          .get();
+      List<dynamic> users = roomDoc.data()?['users'] ?? [];
+      String otherUserId = users.firstWhere(
+        (id) => id != currentUserId,
+        orElse: () => '',
+      );
+
+      // 3. Update last message AND increment the other user's unread badge count
       await FirebaseFirestore.instance
           .collection('chat_rooms')
           .doc(widget.roomId)
           .update({
             'lastMessage': text,
             'lastMessageTime': FieldValue.serverTimestamp(),
+            'unreadCount.$otherUserId': FieldValue.increment(
+              1,
+            ), // Increments unread count for the offline user!
           });
     } catch (e) {
       debugPrint("Error sending message: $e");
