@@ -4,7 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:study_sync/screens/chat%20screen/requests_screen.dart';
-// / Import Request Screen
+
+import 'package:study_sync/services/message_service.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({super.key});
@@ -19,7 +20,6 @@ class _ChatListScreenState extends State<ChatListScreen>
   final TextEditingController _searchController = TextEditingController();
 
   String _searchQuery = '';
-  final Set<String> _sentRequests = {};
 
   @override
   void initState() {
@@ -45,17 +45,17 @@ class _ChatListScreenState extends State<ChatListScreen>
     final Color secondaryColor = theme.colorScheme.secondary;
     final Color onSurfaceColor = theme.colorScheme.onSurface;
     final Color surfaceColor = theme.colorScheme.surface;
-    final String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
-    // Dummy variable to show the red dot (change this based on Firebase later)
-    bool hasPendingRequests = true;
+    final String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          // --- BACKGROUND ---
+          // ===================================================================
+          // --- 1. AMBIENT BACKGROUND ANIMATION ---
+          // ===================================================================
           AnimatedBuilder(
             animation: _loopController,
             builder: (context, child) {
@@ -76,7 +76,9 @@ class _ChatListScreenState extends State<ChatListScreen>
             },
           ),
 
-          // --- MAIN CONTENT ---
+          // ===================================================================
+          // --- 2. MAIN SCROLLING CONTENT ---
+          // ===================================================================
           SafeArea(
             bottom: false,
             child: Column(
@@ -140,18 +142,21 @@ class _ChatListScreenState extends State<ChatListScreen>
                 ),
                 const SizedBox(height: 24),
 
-                // --- USERS LIST ---
+                // --- USERS LIST (NESTED STREAM FOR REQUEST STATUS) ---
                 Expanded(
                   child: StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection('users')
                         .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting)
+                    builder: (context, userSnapshot) {
+                      if (userSnapshot.connectionState ==
+                          ConnectionState.waiting) {
                         return Center(
                           child: CircularProgressIndicator(color: primaryColor),
                         );
-                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty)
+                      }
+                      if (!userSnapshot.hasData ||
+                          userSnapshot.data!.docs.isEmpty) {
                         return Center(
                           child: Text(
                             "No users found.",
@@ -160,46 +165,75 @@ class _ChatListScreenState extends State<ChatListScreen>
                             ),
                           ),
                         );
+                      }
 
-                      var users = snapshot.data!.docs.where((doc) {
-                        if (doc.id == currentUserId) return false;
-                        final data = doc.data() as Map<String, dynamic>;
-                        final name = (data['fullname'] ?? '')
-                            .toString()
-                            .toLowerCase();
-                        final username = (data['username'] ?? '')
-                            .toString()
-                            .toLowerCase();
-                        return _searchQuery.isEmpty ||
-                            name.contains(_searchQuery) ||
-                            username.contains(_searchQuery);
-                      }).toList();
+                      // Stream for Requests sent BY the current user
+                      return StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('requests')
+                            .where('senderId', isEqualTo: currentUserId)
+                            .snapshots(),
+                        builder: (context, requestSnapshot) {
+                          // Build a map of receiverId -> status
+                          Map<String, String> requestStatuses = {};
+                          if (requestSnapshot.hasData) {
+                            for (var doc in requestSnapshot.data!.docs) {
+                              requestStatuses[doc['receiverId']] =
+                                  doc['status'];
+                            }
+                          }
 
-                      if (users.isEmpty)
-                        return Center(
-                          child: Text(
-                            "No user matches '$_searchQuery'",
-                            style: TextStyle(
-                              color: onSurfaceColor.withOpacity(0.5),
-                            ),
-                          ),
-                        );
+                          // Filter Users
+                          var users = userSnapshot.data!.docs.where((doc) {
+                            if (doc.id == currentUserId)
+                              return false; // Hide self
+                            final data = doc.data() as Map<String, dynamic>;
+                            final name = (data['fullname'] ?? '')
+                                .toString()
+                                .toLowerCase();
+                            final username = (data['username'] ?? '')
+                                .toString()
+                                .toLowerCase();
+                            return _searchQuery.isEmpty ||
+                                name.contains(_searchQuery) ||
+                                username.contains(_searchQuery);
+                          }).toList();
 
-                      return ListView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
-                        itemCount: users.length,
-                        itemBuilder: (context, index) {
-                          final userData =
-                              users[index].data() as Map<String, dynamic>;
-                          return _buildUserCard(
-                            userId: users[index].id,
-                            name: userData['fullname'] ?? 'Unknown User',
-                            username: userData['username'] ?? 'no_username',
-                            primaryColor: primaryColor,
-                            surfaceColor: surfaceColor,
-                            onSurfaceColor: onSurfaceColor,
-                            isDark: isDark,
+                          if (users.isEmpty) {
+                            return Center(
+                              child: Text(
+                                "No user matches '$_searchQuery'",
+                                style: TextStyle(
+                                  color: onSurfaceColor.withOpacity(0.5),
+                                ),
+                              ),
+                            );
+                          }
+
+                          return ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
+                            itemCount: users.length,
+                            itemBuilder: (context, index) {
+                              final userData =
+                                  users[index].data() as Map<String, dynamic>;
+                              final userId = users[index].id;
+
+                              // Get real-time status from Firebase map
+                              final status = requestStatuses[userId] ?? 'none';
+
+                              return _buildUserCard(
+                                userId: userId,
+                                name: userData['fullname'] ?? 'Unknown User',
+                                username: userData['username'] ?? 'no_username',
+                                isOnline: userData['isOnline'] ?? false,
+                                requestStatus: status, // Pass the status here
+                                primaryColor: primaryColor,
+                                surfaceColor: surfaceColor,
+                                onSurfaceColor: onSurfaceColor,
+                                isDark: isDark,
+                              );
+                            },
                           );
                         },
                       );
@@ -210,7 +244,9 @@ class _ChatListScreenState extends State<ChatListScreen>
             ),
           ),
 
-          // --- INSTAGRAM-STYLE APP BAR ---
+          // ===================================================================
+          // --- 3. INSTAGRAM-STYLE APP BAR ---
+          // ===================================================================
           Positioned(
             top: 0,
             left: 0,
@@ -240,7 +276,6 @@ class _ChatListScreenState extends State<ChatListScreen>
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // Title on the left
                           Text(
                             'Messages',
                             style: TextStyle(
@@ -250,55 +285,62 @@ class _ChatListScreenState extends State<ChatListScreen>
                               letterSpacing: -0.5,
                             ),
                           ),
+                          // Notification Badge
+                          StreamBuilder<QuerySnapshot>(
+                            stream: MessageService().getIncomingRequests(),
+                            builder: (context, snapshot) {
+                              bool hasPendingRequests =
+                                  snapshot.hasData &&
+                                  snapshot.data!.docs.isNotEmpty;
 
-                          // Notification Icon on the right (Pushes to Requests Screen)
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const RequestsScreen(),
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const RequestsScreen(),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  height: 44,
+                                  width: 44,
+                                  decoration: BoxDecoration(
+                                    color: onSurfaceColor.withOpacity(
+                                      isDark ? 0.08 : 0.05,
+                                    ),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.favorite_outline_rounded,
+                                        color: onSurfaceColor.withOpacity(0.9),
+                                        size: 22,
+                                      ),
+                                      if (hasPendingRequests)
+                                        Positioned(
+                                          top: 10,
+                                          right: 10,
+                                          child: Container(
+                                            height: 10,
+                                            width: 10,
+                                            decoration: BoxDecoration(
+                                              color: Colors.redAccent,
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: surfaceColor,
+                                                width: 2,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
                                 ),
                               );
                             },
-                            child: Container(
-                              height: 44,
-                              width: 44,
-                              decoration: BoxDecoration(
-                                color: onSurfaceColor.withOpacity(
-                                  isDark ? 0.08 : 0.05,
-                                ),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.favorite_outline_rounded,
-                                    color: onSurfaceColor.withOpacity(0.9),
-                                    size: 22,
-                                  ),
-                                  // The Red Badge Dot
-                                  if (hasPendingRequests)
-                                    Positioned(
-                                      top: 10,
-                                      right: 10,
-                                      child: Container(
-                                        height: 10,
-                                        width: 10,
-                                        decoration: BoxDecoration(
-                                          color: Colors.redAccent,
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: surfaceColor,
-                                            width: 2,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
                           ),
                         ],
                       ),
@@ -313,16 +355,42 @@ class _ChatListScreenState extends State<ChatListScreen>
     );
   }
 
+  // --- DYNAMIC USER CARD BASED ON FIREBASE STATUS ---
   Widget _buildUserCard({
     required String userId,
     required String name,
     required String username,
+    required bool isOnline,
+    required String requestStatus,
     required Color primaryColor,
     required Color surfaceColor,
     required Color onSurfaceColor,
     required bool isDark,
   }) {
-    bool isSent = _sentRequests.contains(userId);
+    // UI logic based on Real-Time Firebase Status
+    String buttonText = "Connect";
+    Color buttonColor = primaryColor;
+    Color textColor = Colors.white;
+    bool isClickable = true;
+
+    if (requestStatus == 'pending') {
+      buttonText = "Requested";
+      buttonColor = onSurfaceColor.withOpacity(0.1);
+      textColor = onSurfaceColor.withOpacity(0.6);
+      isClickable = false;
+    } else if (requestStatus == 'accepted') {
+      buttonText = "Connected";
+      buttonColor = Colors.green;
+      textColor = Colors.white;
+      isClickable =
+          false; // They should click the actual card to go to chat, not this button
+    } else if (requestStatus == 'declined') {
+      buttonText = "Declined";
+      buttonColor = Colors.redAccent.withOpacity(0.2);
+      textColor = Colors.redAccent;
+      isClickable = false; // Prevent spamming requests if declined
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: ClipRRect(
@@ -343,17 +411,35 @@ class _ChatListScreenState extends State<ChatListScreen>
             ),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 26,
-                  backgroundColor: primaryColor.withOpacity(0.2),
-                  child: Text(
-                    name.isNotEmpty ? name[0].toUpperCase() : '?',
-                    style: TextStyle(
-                      color: primaryColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 26,
+                      backgroundColor: primaryColor.withOpacity(0.2),
+                      child: Text(
+                        name.isNotEmpty ? name[0].toUpperCase() : '?',
+                        style: TextStyle(
+                          color: primaryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
                     ),
-                  ),
+                    if (isOnline)
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          height: 14,
+                          width: 14,
+                          decoration: BoxDecoration(
+                            color: Colors.greenAccent,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: surfaceColor, width: 2.5),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -380,9 +466,17 @@ class _ChatListScreenState extends State<ChatListScreen>
                     ],
                   ),
                 ),
+
+                // CONNECT BUTTON
                 GestureDetector(
-                  onTap: () {
-                    if (!isSent) setState(() => _sentRequests.add(userId));
+                  onTap: () async {
+                    if (isClickable) {
+                      try {
+                        await MessageService().sendConnectionRequest(userId);
+                      } catch (e) {
+                        debugPrint("Error sending request: $e");
+                      }
+                    }
                   },
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
@@ -391,17 +485,13 @@ class _ChatListScreenState extends State<ChatListScreen>
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: isSent
-                          ? onSurfaceColor.withOpacity(0.1)
-                          : primaryColor,
+                      color: buttonColor,
                       borderRadius: BorderRadius.circular(100),
                     ),
                     child: Text(
-                      isSent ? "Requested" : "Connect",
+                      buttonText,
                       style: TextStyle(
-                        color: isSent
-                            ? onSurfaceColor.withOpacity(0.6)
-                            : Colors.white,
+                        color: textColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
                       ),
