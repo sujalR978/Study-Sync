@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:study_sync/screens/chat%20screen/chat_list_screen.dart';
 import 'dart:ui';
 
 import 'package:study_sync/screens/home/home_screen.dart';
 import 'package:study_sync/screens/Notes/Notes.dart';
 import 'package:study_sync/screens/profile/profileScreen.dart';
-
 
 class Bottomnavigation extends StatefulWidget {
   const Bottomnavigation({super.key});
@@ -82,9 +82,8 @@ class _BottomnavigationState extends State<Bottomnavigation> {
                 // Tabs are now loaded directly as clear plain panels.
                 HomeScreen(),
                 Notes(),
-                Notes(), // Secondary placeholder notes pointer slot matching your tracking system
+                ChatListScreen(),
                 Profilescreen(),
-             
               ],
             ),
           ),
@@ -140,7 +139,7 @@ class _BottomnavigationState extends State<Bottomnavigation> {
                       _buildNavItem(
                         2,
                         Icons.folder_copy_rounded,
-                        "Files",
+                        "chat",
                         primaryColor,
                         onSurfaceColor,
                       ),
@@ -151,7 +150,6 @@ class _BottomnavigationState extends State<Bottomnavigation> {
                         primaryColor,
                         onSurfaceColor,
                       ),
-                     
                     ],
                   ),
                 ),
