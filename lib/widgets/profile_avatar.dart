@@ -60,7 +60,7 @@ class _ProfileAvatarState extends State<ProfileAvatar>
     );
     final Color dynamicTextBody = onSurfaceColor.withOpacity(0.45);
 
-    // FIXED: Self-contained pressable scaling interactive framework replacing missing custom wrappers
+    // Self-contained pressable scaling interactive framework replacing missing custom wrappers
     return GestureDetector(
       onTapDown: (_) => setState(() => _isPressed = true),
       onTapUp: (_) => setState(() => _isPressed = false),
@@ -76,7 +76,7 @@ class _ProfileAvatarState extends State<ProfileAvatar>
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // FIXED: Rotation controller matrix replacing missing SlowRotate wrapper element
+              // Rotation controller matrix replacing missing SlowRotate wrapper element
               RotationTransition(
                 turns: _rotationController,
                 child: Container(
@@ -97,7 +97,7 @@ class _ProfileAvatarState extends State<ProfileAvatar>
                 ),
               ),
 
-              // FIXED: Tween breathing matrix replacing missing Breathing structure block
+              // Tween breathing matrix replacing missing Breathing structure block
               TweenAnimationBuilder<double>(
                 tween: Tween<double>(begin: 0.99, end: 1.01),
                 duration: const Duration(milliseconds: 1800),
