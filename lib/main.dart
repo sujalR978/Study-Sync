@@ -10,7 +10,7 @@ import 'package:study_sync/screens/splash/splash_screen.dart';
 import 'package:study_sync/services/notification_service.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
-// --- ADDED: Top-level background handler for FCM push notifications ---
+
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
