@@ -423,7 +423,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     setState(() => isLoading = true);
 
                                     AuthService auth = AuthService();
-                                    final logIn = await auth.googleSingIn();
+                                    final logIn = await auth.googleSignIn();
 
                                     if (!mounted) return;
                                     setState(() => isLoading = false);
